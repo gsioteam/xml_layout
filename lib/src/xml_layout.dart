@@ -6,7 +6,7 @@ import 'exceptions.dart';
 import 'types.dart';
 
 typedef ItemConstructor = dynamic Function(NodeData node, Key key);
-typedef TypeConverter = dynamic Function(NodeData node);
+typedef MethodConstructor = dynamic Function();
 
 class NodeData {
   xml.XmlNode node;
@@ -18,6 +18,7 @@ class NodeData {
   NodeData(this.node, this.state);
 
   void _setNode(String name, NodeData node) {
+    name = name.toLowerCase();
     List<NodeData> list = _attributes[name];
     if (list == null) {
       list = List();
@@ -55,17 +56,21 @@ class NodeData {
     return ret?.first;
   }
 
-  dynamic object() {
-    if (this.node is xml.XmlElement) {
+  Key _getKey() {
+    NodeData id = this["id"];
+    Key key;
+    if (id != null) {
+      key = state._addKey(id.text);
+    }
+    return key;
+  }
+
+  dynamic element() {
+    if (isElement) {
       xml.XmlElement element = this.node as xml.XmlElement;
-      ItemConstructor constructor = XMLLayout._constructors[element.name];
-      if (constructor != null) {
-        NodeData id = this["id"];
-        Key key;
-        if (id != null) {
-          key = state._addKey(id.text);
-        }
-        return constructor(this, key);
+      _ItemInfo info = XMLLayout._constructors[element.name.toString().toLowerCase()];
+      if (info != null && info.mode & XMLLayout.Element != 0) {
+        return info.constructor(this, _getKey());
       }
     }
   }
@@ -76,6 +81,7 @@ class NodeData {
   bool get boolean => text == "true" ? true:false;
 
   bool get isAttribute => node is xml.XmlAttribute;
+  bool get isElement => node is xml.XmlElement;
   String get name => node is xml.XmlElement ? (node as xml.XmlElement).name.local : null;
 
   void _init() {
@@ -93,18 +99,21 @@ class NodeData {
     }
   }
 
-  Widget get child {
+  T child<T>() {
     _init();
-    dynamic obj = _children.first?.object();
-    return obj is Widget ? obj : null;
+    for (NodeData data in _children) {
+      dynamic obj = _children.first?.element();
+      if (obj is T) return obj;
+    }
+    return null;
   }
 
-  List<Widget> get children {
+  List<T> children<T>() {
     _init();
-    List<Widget> ret = [];
+    List<T> ret = [];
     _children.forEach((element) {
-      dynamic obj = element.object();
-      if (obj is Widget) ret.add(obj);
+      dynamic obj = element.element();
+      if (obj is T) ret.add(obj);
     });
     return ret;
   }
@@ -126,7 +135,7 @@ class NodeData {
   T t<T>() {
     switch (T) {
       case Function: {
-        if (text != null) {
+        if (isAttribute && text != null) {
           return fn(text) as T;
         }
         return null;
@@ -144,16 +153,14 @@ class NodeData {
         return real as T;
       }
       default: {
-        TypeConverter covert = XMLLayout._types[T];
-        dynamic obj;
-        if (covert != null) {
-          obj = covert(this);
+        _ItemInfo info = XMLLayout._constructors[T];
+        bool check = false;
+        check |= info.mode & XMLLayout.Element > 0 && isElement;
+        check |= info.mode & XMLLayout.Text > 0 && !isElement;
+        if (check) {
+          return info.constructor(this, _getKey());
         }
-        if (obj == null) {
-          obj = object();
-          if (obj is T) return obj;
-          else return null;
-        } else return obj;
+        return null;
       }
     }
   }
@@ -161,11 +168,47 @@ class NodeData {
   T s<T>(String name) {
     return this[name]?.t<T>();
   }
+
+  T v<T>(String txt) {
+    _ItemInfo info = XMLLayout._constructors[T];
+    if (info.mode & XMLLayout.Text > 0) {
+      return info.constructor(NodeData(xml.XmlText(txt), state), null);
+    }
+    return null;
+  }
+
+  static const String MethodPattern = r"^{0}\(([^\)]*)\)$";
+  List<String> splitMethod(String name, int count) {
+    if (!isElement) {
+      String str = MethodPattern.replaceFirst("{0}", name);
+      var matches = RegExp(str).allMatches(node.text);
+      if (matches.isNotEmpty) {
+        var params = matches.first.group(1).split(",");
+        if (params.length == count) {
+          return List.from(params.map<String>((e) => e.trim()));
+        } else if (count == 0 && params.first.isEmpty) {
+          return [];
+        } else {
+          print("${node.text} params count not match $count}");
+        }
+      }
+    }
+  }
+
+
+}
+
+class _ItemInfo {
+  ItemConstructor constructor;
+  int mode;
+
+  _ItemInfo(this.constructor, this.mode);
 }
 
 class XMLLayout extends StatefulWidget {
-  static Map<String, ItemConstructor> _constructors = Map();
-  static Map<Type, TypeConverter> _types = Map();
+  static Map<dynamic, _ItemInfo> _constructors = Map();
+
+  static const Element = 1, Text = 2;
 
   String temp;
   Map<String, Function> functions;
@@ -183,13 +226,16 @@ class XMLLayout extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => XMLLayoutState();
 
-  static void reg(dynamic nameOrType, ItemConstructor constructor) {
-    if (nameOrType is Type) nameOrType = nameOrType.toString();
-    _constructors[nameOrType.toLowerCase()] = constructor;
-  }
-
-  static void regType(Type type, TypeConverter converter) {
-    _types[type] = converter;
+  static void reg(dynamic nameOrType, ItemConstructor constructor, {
+    int mode = Element | Text
+  }) {
+    assert(mode != null);
+    dynamic info = _ItemInfo(constructor, mode);
+    if (nameOrType is Type) {
+      _constructors[nameOrType] = info;
+      nameOrType = nameOrType.toString();
+    }
+    _constructors[nameOrType.toLowerCase()] = info;
   }
 
   static void regEnum<T>(List<T> values) {
@@ -197,10 +243,10 @@ class XMLLayout extends StatefulWidget {
     values.forEach((element) {
       map[element.toString().split(".").last] = element;
     });
-    regType(T, (node) {
+    reg(T, (node, _) {
       String name = node.text;
       return map[name];
-    });
+    }, mode: Text);
   }
 }
 
@@ -214,7 +260,7 @@ class XMLLayoutState extends State<XMLLayout> {
       xml.XmlDocument doc = xml.parse(widget.temp);
       if (doc.firstChild != null) {
         NodeData data = NodeData(doc.firstChild, this);
-        dynamic tar = data.object();
+        dynamic tar = data.element();
         if (tar is Widget) {
           _build = tar;
         } else {

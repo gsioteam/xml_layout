@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import '../xml_layout.dart';
 
-Color _colorGenerator(node) {
+Color _colorGenerator(node, key) {
   String text = node.text;
   switch (text) {
     case 'transparent': return Colors.transparent;
@@ -66,7 +66,7 @@ Color _colorGenerator(node) {
         var matches;
         if ((matches = RegExp(r"(\w+)\[(\d+)\]$").allMatches(text)).length > 0) {
           RegExpMatch match = matches.first;
-          Color color = _colorGenerator(match.group(1));
+          Color color = _colorGenerator(match.group(1), key);
           if (color is MaterialColor) {
             return color[int.parse(match.group(2))];
           }
@@ -90,5 +90,5 @@ Color _colorGenerator(node) {
 }
 
 void registerColors() {
-  XMLLayout.regType(Color, _colorGenerator);
+  XMLLayout.reg(Color, _colorGenerator);
 }

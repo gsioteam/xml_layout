@@ -22,7 +22,7 @@ double _parseDouble(String v) {
 }
 
 void initTypes() {
-  XMLLayout.regType(AlignmentGeometry, (node) {
+  XMLLayout.reg(AlignmentGeometry, (node, _) {
     String text = node.text;
     switch (text) {
       case "topLeft": return Alignment.topLeft;
@@ -50,7 +50,7 @@ void initTypes() {
     return null;
   });
 
-  XMLLayout.regType(EdgeInsetsGeometry, (node) {
+  XMLLayout.reg(EdgeInsetsGeometry, (node, _) {
     String text = node.text;
     var arr = text.split(",");
     if (arr.length == 1) {
@@ -78,7 +78,7 @@ void initTypes() {
 
   registerColors();
 
-  XMLLayout.regType(Clip, (node) {
+  XMLLayout.reg(Clip, (node, _) {
     String text = node.text;
     switch (text) {
       case 'none': return Clip.none;
@@ -94,7 +94,7 @@ void initTypes() {
   XMLLayout.reg(Container, (node, key) {
     return Container(
       key: key,
-      child: node.child,
+      child: node.child<Widget>(),
       alignment: node.s<AlignmentGeometry>("alignment"),
       padding: node.s<EdgeInsetsGeometry>("padding"),
       color: node.s<Color>("color"),
