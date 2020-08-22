@@ -102,7 +102,7 @@ class NodeData {
   T child<T>() {
     _init();
     for (NodeData data in _children) {
-      dynamic obj = _children.first?.element();
+      dynamic obj = data.element();
       if (obj is T) return obj;
     }
     return null;
@@ -118,10 +118,6 @@ class NodeData {
     return ret;
   }
 
-  Function fn(String name) {
-    return state.widget.functions[name];
-  }
-
   List<T> arr<T>(String name) {
     List<NodeData> attr = _attributes[name.toLowerCase()];
     List<T> ret = [];
@@ -134,12 +130,6 @@ class NodeData {
 
   T t<T>() {
     switch (T) {
-      case Function: {
-        if (isAttribute && text != null) {
-          return fn(text) as T;
-        }
-        return null;
-      }
       case String: {
         return text as T;
       }
@@ -157,16 +147,21 @@ class NodeData {
         bool check = false;
         check |= info.mode & XMLLayout.Element > 0 && isElement;
         check |= info.mode & XMLLayout.Text > 0 && !isElement;
+        dynamic obj;
         if (check) {
-          return info.constructor(this, _getKey());
+          obj = info.constructor(this, _getKey());
         }
-        return null;
+        if (obj == null && !isElement) {
+          obj = state.widget.objects[text];
+          if (!(obj is T)) obj = null;
+        }
+        return obj;
       }
     }
   }
 
-  T s<T>(String name) {
-    return this[name]?.t<T>();
+  T s<T>(String name, [T def]) {
+    return this[name]?.t<T>() ?? def;
   }
 
   T v<T>(String txt) {
@@ -189,10 +184,11 @@ class NodeData {
         } else if (count == 0 && params.first.isEmpty) {
           return [];
         } else {
-          print("${node.text} params count not match $count}");
+          // print("${node.text} params count not match $count}");
         }
       }
     }
+    return null;
   }
 
 
@@ -211,12 +207,12 @@ class XMLLayout extends StatefulWidget {
   static const Element = 1, Text = 2;
 
   String temp;
-  Map<String, Function> functions;
+  Map<String, dynamic> objects;
 
   static bool _firstInit = true;
 
-  XMLLayout({this.temp, this.functions}) {
-    if (this.functions == null) this.functions = Map();
+  XMLLayout({this.temp, this.objects}) {
+    if (this.objects == null) this.objects = Map();
     if (_firstInit) {
       initTypes();
       _firstInit = false;
@@ -230,6 +226,7 @@ class XMLLayout extends StatefulWidget {
     int mode = Element | Text
   }) {
     assert(mode != null);
+    if (nameOrType is String) mode = Element;
     dynamic info = _ItemInfo(constructor, mode);
     if (nameOrType is Type) {
       _constructors[nameOrType] = info;

@@ -1019,28 +1019,28 @@ void reg() {
     String text = node.text;
     IconData data = icons[text];
     if (data == null) {
-      var arr = text.split(",");
-      if (arr.length == 2) {
+      List<String> params;
+      if ((params = node.splitMethod("", 2)) != null) {
         data = IconData(
-            int.parse(arr[0].trim()),
-            fontFamily: arr[1].trim()
+          int.parse(params[0]),
+          fontFamily: params[1]
         );
-      } else if (arr.length == 3) {
+      } else if ((params = node.splitMethod("", 3)) != null) {
         data = IconData(
-          int.parse(arr[0].trim()),
-          fontFamily: arr[1].trim(),
-          fontPackage: arr[2].trim()
+          int.parse(params[0]),
+          fontFamily: params[1],
+          fontPackage: params[2]
         );
-      } else if (arr.length == 4) {
+      } else if ((params = node.splitMethod("", 4)) != null) {
         data = IconData(
-          int.parse(arr[0].trim()),
-          fontFamily: arr[1].trim(),
-          fontPackage: arr[2].trim(),
-          matchTextDirection: arr[3].trim() == 'true'
+          int.parse(params[0]),
+          fontFamily: params[1],
+          fontPackage: params[2],
+          matchTextDirection: params[3] == 'true'
         );
       }
     }
     return data;
   }, mode: XMLLayout.Text);
-  XMLLayout.regEnum(TextDirection.values);
+
 }

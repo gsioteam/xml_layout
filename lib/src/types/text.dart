@@ -12,7 +12,22 @@ import '../xml_layout.dart';
 
 void reg() {
 
-  XMLLayout.regEnum(FontWeight.values);
+  XMLLayout.reg(FontWeight, (node, key) {
+    switch (node.text) {
+      case 'w100': return FontWeight.w100;
+      case 'w200': return FontWeight.w200;
+      case 'w300': return FontWeight.w300;
+      case 'w400': return FontWeight.w400;
+      case 'w500': return FontWeight.w500;
+      case 'w600': return FontWeight.w600;
+      case 'w700': return FontWeight.w700;
+      case 'w800': return FontWeight.w800;
+      case 'w900': return FontWeight.w900;
+      case 'normal': return FontWeight.normal;
+      case 'bold': return FontWeight.bold;
+      default: return null;
+    }
+  });
   XMLLayout.regEnum(FontStyle.values);
   XMLLayout.regEnum(TextBaseline.values);
   XMLLayout.reg(Locale, (node, _) {
@@ -44,7 +59,7 @@ void reg() {
       background: node.s<Paint>("background"),
       shadows: node.arr<Shadow>("shadows"),
     );
-  });
+  }, mode: XMLLayout.Element);
 
   XMLLayout.reg(Text, (node, key) {
     if (node.isElement) {
@@ -109,9 +124,46 @@ void reg() {
       recognizer: node.s<GestureRecognizer>("recognizer"),
       semanticsLabel: node.s<String>("semanticsLabel"),
     );
+  }, mode: XMLLayout.Element);
+
+  XMLLayout.regEnum(PlaceholderAlignment.values);
+  XMLLayout.reg(WidgetSpan, (node, key) {
+    return WidgetSpan(
+      child: node.child<Widget>(),
+      alignment: node.s<PlaceholderAlignment>("alignment"),
+      baseline: node.s<TextBaseline>("baseline"),
+      style: node.s<TextStyle>("style")
+    );
+  }, mode: XMLLayout.Element);
+
+  XMLLayout.reg(StrutStyle, (node, key) {
+    return StrutStyle(
+      fontFamily: node.s<String>("fontFamily"),
+      fontFamilyFallback: node.s<String>("fontFamilyFallback")?.split(","),
+      fontSize: node.s<double>("fontSize"),
+      height: node.s<double>("height"),
+      leading: node.s<double>("leading"),
+      fontWeight: node.s<FontWeight>("fontWeight"),
+      fontStyle: node.s<FontStyle>("fontStyle"),
+      forceStrutHeight: node.s<bool>("forceStrutHeight"),
+      debugLabel: node.s<String>("debugLabel"),
+      package: node.s<String>("package")
+    );
+  }, mode: XMLLayout.Element);
+  XMLLayout.reg("StrutStyle.fromTextStyle", (node, key) {
+    return StrutStyle.fromTextStyle(
+      node.child<TextStyle>(),
+      fontFamily: node.s<String>("fontFamily"),
+      fontFamilyFallback: node.s<String>("fontFamilyFallback")?.split(","),
+      fontSize: node.s<double>("fontSize"),
+      height: node.s<double>("height"),
+      leading: node.s<double>("leading"),
+      fontWeight: node.s<FontWeight>("fontWeight"),
+      fontStyle: node.s<FontStyle>("fontStyle"),
+      forceStrutHeight: node.s<bool>("forceStrutHeight"),
+      debugLabel: node.s<String>("debugLabel"),
+      package: node.s<String>("package")
+    );
   });
 
-  XMLLayout.reg(WidgetSpan, (node, key) {
-    
-  });
 }
