@@ -1,0 +1,9 @@
+<Column mainAxisAlignment="center">
+    <Text text="You have pushed the button this many times:"/>
+    <Text text="$counter" id="text-id">
+        <attr:style>
+            <TextStyle color="red"/>
+        </attr:style>
+    </Text>
+    <Icon icon="airport_shuttle" color="blue"/>
+</Column>

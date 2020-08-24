@@ -9,18 +9,6 @@ import 'types/layout.dart' as layout;
 import 'types/icons.dart' as icons;
 import 'types/list.dart' as list;
 
-double _parseDouble(String v) {
-  v = v.trim();
-  if (v.length > 0) {
-    try {
-      return double.parse(v);
-    } catch (e) {
-
-    }
-  }
-  return null;
-}
-
 void initTypes() {
 
   color.reg();

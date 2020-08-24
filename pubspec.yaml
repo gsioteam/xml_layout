@@ -2,7 +2,7 @@ name: xml_layout
 description: >
   XML layout for flutter.
   You can layout your UI via xml at runtime.
-version: 0.0.2
+version: 0.0.4
 #author:
 homepage: https://github.com/gsioteam/xml_layout
 
@@ -12,11 +12,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  xml: ^3.0.0
+  xml: '>=3.0.0'
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
+#  flutter_test:
+#    sdk: flutter
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

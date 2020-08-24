@@ -4,10 +4,6 @@ import 'package:flutter/material.dart';
 
 import '../parser.dart';
 import '../xml_layout.dart';
-import '../xml_layout.dart';
-import '../xml_layout.dart';
-import '../xml_layout.dart';
-import '../xml_layout.dart';
 
 void reg() {
   XMLLayout.reg(Icon, (node, key) {
