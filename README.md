@@ -32,7 +32,7 @@ In this case
 
 `$counter` for passing argument to the layout.
 
-`id` attribute for select the widget or state.
+`id` attribute for selecting the widget or state.
 
 ```
 XMLLayoutState state = ...;
