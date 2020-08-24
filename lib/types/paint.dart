@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:xml/xml.dart';
 
+import '../parser.dart';
 import '../xml_layout.dart';
 import 'package:flutter/material.dart';
 
@@ -57,7 +58,7 @@ void reg() {
     return ret;
   });
   XMLLayout.reg(ColorFilter, (node, _) {
-    List<String> params;
+    MethodNode params;
     if ((params = node.splitMethod("mode", 2)) != null) {
       return ColorFilter.mode(node.v<Color>(params[0]), node.v<BlendMode>(params[1]));
     } else if ((params = node.splitMethod("matrix", 16)) != null) {
@@ -69,11 +70,11 @@ void reg() {
     } else return null;
   });
   XMLLayout.reg(ImageFilter, (node, _) {
-    List<String> params;
+    MethodNode params;
     if ((params = node.splitMethod("blur", 2)) != null) {
-      return ImageFilter.blur(sigmaX: double.parse(params[0]), sigmaY: double.parse(params[1]));
+      return ImageFilter.blur(sigmaX: double.tryParse(params[0]), sigmaY: double.tryParse(params[1]));
     } else if ((params = node.splitMethod("matrix", 16)) != null) {
-      return ImageFilter.matrix(Float64List.fromList(params.map<double>((e)=>double.parse(e))));
+      return ImageFilter.matrix(Float64List.fromList(params.map<double>((e)=>double.tryParse(e))));
     } else return null;
-  });
+  }, mode: XMLLayout.Text);
 }

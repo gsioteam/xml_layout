@@ -59,28 +59,37 @@ Color _colorGenerator(node, key) {
     case 'blueGrey': return Colors.blueGrey;
     default: {
       if (text.startsWith("0x") || text.startsWith("0X")) {
-        return Color(int.parse(text.substring(2), radix: 16));
+        return Color(int.tryParse(text.substring(2), radix: 16));
       } if (text.startsWith('#')) {
-        return Color(int.parse(text.substring(1), radix: 16));
+        return Color(int.tryParse(text.substring(1), radix: 16));
       } else {
         var matches;
         if ((matches = RegExp(r"(\w+)\[(\d+)\]$").allMatches(text)).length > 0) {
           RegExpMatch match = matches.first;
           Color color = _colorGenerator(match.group(1), key);
-          if (color is MaterialColor) {
-            return color[int.parse(match.group(2))];
-          }
+          if (color is MaterialColor)
+            return color[int.tryParse(match.group(2))];
         } else if ((matches = RegExp(r"^rgb\(([^\)]+)\)$").allMatches(text)).length > 0) {
           RegExpMatch match = matches.first;
           var arr = match.group(1).split(",");
           if (arr.length == 3) {
-            return Color.fromRGBO(int.parse(arr[0]), int.parse(arr[1]), int.parse(arr[2]), 1);
+            return Color.fromRGBO(
+              int.tryParse(arr[0]),
+              int.tryParse(arr[1]),
+              int.tryParse(arr[2]),
+              1
+            );
           }
         } else if ((matches = RegExp(r"^rgba\(([^\)]+)\)$").allMatches(text)).length > 0) {
           RegExpMatch match = matches.first;
           var arr = match.group(1).split(",");
           if (arr.length == 4) {
-            return Color.fromRGBO(int.parse(arr[0]), int.parse(arr[1]), int.parse(arr[2]), double.parse(arr[3]));
+            return Color.fromRGBO(
+              int.tryParse(arr[0]),
+              int.tryParse(arr[1]),
+              int.tryParse(arr[2]),
+              double.tryParse(arr[3])
+            );
           }
         }
       }
@@ -89,6 +98,6 @@ Color _colorGenerator(node, key) {
   }
 }
 
-void registerColors() {
+void reg() {
   XMLLayout.reg(Color, _colorGenerator);
 }

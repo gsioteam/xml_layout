@@ -2,6 +2,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../parser.dart';
 import '../xml_layout.dart';
 import '../xml_layout.dart';
 import '../xml_layout.dart';
@@ -1019,7 +1020,7 @@ void reg() {
     String text = node.text;
     IconData data = icons[text];
     if (data == null) {
-      List<String> params;
+      MethodNode params;
       if ((params = node.splitMethod("", 2)) != null) {
         data = IconData(
           int.parse(params[0]),

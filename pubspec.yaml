@@ -1,5 +1,7 @@
 name: xml_layout
-description: A new Flutter package.
+description: >
+  XML layout for flutter.
+  You can layout your UI via xml at runtime.
 version: 0.0.1
 author:
 homepage:

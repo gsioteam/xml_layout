@@ -1,13 +1,10 @@
 
 import 'dart:ui';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 
-import '../xml_layout.dart';
-import 'package:flutter/material.dart';
-
-import '../xml_layout.dart';
-import '../xml_layout.dart';
+import '../parser.dart';
 import '../xml_layout.dart';
 
 void reg() {
@@ -44,7 +41,7 @@ void reg() {
 
   XMLLayout.reg(TextStyle, (node, _) {
     return TextStyle(
-      inherit: node.s<bool>("color"),
+      inherit: node.s<bool>("inherit", true),
       color: node.s<Color>("color"),
       backgroundColor: node.s<Color>("backgroundColor"),
       fontSize: node.s<double>("fontSize"),
@@ -64,7 +61,7 @@ void reg() {
   XMLLayout.reg(Text, (node, key) {
     if (node.isElement) {
       return Text(
-        node["text"]?.text ?? node.text,
+        node.s<String>("text") ?? node.text,
         key: key,
         style: node.s<TextStyle>("style"),
         strutStyle: node.s<StrutStyle>("strutStyle"),
@@ -106,12 +103,16 @@ void reg() {
   XMLLayout.regEnum(TextDirection.values);
 
   XMLLayout.reg(TextHeightBehavior, (node, key) {
-    List<String> params;
+    MethodNode params;
     if ((params = node.splitMethod("", 2)) != null) {
       return TextHeightBehavior(applyHeightToFirstAscent: params[0] == 'true', applyHeightToLastDescent: params[1] == 'true');
     } else if ((params = node.splitMethod("fromEncoded", 1)) != null) {
       return TextHeightBehavior.fromEncoded(int.parse(params[0]));
     } else return null;
+  }, mode: XMLLayout.Text);
+
+  XMLLayout.reg(InlineSpan, (node, key) {
+    return TextSpan(text: node.text);
   }, mode: XMLLayout.Text);
 
   XMLLayout.reg(TextSpan, (node, key) {
