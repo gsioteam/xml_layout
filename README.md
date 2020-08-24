@@ -40,7 +40,7 @@ XMLLayoutState state = ...;
 GlobalKey key = state.find('text-id');
 ```
 
-## Support Widget
+## Supported Widgets
 
 All support widget are write in `types/*.dart` files. Find the class name to check if supported.
 
@@ -62,6 +62,8 @@ XMLLayout.regEnum(MyEnum.values);
 ```
 
 `node.s<T>("name")` convert subnode to target type
+
 `node.t<T>()` convert this node to target type
+
 `node.v<T>("value")` convert text to target type
 
