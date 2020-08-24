@@ -4,7 +4,7 @@ description: >
   You can layout your UI via xml at runtime.
 version: 0.0.1
 author:
-homepage:
+homepage: https://github.com/gsioteam/xml_layout
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
