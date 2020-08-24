@@ -9,7 +9,7 @@ import 'types/layout.dart' as layout;
 import 'types/icons.dart' as icons;
 import 'types/list.dart' as list;
 
-void initTypes() {
+int initTypes() {
 
   color.reg();
   text.reg();
@@ -18,4 +18,5 @@ void initTypes() {
   layout.reg();
   icons.reg();
   list.reg();
+  return 0;
 }

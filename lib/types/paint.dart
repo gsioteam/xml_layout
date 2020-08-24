@@ -9,7 +9,7 @@ import '../xml_layout.dart';
 import 'package:flutter/material.dart';
 
 void reg() {
-  XMLLayout.reg(Paint, (node, key) {
+  XmlLayout.reg(Paint, (node, key) {
     if (node.name == "paint") {
       dynamic v;
       Paint paint = Paint();
@@ -31,13 +31,13 @@ void reg() {
     return null;
   });
 
-  XMLLayout.regEnum(BlendMode.values);
-  XMLLayout.regEnum(FilterQuality.values);
-  XMLLayout.regEnum(PaintingStyle.values);
-  XMLLayout.regEnum(StrokeCap.values);
-  XMLLayout.regEnum(StrokeJoin.values);
-  XMLLayout.regEnum(BlurStyle.values);
-  XMLLayout.reg(MaskFilter, (node, _) {
+  XmlLayout.regEnum(BlendMode.values);
+  XmlLayout.regEnum(FilterQuality.values);
+  XmlLayout.regEnum(PaintingStyle.values);
+  XmlLayout.regEnum(StrokeCap.values);
+  XmlLayout.regEnum(StrokeJoin.values);
+  XmlLayout.regEnum(BlurStyle.values);
+  XmlLayout.reg(MaskFilter, (node, _) {
     String text = node.text;
     Iterable<RegExpMatch> matches = RegExp(r"blur\(([^\)]+)\)").allMatches(text);
     MaskFilter ret;
@@ -57,7 +57,7 @@ void reg() {
     }
     return ret;
   });
-  XMLLayout.reg(ColorFilter, (node, _) {
+  XmlLayout.reg(ColorFilter, (node, _) {
     MethodNode params;
     if ((params = node.splitMethod("mode", 2)) != null) {
       return ColorFilter.mode(node.v<Color>(params[0]), node.v<BlendMode>(params[1]));
@@ -69,12 +69,12 @@ void reg() {
       return ColorFilter.linearToSrgbGamma();
     } else return null;
   });
-  XMLLayout.reg(ImageFilter, (node, _) {
+  XmlLayout.reg(ImageFilter, (node, _) {
     MethodNode params;
     if ((params = node.splitMethod("blur", 2)) != null) {
       return ImageFilter.blur(sigmaX: double.tryParse(params[0]), sigmaY: double.tryParse(params[1]));
     } else if ((params = node.splitMethod("matrix", 16)) != null) {
       return ImageFilter.matrix(Float64List.fromList(params.map<double>((e)=>double.tryParse(e))));
     } else return null;
-  }, mode: XMLLayout.Text);
+  }, mode: XmlLayout.Text);
 }

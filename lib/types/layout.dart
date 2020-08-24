@@ -10,46 +10,46 @@ import '../parser.dart';
 import '../xml_layout.dart';
 
 void reg() {
-  XMLLayout.regEnum(MainAxisAlignment.values);
-  XMLLayout.regEnum(MainAxisSize.values);
-  XMLLayout.regEnum(CrossAxisAlignment.values);
-  XMLLayout.regEnum(VerticalDirection.values);
-  XMLLayout.regEnum(Clip.values);
+  XmlLayout.regEnum(MainAxisAlignment.values);
+  XmlLayout.regEnum(MainAxisSize.values);
+  XmlLayout.regEnum(CrossAxisAlignment.values);
+  XmlLayout.regEnum(VerticalDirection.values);
+  XmlLayout.regEnum(Clip.values);
 
-  XMLLayout.reg(Directionality, (node, key) {
+  XmlLayout.reg(Directionality, (node, key) {
     return Directionality(
       key: key,
       child: node.child<Widget>(),
       textDirection: node.s<TextDirection>("textDirection")
     );
-  }, mode: XMLLayout.Element);
+  }, mode: XmlLayout.Element);
 
-  XMLLayout.reg(Opacity, (node, key) {
+  XmlLayout.reg(Opacity, (node, key) {
     return Opacity(
       key: key,
       opacity: node.s<double>("opacity"),
       alwaysIncludeSemantics: node.s<bool>("alwaysIncludeSemantics"),
       child: node.child<Widget>(),
     );
-  }, mode: XMLLayout.Element);
+  }, mode: XmlLayout.Element);
 
-  XMLLayout.reg(ShaderMask, (node, key) {
+  XmlLayout.reg(ShaderMask, (node, key) {
     return ShaderMask(
       key: key,
       child: node.child<Widget>(),
       shaderCallback: node.s<ShaderCallback>("shaderCallback"),
       blendMode: node.s<BlendMode>("blendMode")
     );
-  }, mode: XMLLayout.Element);
+  }, mode: XmlLayout.Element);
 
-  XMLLayout.reg(BackdropFilter, (node, key) {
+  XmlLayout.reg(BackdropFilter, (node, key) {
     return BackdropFilter(
       key: key,
       child: node.child<Widget>(),
       filter: node.s<ui.ImageFilter>("filter")
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(CustomPaint, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(CustomPaint, (node, key) {
     return CustomPaint(
       key: key,
       child: node.child<Widget>(),
@@ -59,15 +59,15 @@ void reg() {
       isComplex: node.s<bool>("isComplex", false),
       willChange: node.s<bool>("willChange", false)
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(ClipRect, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(ClipRect, (node, key) {
     return ClipRect(
       key: key,
       child: node.child<Widget>(),
       clipBehavior: node.s<Clip>("clipBehavior", Clip.hardEdge)
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(ClipRRect, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(ClipRRect, (node, key) {
     return ClipRRect(
       key: key,
       child: node.child<Widget>(),
@@ -75,24 +75,24 @@ void reg() {
       clipper: node.s<CustomClipper<RRect>>("clipper"),
       clipBehavior: node.s<Clip>("clipBehavior", Clip.antiAlias)
     );
-  }, mode: XMLLayout.Element);
+  }, mode: XmlLayout.Element);
 
-  XMLLayout.reg(ClipOval, (node, key) {
+  XmlLayout.reg(ClipOval, (node, key) {
     return ClipOval(
       key: key,
       child: node.child<Widget>(),
       clipBehavior: node.s<Clip>("clipBehavior", Clip.antiAlias),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(ClipPath, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(ClipPath, (node, key) {
     return ClipPath(
       key: key,
       child: node.child<Widget>(),
       clipBehavior: node.s<Clip>("clipBehavior", Clip.antiAlias),
       clipper: node.s<CustomClipper<Path>>("clipper")
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(PhysicalModel, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(PhysicalModel, (node, key) {
     return PhysicalModel(
       key: key,
       child: node.child<Widget>(),
@@ -103,8 +103,8 @@ void reg() {
       color: node.s<Color>("color"),
       shadowColor: node.s<Color>("shadowColor", Colors.black)
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(PhysicalShape, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(PhysicalShape, (node, key) {
     return PhysicalShape(
       key: key,
       child: node.child<Widget>(),
@@ -114,8 +114,8 @@ void reg() {
       color: node.s<Color>("color"),
       shadowColor: node.s<Color>("shadowColor", Colors.black)
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(Transform, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(Transform, (node, key) {
     return Transform(
       key: key,
       child: node.child<Widget>(),
@@ -124,8 +124,8 @@ void reg() {
       alignment: node.s<AlignmentGeometry>("alignment"),
       transformHitTests: node.s<bool>("transformHitTests", true),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg("Transform.rotate", (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg("Transform.rotate", (node, key) {
     return Transform.rotate(
       key: key,
       child: node.child<Widget>(),
@@ -134,16 +134,16 @@ void reg() {
       alignment: node.s<Alignment>("alignment", Alignment.center),
       transformHitTests: node.s<bool>("transformHitTests", true),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg("Transform.translate", (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg("Transform.translate", (node, key) {
     return Transform.translate(
       key: key,
       child: node.child<Widget>(),
       offset: node.s<Offset>("offset"),
       transformHitTests: node.s<bool>("transformHitTests", true),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg("Transform.scale", (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg("Transform.scale", (node, key) {
     return Transform.scale(
       key: key,
       child: node.child<Widget>(),
@@ -152,15 +152,15 @@ void reg() {
       alignment: node.s<Alignment>("alignment", Alignment.center),
       transformHitTests: node.s<bool>("transformHitTests", true),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(CompositedTransformTarget, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(CompositedTransformTarget, (node, key) {
     return CompositedTransformTarget(
       key: key,
       child: node.child<Widget>(),
       link: node.s<LayerLink>("link"),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(CompositedTransformFollower, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(CompositedTransformFollower, (node, key) {
     return CompositedTransformFollower(
       key: key,
       child: node.child<Widget>(),
@@ -168,38 +168,38 @@ void reg() {
       showWhenUnlinked: node.s<bool>("showWhenUnlinked"),
       offset: node.s<Offset>("offset", Offset.zero),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(FittedBox, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(FittedBox, (node, key) {
     return FittedBox(
       key: key,
       child: node.child<Widget>(),
       fit: node.s<BoxFit>("fit", BoxFit.contain),
       alignment: node.s<Alignment>("alignment", Alignment.center)
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(FractionalTranslation, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(FractionalTranslation, (node, key) {
     return FractionalTranslation(
       key: key,
       child: node.child<Widget>(),
       translation: node.s<Offset>("translation"),
       transformHitTests: node.s<bool>("transformHitTests")
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(RotatedBox, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(RotatedBox, (node, key) {
     return RotatedBox(
       key: key,
       child: node.child<Widget>(),
       quarterTurns: node.s<int>("quarterTurns")
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(Padding, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(Padding, (node, key) {
     return Padding(
       key: key,
       child: node.child<Widget>(),
       padding: node.s<EdgeInsetsGeometry>("padding")
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(Align, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(Align, (node, key) {
     return Align(
       key: key,
       child: node.child<Widget>(),
@@ -207,71 +207,71 @@ void reg() {
       widthFactor: node.s<double>("widthFactor"),
       heightFactor: node.s<double>("heightFactor"),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(Center, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(Center, (node, key) {
     return Center(
       key: key,
       child: node.child<Widget>(),
       widthFactor: node.s<double>("widthFactor"),
       heightFactor: node.s<double>("heightFactor"),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(CustomSingleChildLayout, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(CustomSingleChildLayout, (node, key) {
     return CustomSingleChildLayout(
       key: key,
       child: node.child<Widget>(),
       delegate: node.s<SingleChildLayoutDelegate>("delegate")
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(LayoutId, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(LayoutId, (node, key) {
     return LayoutId(
       key: key,
       child: node.child<Widget>(),
       id: node.s<Object>("id")
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(CustomMultiChildLayout, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(CustomMultiChildLayout, (node, key) {
     return CustomMultiChildLayout(
       key: key,
       children: node.children<Widget>(),
       delegate: node.s<MultiChildLayoutDelegate>("delegate"),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(SizedBox, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(SizedBox, (node, key) {
     return SizedBox(
       key: key,
       child: node.child<Widget>(),
       width: node.s<double>("width"),
       height: node.s<double>("height"),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg("SizedBox.expand", (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg("SizedBox.expand", (node, key) {
     return SizedBox.expand(
       key: key,
       child: node.child<Widget>(),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg("SizedBox.shrink", (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg("SizedBox.shrink", (node, key) {
     return SizedBox.shrink(
       key: key,
       child: node.child<Widget>(),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg("SizedBox.fromSize", (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg("SizedBox.fromSize", (node, key) {
     return SizedBox.fromSize(
       key: key,
       child: node.child<Widget>(),
       size: node.s<Size>("size"),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(ConstrainedBox, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(ConstrainedBox, (node, key) {
     return ConstrainedBox(
       key: key,
       child: node.child<Widget>(),
       constraints: node.s<BoxConstraints>("constraints"),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(UnconstrainedBox, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(UnconstrainedBox, (node, key) {
     return UnconstrainedBox(
       key: key,
       child: node.child<Widget>(),
@@ -279,8 +279,8 @@ void reg() {
       alignment: node.s<Alignment>("alignment", Alignment.center),
       constrainedAxis: node.s<Axis>("constrainedAxis")
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(FractionallySizedBox, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(FractionallySizedBox, (node, key) {
     return FractionallySizedBox(
       key: key,
       child: node.child<Widget>(),
@@ -288,16 +288,16 @@ void reg() {
       widthFactor: node.s<double>("widthFactor"),
       heightFactor: node.s<double>("heightFactor"),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(LimitedBox, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(LimitedBox, (node, key) {
     return LimitedBox(
       key: key,
       child: node.child<Widget>(),
       maxWidth: node.s<double>("maxWidth", double.infinity),
       maxHeight: node.s<double>("maxHeight", double.infinity),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(OverflowBox, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(OverflowBox, (node, key) {
     return OverflowBox(
       key: key,
       child: node.child<Widget>(),
@@ -307,73 +307,73 @@ void reg() {
       minHeight: node.s<double>("minHeight"),
       maxHeight: node.s<double>("maxHeight"),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(SizedOverflowBox, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(SizedOverflowBox, (node, key) {
     return SizedOverflowBox(
       key: key,
       child: node.child<Widget>(),
       size: node.s<Size>("size"),
       alignment: node.s<Alignment>("alignment", Alignment.center)
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(Offstage, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(Offstage, (node, key) {
     return Offstage(
       key: key,
       child: node.child<Widget>(),
       offstage: node.s<bool>("offstage", true)
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(AspectRatio, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(AspectRatio, (node, key) {
     return AspectRatio(
       key: key,
       child: node.child<Widget>(),
       aspectRatio: node.s<double>("aspectRatio")
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(IntrinsicWidth, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(IntrinsicWidth, (node, key) {
     return IntrinsicWidth(
       key: key,
       child: node.child<Widget>(),
       stepWidth: node.s<double>("stepWidth"),
       stepHeight: node.s<double>("stepHeight")
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(IntrinsicHeight, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(IntrinsicHeight, (node, key) {
     return IntrinsicHeight(
       key: key,
       child: node.child<Widget>(),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(Baseline, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(Baseline, (node, key) {
     return Baseline(
       key: key,
       child: node.child<Widget>(),
       baseline: node.s<double>("baseline"),
       baselineType: node.s<TextBaseline>("baselineType")
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(SliverToBoxAdapter, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(SliverToBoxAdapter, (node, key) {
     return SliverToBoxAdapter(
       key: key,
       child: node.child<Widget>(),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(SliverPadding, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(SliverPadding, (node, key) {
     return SliverPadding(
       key: key,
       sliver: node.child<Widget>(),
       padding: node.s<EdgeInsetsGeometry>("padding")
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(ListBody, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(ListBody, (node, key) {
     return ListBody(
       key: key,
       children: node.children<Widget>(),
       mainAxis: node.s<Axis>("mainAxis", Axis.vertical),
       reverse: node.s<bool>("reverse", false)
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(Stack, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(Stack, (node, key) {
     return Stack(
       key: key,
       children: node.children<Widget>(),
@@ -382,8 +382,8 @@ void reg() {
       fit: node.s<StackFit>("fit", StackFit.loose),
       overflow: node.s<Overflow>("overflow", Overflow.clip)
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(IndexedStack, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(IndexedStack, (node, key) {
     return IndexedStack(
       key: key,
       children: node.children<Widget>(),
@@ -392,8 +392,8 @@ void reg() {
       sizing: node.s<StackFit>("sizing", StackFit.loose),
       index: node.s<int>("index", 0)
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(Positioned, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(Positioned, (node, key) {
     return Positioned(
       key: key,
       child: node.child<Widget>(),
@@ -404,22 +404,22 @@ void reg() {
       width: node.s<double>("width"),
       height: node.s<double>("height"),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg("Positioned.fromRect", (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg("Positioned.fromRect", (node, key) {
     return Positioned.fromRect(
       key: key,
       child: node.child<Widget>(),
       rect: node.s<Rect>("rect"),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg("Positioned.fromRelativeRect", (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg("Positioned.fromRelativeRect", (node, key) {
     return Positioned.fromRelativeRect(
       key: key,
       child: node.child<Widget>(),
       rect: node.s<RelativeRect>("rect"),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg("Positioned.fill", (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg("Positioned.fill", (node, key) {
     return Positioned.fill(
       key: key,
       child: node.child<Widget>(),
@@ -428,8 +428,8 @@ void reg() {
       top: node.s<double>("top", 0.0),
       bottom: node.s<double>("bottom", 0.0),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg("Positioned.directional", (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg("Positioned.directional", (node, key) {
     return Positioned.directional(
       key: key,
       child: node.child<Widget>(),
@@ -441,8 +441,8 @@ void reg() {
       width: node.s<double>("width"),
       height: node.s<double>("height"),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(PositionedDirectional, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(PositionedDirectional, (node, key) {
     return PositionedDirectional(
       key: key,
       child: node.child<Widget>(),
@@ -453,8 +453,8 @@ void reg() {
       width: node.s<double>("width"),
       height: node.s<double>("height"),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(Flex, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(Flex, (node, key) {
     return Flex(
       key: key,
       children: node.children<Widget>(),
@@ -466,9 +466,9 @@ void reg() {
       verticalDirection: node.s<VerticalDirection>("verticalDirection", VerticalDirection.down),
       textBaseline: node.s<TextBaseline>("textBaseline")
     );
-  }, mode: XMLLayout.Element);
+  }, mode: XmlLayout.Element);
 
-  XMLLayout.reg(Row, (node, key) {
+  XmlLayout.reg(Row, (node, key) {
     return Row(
       key: key,
       children: node.children<Widget>(),
@@ -479,8 +479,8 @@ void reg() {
       verticalDirection: node.s<VerticalDirection>("verticalDirection", VerticalDirection.down),
       textBaseline: node.s<TextBaseline>("textBaseline"),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(Column, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(Column, (node, key) {
     return Column(
       key: key,
       children: node.children<Widget>(),
@@ -491,23 +491,23 @@ void reg() {
       verticalDirection: node.s<VerticalDirection>("verticalDirection", VerticalDirection.down),
       textBaseline: node.s<TextBaseline>("textBaseline"),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(Flexible, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(Flexible, (node, key) {
     return Flexible(
       key: key,
       child: node.child<Widget>(),
       flex: node.s<int>("flex", 1),
       fit: node.s<FlexFit>("fit", FlexFit.loose),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(Expanded, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(Expanded, (node, key) {
     return Expanded(
       key: key,
       child: node.child<Widget>(),
       flex: node.s<int>("flex", 1),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(Wrap, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(Wrap, (node, key) {
     return Wrap(
       key: key,
       children: node.children<Widget>(),
@@ -520,22 +520,22 @@ void reg() {
       textDirection: node.s<TextDirection>("textDirection"),
       verticalDirection: node.s<VerticalDirection>("verticalDirection", VerticalDirection.down),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(Flow, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(Flow, (node, key) {
     return Flow(
       key: key,
       children: node.children<Widget>(),
       delegate: node.s<FlowDelegate>("delegate"),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg("Flow.unwrapped", (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg("Flow.unwrapped", (node, key) {
     return Flow.unwrapped(
       key: key,
       children: node.children<Widget>(),
       delegate: node.s<FlowDelegate>("delegate"),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(RichText, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(RichText, (node, key) {
     return RichText(
       key: key,
       text: node.child<InlineSpan>(),
@@ -550,8 +550,8 @@ void reg() {
       textWidthBasis: node.s<TextWidthBasis>("textWidthBasis", TextWidthBasis.parent),
       textHeightBehavior: node.s<TextHeightBehavior>("textHeightBehavior"),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(RawImage, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(RawImage, (node, key) {
     return RawImage(
       key: key,
       image: node.child<ui.Image>(),
@@ -568,15 +568,15 @@ void reg() {
       invertColors: node.s<bool>("invertColors", false),
       filterQuality: node.s<FilterQuality>("filterQuality", FilterQuality.low)
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(DefaultAssetBundle, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(DefaultAssetBundle, (node, key) {
     return DefaultAssetBundle(
       key: key,
       child: node.child<Widget>(),
       bundle: node.s<AssetBundle>("bundle"),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(Listener, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(Listener, (node, key) {
     return Listener(
       key: key,
       child: node.child<Widget>(),
@@ -587,8 +587,8 @@ void reg() {
       onPointerSignal: node.s<PointerSignalEventListener>("onPointerSignal"),
       behavior: node.s<HitTestBehavior>("behavior", HitTestBehavior.deferToChild)
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(MouseRegion, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(MouseRegion, (node, key) {
     return MouseRegion(
       key: key,
       child: node.child<Widget>(),
@@ -597,38 +597,38 @@ void reg() {
       onExit: node.s<PointerExitEventListener>("onExit"),
       opaque: node.s<bool>("opaque", true),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(RepaintBoundary, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(RepaintBoundary, (node, key) {
     return RepaintBoundary(
       key: key,
       child: node.child<Widget>(),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(IgnorePointer, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(IgnorePointer, (node, key) {
     return IgnorePointer(
       key: key,
       child: node.child<Widget>(),
       ignoring: node.s<bool>("ignoring", true),
       ignoringSemantics: node.s<bool>("ignoringSemantics")
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(AbsorbPointer, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(AbsorbPointer, (node, key) {
     return AbsorbPointer(
       key: key,
       child: node.child<Widget>(),
       absorbing: node.s<bool>("absorbing", true),
       ignoringSemantics: node.s<bool>("ignoringSemantics")
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(MetaData, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(MetaData, (node, key) {
     return MetaData(
       key: key,
       child: node.child<Widget>(),
       behavior: node.s<HitTestBehavior>("behavior", HitTestBehavior.deferToChild),
       metaData: node.s("metaData")
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(Semantics, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(Semantics, (node, key) {
     return Semantics(
       key: key,
       child: node.child<Widget>(),
@@ -684,64 +684,64 @@ void reg() {
       onDidLoseAccessibilityFocus: node.s<VoidCallback>("onDidLoseAccessibilityFocus"),
       customSemanticsActions: node.s<Map<CustomSemanticsAction, VoidCallback>>("customSemanticsActions"),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(MergeSemantics, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(MergeSemantics, (node, key) {
     return MergeSemantics(
       key: key,
       child: node.child<Widget>(),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(BlockSemantics, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(BlockSemantics, (node, key) {
     return BlockSemantics(
       key: key,
       child: node.child<Widget>(),
       blocking: node.s<bool>("blocking", true),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(ExcludeSemantics, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(ExcludeSemantics, (node, key) {
     return ExcludeSemantics(
       key: key,
       child: node.child<Widget>(),
       excluding: node.s<bool>("excluding", true),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(IndexedSemantics, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(IndexedSemantics, (node, key) {
     return IndexedSemantics(
       key: key,
       child: node.child<Widget>(),
       index: node.s<int>("index"),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(KeyedSubtree, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(KeyedSubtree, (node, key) {
     return KeyedSubtree(
       key: key,
       child: node.child<Widget>(),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg("KeyedSubtree.wrap", (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg("KeyedSubtree.wrap", (node, key) {
     return KeyedSubtree.wrap(node.child<Widget>(), node.s<int>("index"));
   });
-  XMLLayout.reg(Builder, (node, key) {
+  XmlLayout.reg(Builder, (node, key) {
     return Builder(
       key: key,
       builder: node.s<WidgetBuilder>("builder"),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(StatefulBuilder, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(StatefulBuilder, (node, key) {
     return StatefulBuilder(
       key: key,
       builder: node.s<StatefulWidgetBuilder>("builder"),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(ColoredBox, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(ColoredBox, (node, key) {
     return ColoredBox(
       key: key,
       child: node.child<Widget>(),
       color: node.s<Color>("color"),
     );
-  }, mode: XMLLayout.Element);
+  }, mode: XmlLayout.Element);
 
-  XMLLayout.reg(BorderRadius, (node, key) {
+  XmlLayout.reg(BorderRadius, (node, key) {
     switch (node.text) {
       case 'zero': return BorderRadius.zero;
       default: {
@@ -771,9 +771,9 @@ void reg() {
         return null;
       }
     }
-  }, mode: XMLLayout.Text);
+  }, mode: XmlLayout.Text);
 
-  XMLLayout.reg(Radius, (node, key) {
+  XmlLayout.reg(Radius, (node, key) {
     switch (node.text) {
       case 'zero': return Radius.zero;
       default: {
@@ -786,8 +786,8 @@ void reg() {
         return null;
       }
     }
-  }, mode: XMLLayout.Text);
-  XMLLayout.reg(Offset, (node, key) {
+  }, mode: XmlLayout.Text);
+  XmlLayout.reg(Offset, (node, key) {
     switch (node.text) {
       case 'zero': return Offset.zero;
       case 'infinite': return Offset.infinite;
@@ -803,8 +803,8 @@ void reg() {
         return null;
       }
     }
-  }, mode: XMLLayout.Text);
-  XMLLayout.reg(Size, (node, key) {
+  }, mode: XmlLayout.Text);
+  XmlLayout.reg(Size, (node, key) {
     switch (node.text) {
       case 'zero': return Size.zero;
       case 'infinite': return Size.infinite;
@@ -824,8 +824,8 @@ void reg() {
         return null;
       }
     }
-  }, mode: XMLLayout.Text);
-  XMLLayout.reg(BoxConstraints, (node, key) {
+  }, mode: XmlLayout.Text);
+  XmlLayout.reg(BoxConstraints, (node, key) {
     MethodNode a;
     if ((a = node.splitMethod("", 4)) != null) {
       return BoxConstraints(
@@ -847,9 +847,9 @@ void reg() {
     } else {
       return null;
     }
-  }, mode: XMLLayout.Text);
-  XMLLayout.regEnum(Axis.values);
-  XMLLayout.reg(AlignmentDirectional, (node, key) {
+  }, mode: XmlLayout.Text);
+  XmlLayout.regEnum(Axis.values);
+  XmlLayout.reg(AlignmentDirectional, (node, key) {
     switch (node.text) {
       case 'topStart': return AlignmentDirectional.topStart;
       case 'topCenter': return AlignmentDirectional.topCenter;
@@ -869,10 +869,10 @@ void reg() {
         }
       }
     }
-  }, mode: XMLLayout.Text);
-  XMLLayout.regEnum(StackFit.values);
-  XMLLayout.regEnum(Overflow.values);
-  XMLLayout.reg(Rect, (node, key) {
+  }, mode: XmlLayout.Text);
+  XmlLayout.regEnum(StackFit.values);
+  XmlLayout.regEnum(Overflow.values);
+  XmlLayout.reg(Rect, (node, key) {
     switch (node.text) {
       case 'zero': return Rect.zero;
       case 'largest': return Rect.largest;
@@ -908,8 +908,8 @@ void reg() {
         } else return null;
       }
     }
-  }, mode: XMLLayout.Text);
-  XMLLayout.reg(RelativeRect, (node, key) {
+  }, mode: XmlLayout.Text);
+  XmlLayout.reg(RelativeRect, (node, key) {
     switch (node.text) {
       case 'fill': return RelativeRect.fill;
       default: {
@@ -928,8 +928,8 @@ void reg() {
         } else return null;
       }
     }
-  }, mode: XMLLayout.Text);
-  XMLLayout.reg(Alignment, (node, key) {
+  }, mode: XmlLayout.Text);
+  XmlLayout.reg(Alignment, (node, key) {
     switch (node.text) {
       case 'topLeft': return Alignment.topLeft;
       case 'topCenter': return Alignment.topCenter;
@@ -947,11 +947,11 @@ void reg() {
         } else return null;
       }
     }
-  }, mode: XMLLayout.Text);
-  XMLLayout.regEnum(HitTestBehavior.values);
-  XMLLayout.regEnum(BoxFit.values);
+  }, mode: XmlLayout.Text);
+  XmlLayout.regEnum(HitTestBehavior.values);
+  XmlLayout.regEnum(BoxFit.values);
 
-  XMLLayout.reg(AlignmentGeometry, (node, _) {
+  XmlLayout.reg(AlignmentGeometry, (node, _) {
     String text = node.text;
     switch (text) {
       case "topLeft": return Alignment.topLeft;
@@ -979,7 +979,7 @@ void reg() {
     return null;
   });
 
-  XMLLayout.reg(EdgeInsetsGeometry, (node, _) {
+  XmlLayout.reg(EdgeInsetsGeometry, (node, _) {
     switch (node.text) {
       case 'infinity': return EdgeInsetsGeometry.infinity;
       case 'zero': return EdgeInsets.zero;
@@ -1007,9 +1007,9 @@ void reg() {
         } else return null;
       }
     }
-  }, mode: XMLLayout.Text);
+  }, mode: XmlLayout.Text);
 
-  XMLLayout.reg(Container, (node, key) {
+  XmlLayout.reg(Container, (node, key) {
     return Container(
       key: key,
       child: node.child<Widget>(),
@@ -1024,11 +1024,11 @@ void reg() {
       margin: node.s<EdgeInsetsGeometry>("margin"),
       clipBehavior: node.s<Clip>("clipBehavior", Clip.none),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(ui.WindowPadding, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(ui.WindowPadding, (node, key) {
     switch (node.text) {
       case 'zero': return ui.WindowPadding.zero;
       default: return null;
     }
-  }, mode: XMLLayout.Text);
+  }, mode: XmlLayout.Text);
 }

@@ -90,8 +90,8 @@ class _MyHomePageState extends State<MyHomePage> {
             future: _loadLayout(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                return XMLLayout(
-                  temp: snapshot.data,
+                return XmlLayout(
+                  template: snapshot.data,
                   objects: {
                     "counter": _counter
                   },

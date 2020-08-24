@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import '../xml_layout.dart';
 
 void reg() {
-  XMLLayout.reg(Image, (node, key) {
+  XmlLayout.reg(Image, (node, key) {
     return Image(
       key: key,
       image: node.s<ImageProvider>("image"),
@@ -28,10 +28,10 @@ void reg() {
       filterQuality: node.s<FilterQuality>("filterQuality", FilterQuality.low),
       loadingBuilder: node.s<ImageLoadingBuilder>("loadingBuilder"),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.regEnum(ImageRepeat.values);
-  XMLLayout.regEnum(FilterQuality.values);
-  XMLLayout.reg("Image.network", (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.regEnum(ImageRepeat.values);
+  XmlLayout.regEnum(FilterQuality.values);
+  XmlLayout.reg("Image.network", (node, key) {
     return Image.network(
       node.s<String>("src"),
       key: key,
@@ -59,7 +59,7 @@ void reg() {
 
     );
   });
-  XMLLayout.reg("Image.file", (node, key) {
+  XmlLayout.reg("Image.file", (node, key) {
     return Image.file(
       node.s<File>("Image.file"),
       key: key,
@@ -84,7 +84,7 @@ void reg() {
       scale: node.s<double>("scale"),
     );
   });
-  XMLLayout.reg("Image.asset", (node, key) {
+  XmlLayout.reg("Image.asset", (node, key) {
     return Image.asset(
       node.s<String>("name"),
       key: key,
@@ -110,7 +110,7 @@ void reg() {
       package: node.s<String>("package")
     );
   });
-  XMLLayout.reg("Image.memory", (node, key) {
+  XmlLayout.reg("Image.memory", (node, key) {
     return Image.memory(
       node.s<Uint8List>("bytes"),
       key: key,

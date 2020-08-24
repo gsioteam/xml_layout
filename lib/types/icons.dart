@@ -6,7 +6,7 @@ import '../parser.dart';
 import '../xml_layout.dart';
 
 void reg() {
-  XMLLayout.reg(Icon, (node, key) {
+  XmlLayout.reg(Icon, (node, key) {
     if (node.isElement) {
       return Icon(
         node.s<IconData>("icon"),
@@ -1012,7 +1012,7 @@ void reg() {
     'zoom_out_map': Icons.zoom_out_map,
   };
 
-  XMLLayout.reg(IconData, (node, key) {
+  XmlLayout.reg(IconData, (node, key) {
     String text = node.text;
     IconData data = icons[text];
     if (data == null) {
@@ -1038,6 +1038,6 @@ void reg() {
       }
     }
     return data;
-  }, mode: XMLLayout.Text);
+  }, mode: XmlLayout.Text);
 
 }

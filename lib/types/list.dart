@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../xml_layout.dart';
 
 void reg() {
-  XMLLayout.reg(ListTile, (node, key) {
+  XmlLayout.reg(ListTile, (node, key) {
     return ListTile(
       key: key,
       leading: node.s<Widget>("leading"),
@@ -20,8 +20,8 @@ void reg() {
       onTap: node.s<GestureTapCallback>("onTap"),
       onLongPress: node.s<GestureLongPressCallback>("onLongPress"),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(CustomScrollView, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(CustomScrollView, (node, key) {
     return CustomScrollView(
       key: key,
       scrollDirection: node.s<Axis>("scrollDirection", Axis.vertical),
@@ -37,8 +37,8 @@ void reg() {
       semanticChildCount: node.s<int>("semanticChildCount"),
       dragStartBehavior: node.s<DragStartBehavior>("dragStartBehavior", DragStartBehavior.start)
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg(ListView, (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(ListView, (node, key) {
     return ListView(
       key: key,
       scrollDirection: node.s<Axis>("scrollDirection", Axis.vertical),
@@ -59,8 +59,8 @@ void reg() {
 
       children: node.children<Widget>(),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg("ListView.builder", (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg("ListView.builder", (node, key) {
     return ListView.builder(
       key: key,
       scrollDirection: node.s<Axis>("scrollDirection", Axis.vertical),
@@ -82,7 +82,7 @@ void reg() {
       itemCount: node.s<int>("itemCount"),
     );
   });
-  XMLLayout.reg("ListView.separated", (node, key) {
+  XmlLayout.reg("ListView.separated", (node, key) {
     return ListView.separated(
       key: key,
       scrollDirection: node.s<Axis>("scrollDirection", Axis.vertical),
@@ -102,7 +102,7 @@ void reg() {
       itemCount: node.s<int>("itemCount"),
     );
   });
-  XMLLayout.reg("ListView.custom", (node, key) {
+  XmlLayout.reg("ListView.custom", (node, key) {
     return ListView.custom(
       key: key,
       scrollDirection: node.s<Axis>("scrollDirection", Axis.vertical),
@@ -119,7 +119,7 @@ void reg() {
       childrenDelegate: node.s<SliverChildDelegate>("childrenDelegate"),
     );
   });
-  XMLLayout.reg(GridView, (node, key) {
+  XmlLayout.reg(GridView, (node, key) {
     return GridView(
       key: key,
       scrollDirection: node.s<Axis>("scrollDirection", Axis.vertical),
@@ -137,8 +137,8 @@ void reg() {
       gridDelegate: node.s<SliverGridDelegate>("gridDelegate"),
       children: node.children<Widget>(),
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg("GridView.builder", (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg("GridView.builder", (node, key) {
     return GridView.builder(
       key: key,
       scrollDirection: node.s<Axis>("scrollDirection", Axis.vertical),
@@ -158,7 +158,7 @@ void reg() {
       itemBuilder: node.s<IndexedWidgetBuilder>("itemBuilder"),
     );
   });
-  XMLLayout.reg("GridView.custom", (node, key) {
+  XmlLayout.reg("GridView.custom", (node, key) {
     return GridView.custom(
       key: key,
       scrollDirection: node.s<Axis>("scrollDirection", Axis.vertical),
@@ -175,7 +175,7 @@ void reg() {
       childrenDelegate: node.s<SliverChildDelegate>("childrenDelegate"),
     );
   });
-  XMLLayout.reg("GridView.count", (node, key) {
+  XmlLayout.reg("GridView.count", (node, key) {
     return GridView.count(
       key: key,
       scrollDirection: node.s<Axis>("scrollDirection", Axis.vertical),
@@ -198,7 +198,7 @@ void reg() {
       children: node.children<Widget>(),
     );
   });
-  XMLLayout.reg("GridView.extent", (node, key) {
+  XmlLayout.reg("GridView.extent", (node, key) {
     return GridView.extent(
       key: key,
       scrollDirection: node.s<Axis>("scrollDirection", Axis.vertical),
@@ -221,5 +221,5 @@ void reg() {
       children: node.children<Widget>(),
     );
   });
-  XMLLayout.regEnum(DragStartBehavior.values);
+  XmlLayout.regEnum(DragStartBehavior.values);
 }

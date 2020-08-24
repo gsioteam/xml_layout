@@ -9,7 +9,7 @@ import '../xml_layout.dart';
 
 void reg() {
 
-  XMLLayout.reg(FontWeight, (node, key) {
+  XmlLayout.reg(FontWeight, (node, key) {
     switch (node.text) {
       case 'w100': return FontWeight.w100;
       case 'w200': return FontWeight.w200;
@@ -25,9 +25,9 @@ void reg() {
       default: return null;
     }
   });
-  XMLLayout.regEnum(FontStyle.values);
-  XMLLayout.regEnum(TextBaseline.values);
-  XMLLayout.reg(Locale, (node, _) {
+  XmlLayout.regEnum(FontStyle.values);
+  XmlLayout.regEnum(TextBaseline.values);
+  XmlLayout.reg(Locale, (node, _) {
     List<String> arr = node.text?.split(",");
     if (arr != null) {
       if (arr.length >= 2) {
@@ -39,7 +39,7 @@ void reg() {
     return null;
   });
 
-  XMLLayout.reg(TextStyle, (node, _) {
+  XmlLayout.reg(TextStyle, (node, _) {
     return TextStyle(
       inherit: node.s<bool>("inherit", true),
       color: node.s<Color>("color"),
@@ -56,9 +56,9 @@ void reg() {
       background: node.s<Paint>("background"),
       shadows: node.arr<Shadow>("shadows"),
     );
-  }, mode: XMLLayout.Element);
+  }, mode: XmlLayout.Element);
 
-  XMLLayout.reg(Text, (node, key) {
+  XmlLayout.reg(Text, (node, key) {
     if (node.isElement) {
       return Text(
         node.s<String>("text") ?? node.text,
@@ -80,7 +80,7 @@ void reg() {
       return Text(node.text, key: key,);
     }
   });
-  XMLLayout.reg("Text.rich", (node, key) {
+  XmlLayout.reg("Text.rich", (node, key) {
     return Text.rich(
       node.child<InlineSpan>(),
       key: key,
@@ -98,24 +98,24 @@ void reg() {
       textHeightBehavior: node.s<TextHeightBehavior>("textHeightBehavior"),
     );
   });
-  XMLLayout.regEnum(TextWidthBasis.values);
-  XMLLayout.regEnum(TextOverflow.values);
-  XMLLayout.regEnum(TextDirection.values);
+  XmlLayout.regEnum(TextWidthBasis.values);
+  XmlLayout.regEnum(TextOverflow.values);
+  XmlLayout.regEnum(TextDirection.values);
 
-  XMLLayout.reg(TextHeightBehavior, (node, key) {
+  XmlLayout.reg(TextHeightBehavior, (node, key) {
     MethodNode params;
     if ((params = node.splitMethod("", 2)) != null) {
       return TextHeightBehavior(applyHeightToFirstAscent: params[0] == 'true', applyHeightToLastDescent: params[1] == 'true');
     } else if ((params = node.splitMethod("fromEncoded", 1)) != null) {
       return TextHeightBehavior.fromEncoded(int.parse(params[0]));
     } else return null;
-  }, mode: XMLLayout.Text);
+  }, mode: XmlLayout.Text);
 
-  XMLLayout.reg(InlineSpan, (node, key) {
+  XmlLayout.reg(InlineSpan, (node, key) {
     return TextSpan(text: node.text);
-  }, mode: XMLLayout.Text);
+  }, mode: XmlLayout.Text);
 
-  XMLLayout.reg(TextSpan, (node, key) {
+  XmlLayout.reg(TextSpan, (node, key) {
     var children = node.children<InlineSpan>();
     if (children.length == 0) children = null;
     return TextSpan(
@@ -125,19 +125,19 @@ void reg() {
       recognizer: node.s<GestureRecognizer>("recognizer"),
       semanticsLabel: node.s<String>("semanticsLabel"),
     );
-  }, mode: XMLLayout.Element);
+  }, mode: XmlLayout.Element);
 
-  XMLLayout.regEnum(PlaceholderAlignment.values);
-  XMLLayout.reg(WidgetSpan, (node, key) {
+  XmlLayout.regEnum(PlaceholderAlignment.values);
+  XmlLayout.reg(WidgetSpan, (node, key) {
     return WidgetSpan(
       child: node.child<Widget>(),
       alignment: node.s<PlaceholderAlignment>("alignment"),
       baseline: node.s<TextBaseline>("baseline"),
       style: node.s<TextStyle>("style")
     );
-  }, mode: XMLLayout.Element);
+  }, mode: XmlLayout.Element);
 
-  XMLLayout.reg(StrutStyle, (node, key) {
+  XmlLayout.reg(StrutStyle, (node, key) {
     return StrutStyle(
       fontFamily: node.s<String>("fontFamily"),
       fontFamilyFallback: node.s<String>("fontFamilyFallback")?.split(","),
@@ -150,8 +150,8 @@ void reg() {
       debugLabel: node.s<String>("debugLabel"),
       package: node.s<String>("package")
     );
-  }, mode: XMLLayout.Element);
-  XMLLayout.reg("StrutStyle.fromTextStyle", (node, key) {
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg("StrutStyle.fromTextStyle", (node, key) {
     return StrutStyle.fromTextStyle(
       node.child<TextStyle>(),
       fontFamily: node.s<String>("fontFamily"),

@@ -99,5 +99,5 @@ Color _colorGenerator(node, key) {
 }
 
 void reg() {
-  XMLLayout.reg(Color, _colorGenerator);
+  XmlLayout.reg(Color, _colorGenerator);
 }

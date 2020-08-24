@@ -13,7 +13,7 @@ typedef MethodConstructor = dynamic Function();
 
 class NodeData {
   xml.XmlNode node;
-  XMLLayoutState state;
+  XmlLayoutState state;
 
   Map<String, List<NodeData> > _attributes;
   List<NodeData> _children;
@@ -70,8 +70,8 @@ class NodeData {
   dynamic element() {
     if (isElement) {
       xml.XmlElement element = this.node as xml.XmlElement;
-      _ItemInfo info = XMLLayout._constructors[element.name.toString().toLowerCase()];
-      if (info != null && info.mode & XMLLayout.Element != 0) {
+      _ItemInfo info = XmlLayout._constructors[element.name.toString().toLowerCase()];
+      if (info != null && info.mode & XmlLayout.Element != 0) {
         return info.constructor(this, _getKey());
       }
     }
@@ -135,7 +135,7 @@ class NodeData {
   T t<T>() {
     if (!isElement) {
       if (text[0] == r'$') {
-        dynamic obj = state.widget.objects[text.substring(1)];
+        dynamic obj = state.widget.objects == null ? null : state.widget.objects[text.substring(1)];
         if (obj != null) {
           if (obj is T) return obj;
           if (T == String) return obj.toString() as T;
@@ -156,16 +156,16 @@ class NodeData {
         return real as T;
       }
       default: {
-        _ItemInfo info = XMLLayout._constructors[T];
+        _ItemInfo info = XmlLayout._constructors[T];
         bool check = false;
-        check |= info.mode & XMLLayout.Element > 0 && isElement;
-        check |= info.mode & XMLLayout.Text > 0 && !isElement;
+        check |= info.mode & XmlLayout.Element > 0 && isElement;
+        check |= info.mode & XmlLayout.Text > 0 && !isElement;
         dynamic obj;
         if (check) {
           obj = info.constructor(this, _getKey());
         }
         if (obj == null && !isElement) {
-          obj = state.widget.objects[text];
+          obj = state.widget.objects == null ? null : state.widget.objects[text];
           if (!(obj is T)) obj = null;
         }
         return obj;
@@ -178,8 +178,8 @@ class NodeData {
   }
 
   T v<T>(String txt) {
-    _ItemInfo info = XMLLayout._constructors[T];
-    if (info.mode & XMLLayout.Text > 0) {
+    _ItemInfo info = XmlLayout._constructors[T];
+    if (info.mode & XmlLayout.Text > 0) {
       return info.constructor(NodeData(xml.XmlText(txt), state), null);
     }
     return null;
@@ -208,30 +208,36 @@ class _ItemInfo {
   _ItemInfo(this.constructor, this.mode);
 }
 
-class XMLLayout extends StatefulWidget {
+class XmlLayout extends StatefulWidget {
   static Map<dynamic, _ItemInfo> _constructors = Map();
 
   static const Element = 1, Text = 2;
 
-  String temp;
-  Map<String, dynamic> objects;
+  final xml.XmlElement element;
+  final String template;
+  final Map<String, dynamic> objects;
 
-  static bool _firstInit = true;
+  // TODO: better?
+  static int initialized = initTypes();
 
-  XMLLayout({
+  XmlLayout({
     Key key,
-    this.temp,
+    @required this.template,
     this.objects
-  }) : super(key: key) {
-    if (this.objects == null) this.objects = Map();
-    if (_firstInit) {
-      initTypes();
-      _firstInit = false;
-    }
+  }) : element = null, super(key: key) {
+    assert(template != null);
+  }
+
+  XmlLayout.element({
+    Key key,
+    @required this.element,
+    this.objects,
+  }) : template = null, super(key: key) {
+    assert(element != null);
   }
 
   @override
-  State<StatefulWidget> createState() => XMLLayoutState();
+  State<StatefulWidget> createState() => XmlLayoutState();
 
   static void reg(dynamic nameOrType, ItemConstructor constructor, {
     int mode = Element | Text
@@ -258,7 +264,7 @@ class XMLLayout extends StatefulWidget {
   }
 }
 
-class XMLLayoutState extends State<XMLLayout> {
+class XmlLayoutState extends State<XmlLayout> {
   NodeData _data;
   Map<String, GlobalKey> _keys = Map();
 
@@ -274,9 +280,9 @@ class XMLLayoutState extends State<XMLLayout> {
   @override
   Widget build(BuildContext context) {
     if (_data == null) {
-      xml.XmlDocument doc = xml.parse(widget.temp);
-      if (doc.firstChild != null) {
-        _data = NodeData(doc.firstChild, this);
+      xml.XmlElement element = widget.element ?? xml.XmlDocument.parse(widget.template)?.firstChild;
+      if (element != null) {
+        _data = NodeData(element, this);
       } else {
         throw TemplateException("Can not parse template.");
       }
@@ -291,10 +297,11 @@ class XMLLayoutState extends State<XMLLayout> {
   }
 
   @override
-  void didUpdateWidget(XMLLayout oldWidget) {
+  void didUpdateWidget(XmlLayout oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (oldWidget.temp != widget.temp) {
+    if (oldWidget.template != widget.template ||
+        oldWidget.element != widget.element) {
       _data = null;
       _keys.clear();
     }
