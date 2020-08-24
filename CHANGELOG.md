@@ -1,3 +1,5 @@
-## [0.0.1] - TODO: Add release date.
+## [0.0.1] - Base version
 
-* TODO: Describe initial release.
+* layout UI via xml.
+
+## [0.0.3] - Fixed typo
