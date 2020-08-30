@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -825,7 +824,8 @@ void reg() {
     'shuffle': Icons.shuffle,
     'shutter_speed': Icons.shutter_speed,
     'signal_cellular_4_bar': Icons.signal_cellular_4_bar,
-    'signal_cellular_connected_no_internet_4_bar': Icons.signal_cellular_connected_no_internet_4_bar,
+    'signal_cellular_connected_no_internet_4_bar':
+        Icons.signal_cellular_connected_no_internet_4_bar,
     'signal_cellular_no_sim': Icons.signal_cellular_no_sim,
     'signal_cellular_null': Icons.signal_cellular_null,
     'signal_cellular_off': Icons.signal_cellular_off,
@@ -1018,26 +1018,17 @@ void reg() {
     if (data == null) {
       MethodNode params;
       if ((params = node.splitMethod("", 2)) != null) {
-        data = IconData(
-          int.parse(params[0]),
-          fontFamily: params[1]
-        );
+        data = IconData(int.parse(params[0]), fontFamily: params[1]);
       } else if ((params = node.splitMethod("", 3)) != null) {
-        data = IconData(
-          int.parse(params[0]),
-          fontFamily: params[1],
-          fontPackage: params[2]
-        );
+        data = IconData(int.parse(params[0]),
+            fontFamily: params[1], fontPackage: params[2]);
       } else if ((params = node.splitMethod("", 4)) != null) {
-        data = IconData(
-          int.parse(params[0]),
-          fontFamily: params[1],
-          fontPackage: params[2],
-          matchTextDirection: params[3] == 'true'
-        );
+        data = IconData(int.parse(params[0]),
+            fontFamily: params[1],
+            fontPackage: params[2],
+            matchTextDirection: params[3] == 'true');
       }
     }
     return data;
   }, mode: XmlLayout.Text);
-
 }

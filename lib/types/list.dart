@@ -1,4 +1,3 @@
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
@@ -23,20 +22,20 @@ void reg() {
   }, mode: XmlLayout.Element);
   XmlLayout.reg(CustomScrollView, (node, key) {
     return CustomScrollView(
-      key: key,
-      scrollDirection: node.s<Axis>("scrollDirection", Axis.vertical),
-      reverse: node.s<bool>("reverse", false),
-      controller: node.s<ScrollController>("controller"),
-      primary: node.s<bool>("primary"),
-      physics: node.s<ScrollPhysics>("physics"),
-      shrinkWrap: node.s<bool>("shrinkWrap", false),
-      center: node.s<Key>("center"),
-      anchor: node.s<double>("anchor", 0),
-      cacheExtent: node.s<double>("cacheExtent"),
-      slivers: node.children<Widget>(),
-      semanticChildCount: node.s<int>("semanticChildCount"),
-      dragStartBehavior: node.s<DragStartBehavior>("dragStartBehavior", DragStartBehavior.start)
-    );
+        key: key,
+        scrollDirection: node.s<Axis>("scrollDirection", Axis.vertical),
+        reverse: node.s<bool>("reverse", false),
+        controller: node.s<ScrollController>("controller"),
+        primary: node.s<bool>("primary"),
+        physics: node.s<ScrollPhysics>("physics"),
+        shrinkWrap: node.s<bool>("shrinkWrap", false),
+        center: node.s<Key>("center"),
+        anchor: node.s<double>("anchor", 0),
+        cacheExtent: node.s<double>("cacheExtent"),
+        slivers: node.children<Widget>(),
+        semanticChildCount: node.s<int>("semanticChildCount"),
+        dragStartBehavior: node.s<DragStartBehavior>(
+            "dragStartBehavior", DragStartBehavior.start));
   }, mode: XmlLayout.Element);
   XmlLayout.reg(ListView, (node, key) {
     return ListView(
@@ -54,9 +53,10 @@ void reg() {
       addSemanticIndexes: node.s<bool>("addSemanticIndexes", true),
       cacheExtent: node.s<double>("cacheExtent"),
       semanticChildCount: node.s<int>("semanticChildCount"),
-      dragStartBehavior: node.s<DragStartBehavior>("dragStartBehavior", DragStartBehavior.start),
-      keyboardDismissBehavior: node.s<ScrollViewKeyboardDismissBehavior>("keyboardDismissBehavior", ScrollViewKeyboardDismissBehavior.manual),
-
+      dragStartBehavior: node.s<DragStartBehavior>(
+          "dragStartBehavior", DragStartBehavior.start),
+      keyboardDismissBehavior: node.s<ScrollViewKeyboardDismissBehavior>(
+          "keyboardDismissBehavior", ScrollViewKeyboardDismissBehavior.manual),
       children: node.children<Widget>(),
     );
   }, mode: XmlLayout.Element);
@@ -76,8 +76,8 @@ void reg() {
       addSemanticIndexes: node.s<bool>("addSemanticIndexes", true),
       cacheExtent: node.s<double>("cacheExtent"),
       semanticChildCount: node.s<int>("semanticChildCount"),
-      dragStartBehavior: node.s<DragStartBehavior>("dragStartBehavior", DragStartBehavior.start),
-
+      dragStartBehavior: node.s<DragStartBehavior>(
+          "dragStartBehavior", DragStartBehavior.start),
       itemBuilder: node.s<IndexedWidgetBuilder>("itemBuilder"),
       itemCount: node.s<int>("itemCount"),
     );
@@ -96,7 +96,6 @@ void reg() {
       addRepaintBoundaries: node.s<bool>("addRepaintBoundaries", true),
       addSemanticIndexes: node.s<bool>("addSemanticIndexes", true),
       cacheExtent: node.s<double>("cacheExtent"),
-
       itemBuilder: node.s<IndexedWidgetBuilder>("itemBuilder"),
       separatorBuilder: node.s<IndexedWidgetBuilder>("separatorBuilder"),
       itemCount: node.s<int>("itemCount"),
@@ -115,7 +114,6 @@ void reg() {
       itemExtent: node.s<double>("itemExtent"),
       cacheExtent: node.s<double>("cacheExtent"),
       semanticChildCount: node.s<int>("semanticChildCount"),
-
       childrenDelegate: node.s<SliverChildDelegate>("childrenDelegate"),
     );
   });
@@ -133,7 +131,6 @@ void reg() {
       addSemanticIndexes: node.s<bool>("addSemanticIndexes", true),
       cacheExtent: node.s<double>("cacheExtent"),
       semanticChildCount: node.s<int>("semanticChildCount"),
-
       gridDelegate: node.s<SliverGridDelegate>("gridDelegate"),
       children: node.children<Widget>(),
     );
@@ -152,7 +149,6 @@ void reg() {
       addSemanticIndexes: node.s<bool>("addSemanticIndexes", true),
       cacheExtent: node.s<double>("cacheExtent"),
       semanticChildCount: node.s<int>("semanticChildCount"),
-
       gridDelegate: node.s<SliverGridDelegate>("gridDelegate"),
       itemCount: node.s<int>("itemCount"),
       itemBuilder: node.s<IndexedWidgetBuilder>("itemBuilder"),
@@ -169,8 +165,8 @@ void reg() {
       shrinkWrap: node.s<bool>("shrinkWrap", false),
       cacheExtent: node.s<double>("cacheExtent"),
       semanticChildCount: node.s<int>("semanticChildCount"),
-      dragStartBehavior: node.s<DragStartBehavior>("dragStartBehavior", DragStartBehavior.start),
-
+      dragStartBehavior: node.s<DragStartBehavior>(
+          "dragStartBehavior", DragStartBehavior.start),
       gridDelegate: node.s<SliverGridDelegate>("gridDelegate"),
       childrenDelegate: node.s<SliverChildDelegate>("childrenDelegate"),
     );
@@ -189,8 +185,8 @@ void reg() {
       addSemanticIndexes: node.s<bool>("addSemanticIndexes", true),
       cacheExtent: node.s<double>("cacheExtent"),
       semanticChildCount: node.s<int>("semanticChildCount"),
-
-      dragStartBehavior: node.s<DragStartBehavior>("dragStartBehavior", DragStartBehavior.start),
+      dragStartBehavior: node.s<DragStartBehavior>(
+          "dragStartBehavior", DragStartBehavior.start),
       crossAxisCount: node.s<int>("crossAxisCount"),
       mainAxisSpacing: node.s<double>("mainAxisSpacing", 0),
       crossAxisSpacing: node.s<double>("crossAxisSpacing", 0),
@@ -211,12 +207,11 @@ void reg() {
       addRepaintBoundaries: node.s<bool>("addRepaintBoundaries", true),
       addSemanticIndexes: node.s<bool>("addSemanticIndexes", true),
       semanticChildCount: node.s<int>("semanticChildCount"),
-
-      dragStartBehavior: node.s<DragStartBehavior>("dragStartBehavior", DragStartBehavior.start),
+      dragStartBehavior: node.s<DragStartBehavior>(
+          "dragStartBehavior", DragStartBehavior.start),
       mainAxisSpacing: node.s<double>("mainAxisSpacing", 0),
       crossAxisSpacing: node.s<double>("crossAxisSpacing", 0),
       childAspectRatio: node.s<double>("childAspectRatio", 0),
-
       maxCrossAxisExtent: node.s<double>("maxCrossAxisExtent"),
       children: node.children<Widget>(),
     );

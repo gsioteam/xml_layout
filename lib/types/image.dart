@@ -1,4 +1,3 @@
-
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -53,10 +52,8 @@ void reg() {
       loadingBuilder: node.s<ImageLoadingBuilder>("loadingBuilder"),
       cacheWidth: node.s<int>("cacheWidth"),
       cacheHeight: node.s<int>("cacheHeight"),
-
       scale: node.s<double>("scale"),
       headers: node.s<Map<String, String>>("headers"),
-
     );
   });
   XmlLayout.reg("Image.file", (node, key) {
@@ -80,35 +77,32 @@ void reg() {
       filterQuality: node.s<FilterQuality>("filterQuality", FilterQuality.low),
       cacheWidth: node.s<int>("cacheWidth"),
       cacheHeight: node.s<int>("cacheHeight"),
-
       scale: node.s<double>("scale"),
     );
   });
   XmlLayout.reg("Image.asset", (node, key) {
-    return Image.asset(
-      node.s<String>("name"),
-      key: key,
-      frameBuilder: node.s<ImageFrameBuilder>("frameBuilder"),
-      errorBuilder: node.s<ImageErrorWidgetBuilder>("errorBuilder"),
-      semanticLabel: node.s<String>("semanticLabel"),
-      excludeFromSemantics: node.s<bool>("excludeFromSemantics", false),
-      width: node.s<double>("width"),
-      height: node.s<double>("height"),
-      color: node.s<Color>("color"),
-      colorBlendMode: node.s<BlendMode>("colorBlendMode"),
-      fit: node.s<BoxFit>("fit"),
-      alignment: node.s<Alignment>("alignment", Alignment.center),
-      repeat: node.s<ImageRepeat>("repeat", ImageRepeat.noRepeat),
-      centerSlice: node.s<Rect>("centerSlice"),
-      matchTextDirection: node.s<bool>("matchTextDirection", false),
-      gaplessPlayback: node.s<bool>("gaplessPlayback", false),
-      filterQuality: node.s<FilterQuality>("filterQuality", FilterQuality.low),
-      cacheWidth: node.s<int>("cacheWidth"),
-      cacheHeight: node.s<int>("cacheHeight"),
-
-      scale: node.s<double>("scale"),
-      package: node.s<String>("package")
-    );
+    return Image.asset(node.s<String>("name"),
+        key: key,
+        frameBuilder: node.s<ImageFrameBuilder>("frameBuilder"),
+        errorBuilder: node.s<ImageErrorWidgetBuilder>("errorBuilder"),
+        semanticLabel: node.s<String>("semanticLabel"),
+        excludeFromSemantics: node.s<bool>("excludeFromSemantics", false),
+        width: node.s<double>("width"),
+        height: node.s<double>("height"),
+        color: node.s<Color>("color"),
+        colorBlendMode: node.s<BlendMode>("colorBlendMode"),
+        fit: node.s<BoxFit>("fit"),
+        alignment: node.s<Alignment>("alignment", Alignment.center),
+        repeat: node.s<ImageRepeat>("repeat", ImageRepeat.noRepeat),
+        centerSlice: node.s<Rect>("centerSlice"),
+        matchTextDirection: node.s<bool>("matchTextDirection", false),
+        gaplessPlayback: node.s<bool>("gaplessPlayback", false),
+        filterQuality:
+            node.s<FilterQuality>("filterQuality", FilterQuality.low),
+        cacheWidth: node.s<int>("cacheWidth"),
+        cacheHeight: node.s<int>("cacheHeight"),
+        scale: node.s<double>("scale"),
+        package: node.s<String>("package"));
   });
   XmlLayout.reg("Image.memory", (node, key) {
     return Image.memory(
@@ -131,7 +125,6 @@ void reg() {
       filterQuality: node.s<FilterQuality>("filterQuality", FilterQuality.low),
       cacheWidth: node.s<int>("cacheWidth"),
       cacheHeight: node.s<int>("cacheHeight"),
-
       scale: node.s<double>("scale"),
     );
   });

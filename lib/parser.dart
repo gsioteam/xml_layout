@@ -1,4 +1,3 @@
-
 List<int> _dots(String p) {
   List<int> dots = [];
   int deep = 0, deep1 = 0, deep2 = 0;
@@ -15,27 +14,27 @@ List<int> _dots(String p) {
       }
     } else if (ch == "(") {
       if (!sentence) {
-        deep ++;
+        deep++;
       }
     } else if (ch == ")") {
       if (!sentence) {
-        deep --;
+        deep--;
       }
     } else if (ch == "[") {
       if (!sentence) {
-        deep1 ++;
+        deep1++;
       }
     } else if (ch == "]") {
       if (!sentence) {
-        deep1 --;
+        deep1--;
       }
     } else if (ch == "{") {
       if (!sentence) {
-        deep2 ++;
+        deep2++;
       }
     } else if (ch == "}") {
       if (!sentence) {
-        deep2 --;
+        deep2--;
       }
     } else if (ch == ",") {
       if (!sentence && deep == 0 && deep1 == 0 && deep2 == 0) {
@@ -64,18 +63,18 @@ class MethodNode {
       if (dots.length > 0) {
         int off = 0;
         dots.forEach((i) {
-          method.arguments.add(param.substring(off, i).trim()) ;
+          method.arguments.add(param.substring(off, i).trim());
           off = i + 1;
         });
       } else if (param.isNotEmpty) {
         method.arguments.add(param);
       }
       return method;
-    } else return null;
+    } else
+      return null;
   }
 
   int get length => arguments.length;
-  String operator[](int idx) => arguments[idx];
+  String operator [](int idx) => arguments[idx];
   List<T> map<T>(T Function(String) fn) => arguments.map(fn);
-
 }

@@ -1,4 +1,3 @@
-
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -8,21 +7,32 @@ import '../parser.dart';
 import '../xml_layout.dart';
 
 void reg() {
-
   XmlLayout.reg(FontWeight, (node, key) {
     switch (node.text) {
-      case 'w100': return FontWeight.w100;
-      case 'w200': return FontWeight.w200;
-      case 'w300': return FontWeight.w300;
-      case 'w400': return FontWeight.w400;
-      case 'w500': return FontWeight.w500;
-      case 'w600': return FontWeight.w600;
-      case 'w700': return FontWeight.w700;
-      case 'w800': return FontWeight.w800;
-      case 'w900': return FontWeight.w900;
-      case 'normal': return FontWeight.normal;
-      case 'bold': return FontWeight.bold;
-      default: return null;
+      case 'w100':
+        return FontWeight.w100;
+      case 'w200':
+        return FontWeight.w200;
+      case 'w300':
+        return FontWeight.w300;
+      case 'w400':
+        return FontWeight.w400;
+      case 'w500':
+        return FontWeight.w500;
+      case 'w600':
+        return FontWeight.w600;
+      case 'w700':
+        return FontWeight.w700;
+      case 'w800':
+        return FontWeight.w800;
+      case 'w900':
+        return FontWeight.w900;
+      case 'normal':
+        return FontWeight.normal;
+      case 'bold':
+        return FontWeight.bold;
+      default:
+        return null;
     }
   });
   XmlLayout.regEnum(FontStyle.values);
@@ -77,7 +87,10 @@ void reg() {
         textHeightBehavior: node.s<TextHeightBehavior>("textHeightBehavior"),
       );
     } else {
-      return Text(node.text, key: key,);
+      return Text(
+        node.text,
+        key: key,
+      );
     }
   });
   XmlLayout.reg("Text.rich", (node, key) {
@@ -105,10 +118,13 @@ void reg() {
   XmlLayout.reg(TextHeightBehavior, (node, key) {
     MethodNode params;
     if ((params = node.splitMethod("", 2)) != null) {
-      return TextHeightBehavior(applyHeightToFirstAscent: params[0] == 'true', applyHeightToLastDescent: params[1] == 'true');
+      return TextHeightBehavior(
+          applyHeightToFirstAscent: params[0] == 'true',
+          applyHeightToLastDescent: params[1] == 'true');
     } else if ((params = node.splitMethod("fromEncoded", 1)) != null) {
       return TextHeightBehavior.fromEncoded(int.parse(params[0]));
-    } else return null;
+    } else
+      return null;
   }, mode: XmlLayout.Text);
 
   XmlLayout.reg(InlineSpan, (node, key) {
@@ -130,41 +146,36 @@ void reg() {
   XmlLayout.regEnum(PlaceholderAlignment.values);
   XmlLayout.reg(WidgetSpan, (node, key) {
     return WidgetSpan(
-      child: node.child<Widget>(),
-      alignment: node.s<PlaceholderAlignment>("alignment"),
-      baseline: node.s<TextBaseline>("baseline"),
-      style: node.s<TextStyle>("style")
-    );
+        child: node.child<Widget>(),
+        alignment: node.s<PlaceholderAlignment>("alignment"),
+        baseline: node.s<TextBaseline>("baseline"),
+        style: node.s<TextStyle>("style"));
   }, mode: XmlLayout.Element);
 
   XmlLayout.reg(StrutStyle, (node, key) {
     return StrutStyle(
-      fontFamily: node.s<String>("fontFamily"),
-      fontFamilyFallback: node.s<String>("fontFamilyFallback")?.split(","),
-      fontSize: node.s<double>("fontSize"),
-      height: node.s<double>("height"),
-      leading: node.s<double>("leading"),
-      fontWeight: node.s<FontWeight>("fontWeight"),
-      fontStyle: node.s<FontStyle>("fontStyle"),
-      forceStrutHeight: node.s<bool>("forceStrutHeight"),
-      debugLabel: node.s<String>("debugLabel"),
-      package: node.s<String>("package")
-    );
+        fontFamily: node.s<String>("fontFamily"),
+        fontFamilyFallback: node.s<String>("fontFamilyFallback")?.split(","),
+        fontSize: node.s<double>("fontSize"),
+        height: node.s<double>("height"),
+        leading: node.s<double>("leading"),
+        fontWeight: node.s<FontWeight>("fontWeight"),
+        fontStyle: node.s<FontStyle>("fontStyle"),
+        forceStrutHeight: node.s<bool>("forceStrutHeight"),
+        debugLabel: node.s<String>("debugLabel"),
+        package: node.s<String>("package"));
   }, mode: XmlLayout.Element);
   XmlLayout.reg("StrutStyle.fromTextStyle", (node, key) {
-    return StrutStyle.fromTextStyle(
-      node.child<TextStyle>(),
-      fontFamily: node.s<String>("fontFamily"),
-      fontFamilyFallback: node.s<String>("fontFamilyFallback")?.split(","),
-      fontSize: node.s<double>("fontSize"),
-      height: node.s<double>("height"),
-      leading: node.s<double>("leading"),
-      fontWeight: node.s<FontWeight>("fontWeight"),
-      fontStyle: node.s<FontStyle>("fontStyle"),
-      forceStrutHeight: node.s<bool>("forceStrutHeight"),
-      debugLabel: node.s<String>("debugLabel"),
-      package: node.s<String>("package")
-    );
+    return StrutStyle.fromTextStyle(node.child<TextStyle>(),
+        fontFamily: node.s<String>("fontFamily"),
+        fontFamilyFallback: node.s<String>("fontFamilyFallback")?.split(","),
+        fontSize: node.s<double>("fontSize"),
+        height: node.s<double>("height"),
+        leading: node.s<double>("leading"),
+        fontWeight: node.s<FontWeight>("fontWeight"),
+        fontStyle: node.s<FontStyle>("fontStyle"),
+        forceStrutHeight: node.s<bool>("forceStrutHeight"),
+        debugLabel: node.s<String>("debugLabel"),
+        package: node.s<String>("package"));
   });
-
 }

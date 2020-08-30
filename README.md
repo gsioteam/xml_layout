@@ -53,7 +53,7 @@ XMLLayout.reg(MyClass, (node, key) {
         key: key,
         child: node.child<Widget>(),
         width: node.s<double>("width"),
-        width: node.s<double>("width"),
+        height: node.s<double>("height"),
     );
 });
 

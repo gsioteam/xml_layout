@@ -6,9 +6,7 @@ class TemplateException implements Exception {
   TemplateException([this.message]);
 }
 
-class NotWidgetException implements Exception {
-
-}
+class NotWidgetException implements Exception {}
 
 class InvalidateParametersException implements Exception {
   Type type;

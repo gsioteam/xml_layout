@@ -1,6 +1,3 @@
-
-
-
 import 'types/colors.dart' as color;
 import 'types/text.dart' as text;
 import 'types/paint.dart' as paint;
@@ -10,7 +7,6 @@ import 'types/icons.dart' as icons;
 import 'types/list.dart' as list;
 
 int initTypes() {
-
   color.reg();
   text.reg();
   paint.reg();

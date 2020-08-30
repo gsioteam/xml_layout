@@ -92,14 +92,11 @@ class _MyHomePageState extends State<MyHomePage> {
               if (snapshot.hasData) {
                 return XmlLayout(
                   template: snapshot.data,
-                  objects: {
-                    "counter": _counter
-                  },
+                  objects: {"counter": _counter},
                 );
               }
               return Container();
-            }
-        ),
+            }),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
