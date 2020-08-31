@@ -119,10 +119,6 @@ class _IfControlData extends _FlowControlData {
   }
 }
 
-class _PathSegment {
-
-}
-
 class _Range {
   int start;
   int end;
@@ -199,7 +195,7 @@ class NodeData {
       if (node is xml.XmlElement) {
         for (xml.XmlNode child in node.children) {
           if (child is xml.XmlElement)
-            _processElement(child as xml.XmlElement);
+            _processElement(child);
         }
       }
     }
