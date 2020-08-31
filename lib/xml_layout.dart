@@ -1,5 +1,7 @@
 library xml_layout;
 
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart' as xml;
@@ -119,6 +121,13 @@ class _IfControlData extends _FlowControlData {
 
 class _PathSegment {
 
+}
+
+class _Range {
+  int start;
+  int end;
+  String value;
+  _Range(this.start, this.end, this.value);
 }
 
 class NodeData {
@@ -279,10 +288,47 @@ class NodeData {
   }
 
   String _processText(String text) {
+    const String mark = r"$";
+    const String slash = r"/";
+
+    int off = text.indexOf(mark);
+    List<_Range> ranges = [];
+    while (off >= 0) {
+      int slashCount = 0;
+      int pre = off - 1;
+      while (pre > 0 && text[pre] == slash) {
+        ++slashCount;
+        --pre;
+      }
+
+      if (slashCount % 2 == 0) {
+        if (text[off + 1] == "{") {
+          Match match = RegExp(r"(?<=\$)\{([^\}]+)\}").matchAsPrefix(text, off + 1);
+          if (match != null) {
+            ranges.add(_Range(match.start - 1, match.end, match.group(1)));
+          } else {
+
+          }
+        } else {
+          Match match = RegExp(r"(?<=\$)[\w_]+").matchAsPrefix(text, off + 1);
+          if (match != null) {
+            ranges.add(_Range(match.start - 1, match.end, match.group(0)));
+          } else {
+
+          }
+        }
+      }
+      off = text.indexOf(mark, off + 1);
+    }
+    ranges.reversed.forEach((element) {
+      text = text.replaceRange(element.start, element.end, _get(element.value).toString());
+    });
     return text;
   }
 
-  String get text => _processText(node is xml.XmlAttribute ? (node as xml.XmlAttribute).value : node.text);
+  String _raw;
+  String get raw => _raw ?? (_raw = node is xml.XmlAttribute ? (node as xml.XmlAttribute).value : node.text);
+  String get text => _processText(raw);
   int get integer => int.tryParse(text);
   double get real => double.tryParse(text);
   bool get boolean => text == "true" ? true : false;
@@ -291,15 +337,6 @@ class NodeData {
   bool get isElement => node is xml.XmlElement;
   String get name =>
       node is xml.XmlElement ? (node as xml.XmlElement).name.local : null;
-
-  T _e<T>(String name) {
-    T res;
-    if (_ext != null) {
-      dynamic o = _ext[name];
-      if (o is T) res = o;
-    }
-    return res ?? _father?._e<T>(name);
-  }
 
   T child<T>() {
     _processChild();
@@ -329,25 +366,72 @@ class NodeData {
     return attr == null ? [] : _convertListTo<T>(attr);
   }
 
-  static _getPath(dynamic tar, List<String> path, int offset) {
+  dynamic _get(String path) {
+    RegExp exp = RegExp(r"^(\w+)((\[[^\]]+\])*)$");
+    RegExp bExp = RegExp(r"\[([^\]]+)\]");
+    List<String> arr = path.split(".");
+    List segs  = [];
+    for (String seg in arr) {
+      RegExpMatch match = exp.firstMatch(seg);
+      if (match == null) return null;
+      String name = match.group(1);
+      String property = match.group(2);
+      segs.add(name);
+      if (property.length > 0) {
+        var matches = bExp.allMatches(property);
+        for (Match match in matches) {
+          segs.add(jsonDecode(match.group(1)));
+        }
+      }
+    }
 
+    dynamic ret = _getPath(_ext, segs, 0);
+    if (ret == null && state.widget?.objects != null) {
+      ret = _getPath(state.widget.objects, segs, 0);
+    }
+    if (ret == null) {
+      NodeData father = _father;
+      while (father != null) {
+        ret = _getPath(father._ext, segs, 0);
+        if (ret != null) break;
+        father = father._father;
+      }
+    }
+    return ret;
   }
 
+  static _getPath(dynamic tar, List path, int offset) {
+    if (offset >= path.length) {
+      return tar;
+    }  else {
+      dynamic seg = path[offset];
+      if (tar is Map) {
+        var sub = seg is String ? tar[seg] : null;
+        if (sub == null) return null;
+        return _getPath(sub, path, offset + 1);
+      } else if (tar is List) {
+        if (seg is int) {
+          var sub = tar[seg];
+          if (sub == null) return null;
+          return _getPath(sub, path, offset + 1);
+        }
+        else return null;
+      }
+    }
+  }
+
+  static RegExp _matchRegExp1 = RegExp(r"^\$([\w_]+)$");
+  static RegExp _matchRegExp2 = RegExp(r"^\$\{([^\}]+)\}$");
   T t<T>() {
     if (!isElement) {
-      if (text[0] == r'$') {
-        String path = text.substring(1);
-        T res = null;
-        if (_ext != null) {
-
-        }
-        dynamic obj = state.widget.objects == null
-            ? null
-            : state.widget.objects[text.substring(1)];
-        if (obj != null) {
-          if (obj is T) return obj;
-          if (T == String) return obj.toString() as T;
-        }
+      Match regExp = _matchRegExp1.firstMatch(raw);
+      if (regExp == null) {
+        regExp = _matchRegExp2.firstMatch(raw);
+      }
+      if (regExp != null) {
+        dynamic obj = _get(regExp.group(1));
+        if (obj is T) return obj;
+        if (T == String) return obj.toString() as T;
       }
     }
     switch (T) {
