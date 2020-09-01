@@ -12,3 +12,5 @@
 * Support `if` tag
 * Support path search of argument
 * Support argument in String
+
+## [0.2.0] - Update example

@@ -1,9 +1,14 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:xml_layout/register.dart';
 
 import '../xml_layout.dart';
 
-void reg() {
+import 'drag.dart' as drag;
+
+Register reg = Register(() {
+  drag.reg();
+
   XmlLayout.reg(ListTile, (node, key) {
     return ListTile(
       key: key,
@@ -216,5 +221,4 @@ void reg() {
       children: node.children<Widget>(),
     );
   });
-  XmlLayout.regEnum(DragStartBehavior.values);
-}
+});

@@ -9,7 +9,9 @@ write xml layout file like:
 *xml*
 ```xml
 <Column mainAxisAlignment="center">
-    <Text text="You have pushed the button this many times:"/>
+    <for count="6">
+        <Text text="$item, You have pushed the button this many times:"/>
+    </for>
     <Text text="$counter" id="text-id">
         <attr:style>
             <TextStyle color="red"/>

@@ -5,8 +5,12 @@ import 'package:flutter/gestures.dart';
 
 import '../parser.dart';
 import '../xml_layout.dart';
+import '../register.dart';
+import 'colors.dart' as colors;
 
-void reg() {
+Register reg = Register(() {
+  colors.reg();
+
   XmlLayout.reg(FontWeight, (node, key) {
     switch (node.text) {
       case 'w100':
@@ -178,4 +182,4 @@ void reg() {
         debugLabel: node.s<String>("debugLabel"),
         package: node.s<String>("package"));
   });
-}
+});

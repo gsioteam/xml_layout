@@ -3,8 +3,15 @@ import 'package:flutter/material.dart';
 
 import '../parser.dart';
 import '../xml_layout.dart';
+import '../register.dart';
 
-void reg() {
+import 'colors.dart' as colors;
+import 'text.dart' as text;
+
+Register reg = Register(() {
+  colors.reg();
+  text.reg();
+
   XmlLayout.reg(Icon, (node, key) {
     if (node.isElement) {
       return Icon(
@@ -825,7 +832,7 @@ void reg() {
     'shutter_speed': Icons.shutter_speed,
     'signal_cellular_4_bar': Icons.signal_cellular_4_bar,
     'signal_cellular_connected_no_internet_4_bar':
-        Icons.signal_cellular_connected_no_internet_4_bar,
+    Icons.signal_cellular_connected_no_internet_4_bar,
     'signal_cellular_no_sim': Icons.signal_cellular_no_sim,
     'signal_cellular_null': Icons.signal_cellular_null,
     'signal_cellular_off': Icons.signal_cellular_off,
@@ -1031,4 +1038,5 @@ void reg() {
     }
     return data;
   }, mode: XmlLayout.Text);
-}
+});
+

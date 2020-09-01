@@ -4,8 +4,11 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
 import '../xml_layout.dart';
+import '../register.dart';
+import 'rect.dart' as rect;
 
-void reg() {
+Register reg = Register(() {
+  rect.reg();
   XmlLayout.reg(Image, (node, key) {
     return Image(
       key: key,
@@ -98,7 +101,7 @@ void reg() {
         matchTextDirection: node.s<bool>("matchTextDirection", false),
         gaplessPlayback: node.s<bool>("gaplessPlayback", false),
         filterQuality:
-            node.s<FilterQuality>("filterQuality", FilterQuality.low),
+        node.s<FilterQuality>("filterQuality", FilterQuality.low),
         cacheWidth: node.s<int>("cacheWidth"),
         cacheHeight: node.s<int>("cacheHeight"),
         scale: node.s<double>("scale"),
@@ -128,4 +131,4 @@ void reg() {
       scale: node.s<double>("scale"),
     );
   });
-}
+});

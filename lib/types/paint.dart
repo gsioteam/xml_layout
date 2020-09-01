@@ -2,12 +2,16 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:xml/xml.dart';
+import 'package:xml_layout/register.dart';
+import 'package:flutter/material.dart';
 
 import '../parser.dart';
 import '../xml_layout.dart';
-import 'package:flutter/material.dart';
+import 'colors.dart' as colors;
 
-void reg() {
+Register reg = Register(() {
+  colors.reg();
+
   XmlLayout.reg(Paint, (node, key) {
     if (node.name == "paint") {
       dynamic v;
@@ -43,7 +47,7 @@ void reg() {
   XmlLayout.reg(MaskFilter, (node, _) {
     String text = node.text;
     Iterable<RegExpMatch> matches =
-        RegExp(r"blur\(([^\)]+)\)").allMatches(text);
+    RegExp(r"blur\(([^\)]+)\)").allMatches(text);
     MaskFilter ret;
     if (matches.isNotEmpty) {
       matches.any((element) {
@@ -89,4 +93,4 @@ void reg() {
     } else
       return null;
   }, mode: XmlLayout.Text);
-}
+});

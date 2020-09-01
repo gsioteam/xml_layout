@@ -1,5 +1,6 @@
 library xml_layout;
 
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -7,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:xml/xml.dart' as xml;
 import 'parser.dart';
 import 'exceptions.dart';
-import 'types.dart';
 
 typedef ItemConstructor = dynamic Function(NodeData node, Key key);
 typedef MethodConstructor = dynamic Function();
@@ -401,11 +401,11 @@ class NodeData {
       return tar;
     }  else {
       dynamic seg = path[offset];
-      if (tar is Map) {
+      if (tar is Map || tar is MapMixin) {
         var sub = seg is String ? tar[seg] : null;
         if (sub == null) return null;
         return _getPath(sub, path, offset + 1);
-      } else if (tar is List) {
+      } else if (tar is List || tar is ListMixin) {
         if (seg is int) {
           var sub = tar[seg];
           if (sub == null) return null;
@@ -501,9 +501,6 @@ class _ItemInfo {
   _ItemInfo(this.constructor, this.mode);
 }
 
-// TODO: better?
-bool _initialized = false;
-
 class XmlLayout extends StatefulWidget {
   static Map<dynamic, _ItemInfo> _constructors = Map();
 
@@ -517,10 +514,6 @@ class XmlLayout extends StatefulWidget {
       : element = null,
         super(key: key) {
     assert(template != null);
-    if (!_initialized) {
-      initTypes();
-      _initialized = true;
-    }
   }
 
   XmlLayout.element({

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../xml_layout.dart';
+import '../register.dart';
 
 Color _colorGenerator(node, key) {
   String text = node.text;
@@ -148,6 +149,7 @@ Color _colorGenerator(node, key) {
   }
 }
 
-void reg() {
+Register reg = Register(() {
   XmlLayout.reg(Color, _colorGenerator);
-}
+});
+
