@@ -47,7 +47,7 @@ Register reg = Register(() {
   XmlLayout.reg(MaskFilter, (node, _) {
     String text = node.text;
     Iterable<RegExpMatch> matches =
-    RegExp(r"blur\(([^\)]+)\)").allMatches(text);
+        RegExp(r"blur\(([^\)]+)\)").allMatches(text);
     MaskFilter ret;
     if (matches.isNotEmpty) {
       matches.any((element) {

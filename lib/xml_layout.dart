@@ -19,7 +19,9 @@ class _StopControl {
 
 class _FlowControlData {
   _FlowControlData next;
-  List<NodeData> process(NodeData temp, _NodeTester tester, [_StopControl stop]) => [];
+  List<NodeData> process(NodeData temp, _NodeTester tester,
+          [_StopControl stop]) =>
+      [];
 
   _FlowControlData([this.next]);
 }
@@ -41,7 +43,8 @@ class _ForControlData extends _FlowControlData {
   }
 
   @override
-  List<NodeData> process(NodeData temp, _NodeTester tester, [_StopControl stop]) {
+  List<NodeData> process(NodeData temp, _NodeTester tester,
+      [_StopControl stop]) {
     List<NodeData> res = [];
     stop ??= _StopControl();
     if (array != null) {
@@ -50,15 +53,14 @@ class _ForControlData extends _FlowControlData {
         int idx = 0;
         for (dynamic data in arr) {
           if (stop.isStop) break;
-          NodeData newNode = temp.clone({
-            item: data,
-            index: idx++
-          });
+          NodeData newNode = temp.clone({item: data, index: idx++});
           if (next == null) {
             if (tester != null) {
               bool isStop = tester(newNode);
-              if (isStop) stop.isStop = true;
-              else res.add(newNode);
+              if (isStop)
+                stop.isStop = true;
+              else
+                res.add(newNode);
             }
           } else {
             res.addAll(next.process(newNode, tester, stop));
@@ -70,15 +72,14 @@ class _ForControlData extends _FlowControlData {
       if (len != null) {
         for (int i = 0; i < len; ++i) {
           if (stop.isStop) break;
-          NodeData newNode = temp.clone({
-            item: i,
-            index: i
-          });
+          NodeData newNode = temp.clone({item: i, index: i});
           if (next == null) {
             if (tester != null) {
               bool isStop = tester(newNode);
-              if (isStop) stop.isStop = true;
-              else res.add(newNode);
+              if (isStop)
+                stop.isStop = true;
+              else
+                res.add(newNode);
             }
           } else {
             res.addAll(next.process(newNode, tester, stop));
@@ -100,7 +101,8 @@ class _IfControlData extends _FlowControlData {
   }
 
   @override
-  List<NodeData> process(NodeData temp, _NodeTester tester, [_StopControl stop]) {
+  List<NodeData> process(NodeData temp, _NodeTester tester,
+      [_StopControl stop]) {
     List<NodeData> res = [];
     stop ??= _StopControl();
     if (!stop.isStop) {
@@ -109,8 +111,10 @@ class _IfControlData extends _FlowControlData {
         if (cand) {
           if (tester != null) {
             bool isStop = tester(temp);
-            if (isStop) stop.isStop = true;
-            else res.add(temp);
+            if (isStop)
+              stop.isStop = true;
+            else
+              res.add(temp);
           }
         }
       }
@@ -156,16 +160,14 @@ class NodeData {
           _processElement(node, flow: flow);
         }
       }
-    }
-    else if (element.name.toString().toLowerCase() == "if") {
+    } else if (element.name.toString().toLowerCase() == "if") {
       flow = _IfControlData(NodeData(element, state, this), flow);
       for (xml.XmlNode node in element.children) {
         if (node is xml.XmlElement) {
           _processElement(node, flow: flow);
         }
       }
-    }
-    else if (element.name.prefix == "attr") {
+    } else if (element.name.prefix == "attr") {
       xml.XmlElement el;
       xml.XmlText text;
       for (xml.XmlNode node in element.children) {
@@ -177,15 +179,9 @@ class NodeData {
       }
 
       _setNode(element.name.local,
-        NodeData(el ?? text ?? xml.XmlText(""), state, this)
-          .._flow = flow
-      );
-    }
-    else if (element.name.prefix == null) {
-      _children.add(
-        NodeData(element, state, this)
-          .._flow = flow
-      );
+          NodeData(el ?? text ?? xml.XmlText(""), state, this).._flow = flow);
+    } else if (element.name.prefix == null) {
+      _children.add(NodeData(element, state, this).._flow = flow);
     }
   }
 
@@ -194,8 +190,7 @@ class NodeData {
       _children = [];
       if (node is xml.XmlElement) {
         for (xml.XmlNode child in node.children) {
-          if (child is xml.XmlElement)
-            _processElement(child);
+          if (child is xml.XmlElement) _processElement(child);
         }
       }
     }
@@ -239,6 +234,7 @@ class NodeData {
       dynamic obj = node.t<T>();
       if (obj != null) res.add(obj);
     }
+
     for (NodeData node in nodes) {
       _processSubNode(node, (newNode) {
         addResult(newNode);
@@ -299,31 +295,33 @@ class NodeData {
 
       if (slashCount % 2 == 0) {
         if (text[off + 1] == "{") {
-          Match match = RegExp(r"(?<=\$)\{([^\}]+)\}").matchAsPrefix(text, off + 1);
+          Match match =
+              RegExp(r"(?<=\$)\{([^\}]+)\}").matchAsPrefix(text, off + 1);
           if (match != null) {
             ranges.add(_Range(match.start - 1, match.end, match.group(1)));
-          } else {
-
-          }
+          } else {}
         } else {
           Match match = RegExp(r"(?<=\$)[\w_]+").matchAsPrefix(text, off + 1);
           if (match != null) {
             ranges.add(_Range(match.start - 1, match.end, match.group(0)));
-          } else {
-
-          }
+          } else {}
         }
       }
       off = text.indexOf(mark, off + 1);
     }
     ranges.reversed.forEach((element) {
-      text = text.replaceRange(element.start, element.end, _get(element.value).toString());
+      text = text.replaceRange(
+          element.start, element.end, _get(element.value).toString());
     });
     return text;
   }
 
   String _raw;
-  String get raw => _raw ?? (_raw = node is xml.XmlAttribute ? (node as xml.XmlAttribute).value : node.text);
+  String get raw =>
+      _raw ??
+      (_raw = node is xml.XmlAttribute
+          ? (node as xml.XmlAttribute).value
+          : node.text);
   String get text => _processText(raw);
   int get integer => int.tryParse(text);
   double get real => double.tryParse(text);
@@ -343,7 +341,8 @@ class NodeData {
         if (obj is T) {
           res = obj;
           return true;
-        } else return false;
+        } else
+          return false;
       });
       return res;
     }
@@ -366,7 +365,7 @@ class NodeData {
     RegExp exp = RegExp(r"^(\w+)((\[[^\]]+\])*)$");
     RegExp bExp = RegExp(r"\[([^\]]+)\]");
     List<String> arr = path.split(".");
-    List segs  = [];
+    List segs = [];
     for (String seg in arr) {
       RegExpMatch match = exp.firstMatch(seg);
       if (match == null) return null;
@@ -399,7 +398,7 @@ class NodeData {
   static _getPath(dynamic tar, List path, int offset) {
     if (offset >= path.length) {
       return tar;
-    }  else {
+    } else {
       dynamic seg = path[offset];
       if (tar is Map || tar is MapMixin) {
         var sub = seg is String ? tar[seg] : null;
@@ -410,8 +409,8 @@ class NodeData {
           var sub = tar[seg];
           if (sub == null) return null;
           return _getPath(sub, path, offset + 1);
-        }
-        else return null;
+        } else
+          return null;
       }
     }
   }
@@ -452,8 +451,10 @@ class NodeData {
           _ItemInfo info = XmlLayout._constructors[T];
           if (info == null) {
             dynamic obj = element();
-            if (obj is T) return obj;
-            else return null;
+            if (obj is T)
+              return obj;
+            else
+              return null;
           } else {
             bool check = false;
             check |= info.mode & XmlLayout.Element > 0 && isElement;

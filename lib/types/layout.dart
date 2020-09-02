@@ -540,7 +540,7 @@ Register reg = Register(() {
       locale: node.s<Locale>("locale"),
       strutStyle: node.s<StrutStyle>("strutStyle"),
       textWidthBasis:
-      node.s<TextWidthBasis>("textWidthBasis", TextWidthBasis.parent),
+          node.s<TextWidthBasis>("textWidthBasis", TextWidthBasis.parent),
       textHeightBehavior: node.s<TextHeightBehavior>("textHeightBehavior"),
     );
   }, mode: XmlLayout.Element);
@@ -560,7 +560,7 @@ Register reg = Register(() {
         matchTextDirection: node.s<bool>("matchTextDirection", false),
         invertColors: node.s<bool>("invertColors", false),
         filterQuality:
-        node.s<FilterQuality>("filterQuality", FilterQuality.low));
+            node.s<FilterQuality>("filterQuality", FilterQuality.low));
   }, mode: XmlLayout.Element);
   XmlLayout.reg(DefaultAssetBundle, (node, key) {
     return DefaultAssetBundle(
@@ -579,7 +579,7 @@ Register reg = Register(() {
         onPointerCancel: node.s<PointerCancelEventListener>("onPointerCancel"),
         onPointerSignal: node.s<PointerSignalEventListener>("onPointerSignal"),
         behavior:
-        node.s<HitTestBehavior>("behavior", HitTestBehavior.deferToChild));
+            node.s<HitTestBehavior>("behavior", HitTestBehavior.deferToChild));
   }, mode: XmlLayout.Element);
   XmlLayout.reg(MouseRegion, (node, key) {
     return MouseRegion(
@@ -616,7 +616,7 @@ Register reg = Register(() {
         key: key,
         child: node.child<Widget>(),
         behavior:
-        node.s<HitTestBehavior>("behavior", HitTestBehavior.deferToChild),
+            node.s<HitTestBehavior>("behavior", HitTestBehavior.deferToChild),
         metaData: node.s("metaData"));
   }, mode: XmlLayout.Element);
   XmlLayout.reg(Semantics, (node, key) {
@@ -669,14 +669,14 @@ Register reg = Register(() {
       onPaste: node.s<VoidCallback>("onPaste"),
       onDismiss: node.s<VoidCallback>("onDismiss"),
       onMoveCursorForwardByCharacter:
-      node.s<MoveCursorHandler>("onMoveCursorForwardByCharacter"),
+          node.s<MoveCursorHandler>("onMoveCursorForwardByCharacter"),
       onMoveCursorBackwardByCharacter:
-      node.s<MoveCursorHandler>("onMoveCursorBackwardByCharacter"),
+          node.s<MoveCursorHandler>("onMoveCursorBackwardByCharacter"),
       onSetSelection: node.s<SetSelectionHandler>("onSetSelection"),
       onDidGainAccessibilityFocus:
-      node.s<VoidCallback>("onDidGainAccessibilityFocus"),
+          node.s<VoidCallback>("onDidGainAccessibilityFocus"),
       onDidLoseAccessibilityFocus:
-      node.s<VoidCallback>("onDidLoseAccessibilityFocus"),
+          node.s<VoidCallback>("onDidLoseAccessibilityFocus"),
       customSemanticsActions: node.s<Map<CustomSemanticsAction, VoidCallback>>(
           "customSemanticsActions"),
     );

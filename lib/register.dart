@@ -1,5 +1,3 @@
-
-
 class Register {
   static Set<Register> _registers = Set();
 

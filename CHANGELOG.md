@@ -14,3 +14,8 @@
 * Support argument in String
 
 ## [0.2.0] - Update example
+
+## [0.2.2] - 
+
+* New register
+* New example

@@ -101,7 +101,7 @@ Register reg = Register(() {
         matchTextDirection: node.s<bool>("matchTextDirection", false),
         gaplessPlayback: node.s<bool>("gaplessPlayback", false),
         filterQuality:
-        node.s<FilterQuality>("filterQuality", FilterQuality.low),
+            node.s<FilterQuality>("filterQuality", FilterQuality.low),
         cacheWidth: node.s<int>("cacheWidth"),
         cacheHeight: node.s<int>("cacheHeight"),
         scale: node.s<double>("scale"),
@@ -141,13 +141,14 @@ Register reg = Register(() {
     }
   }, mode: XmlLayout.Text);
   XmlLayout.reg(NetworkImage, (node, key) {
-    return NetworkImage(
-      node.s<String>("src"),
-      scale: node.s<double>("scale"),
-      headers: node.s<Map<String, String>>("headers")
-    );
+    return NetworkImage(node.s<String>("src"),
+        scale: node.s<double>("scale"),
+        headers: node.s<Map<String, String>>("headers"));
   }, mode: XmlLayout.Element);
   XmlLayout.reg(FileImage, (node, key) {
-    return FileImage(File(node.s<String>("src")),scale: node.s<double>("scale"),);
+    return FileImage(
+      File(node.s<String>("src")),
+      scale: node.s<double>("scale"),
+    );
   }, mode: XmlLayout.Element);
 });

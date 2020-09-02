@@ -1,4 +1,3 @@
-
 import '../register.dart';
 import 'colors.dart' as colors;
 import 'drag.dart' as drag;

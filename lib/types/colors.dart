@@ -152,4 +152,3 @@ Color _colorGenerator(node, key) {
 Register reg = Register(() {
   XmlLayout.reg(Color, _colorGenerator);
 });
-

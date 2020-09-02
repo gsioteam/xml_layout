@@ -1,4 +1,3 @@
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
@@ -21,8 +20,10 @@ Register reg = Register(() {
       appBar: node.s<PreferredSizeWidget>("appBar"),
       body: node.s<Widget>("body"),
       floatingActionButton: node.s<Widget>("floatingActionButton"),
-      floatingActionButtonLocation: node.s<FloatingActionButtonLocation>("floatingActionButtonLocation"),
-      floatingActionButtonAnimator: node.s<FloatingActionButtonAnimator>("floatingActionButtonAnimator"),
+      floatingActionButtonLocation:
+          node.s<FloatingActionButtonLocation>("floatingActionButtonLocation"),
+      floatingActionButtonAnimator:
+          node.s<FloatingActionButtonAnimator>("floatingActionButtonAnimator"),
       persistentFooterButtons: node.arr<Widget>("persistentFooterButtons"),
       drawer: node.s<Widget>("drawer"),
       endDrawer: node.s<Widget>("endDrawer"),
@@ -32,13 +33,16 @@ Register reg = Register(() {
       resizeToAvoidBottomPadding: node.s<bool>("resizeToAvoidBottomPadding"),
       resizeToAvoidBottomInset: node.s<bool>("resizeToAvoidBottomInset"),
       primary: node.s<bool>("primary", true),
-      drawerDragStartBehavior: node.s<DragStartBehavior>("drawerDragStartBehavior", DragStartBehavior.start),
+      drawerDragStartBehavior: node.s<DragStartBehavior>(
+          "drawerDragStartBehavior", DragStartBehavior.start),
       extendBody: node.s<bool>("extendBody", false),
       extendBodyBehindAppBar: node.s<bool>("extendBodyBehindAppBar", false),
       drawerScrimColor: node.s<Color>("drawerScrimColor"),
       drawerEdgeDragWidth: node.s<double>("drawerEdgeDragWidth"),
-      drawerEnableOpenDragGesture: node.s<bool>("drawerEnableOpenDragGesture", true),
-      endDrawerEnableOpenDragGesture: node.s<bool>("endDrawerEnableOpenDragGesture", true),
+      drawerEnableOpenDragGesture:
+          node.s<bool>("drawerEnableOpenDragGesture", true),
+      endDrawerEnableOpenDragGesture:
+          node.s<bool>("endDrawerEnableOpenDragGesture", true),
     );
   }, mode: XmlLayout.Element);
 
@@ -50,20 +54,30 @@ Register reg = Register(() {
   });
   XmlLayout.reg(FloatingActionButtonLocation, (node, key) {
     switch (node.text) {
-      case 'endFloat': return FloatingActionButtonLocation.endFloat;
-      case 'centerFloat': return FloatingActionButtonLocation.centerFloat;
-      case 'endDocked': return FloatingActionButtonLocation.endDocked;
-      case 'centerDocked': return FloatingActionButtonLocation.centerDocked;
-      case 'startTop': return FloatingActionButtonLocation.startTop;
-      case 'miniStartTop': return FloatingActionButtonLocation.miniStartTop;
-      case 'endTop': return FloatingActionButtonLocation.endTop;
-      default: return null;
+      case 'endFloat':
+        return FloatingActionButtonLocation.endFloat;
+      case 'centerFloat':
+        return FloatingActionButtonLocation.centerFloat;
+      case 'endDocked':
+        return FloatingActionButtonLocation.endDocked;
+      case 'centerDocked':
+        return FloatingActionButtonLocation.centerDocked;
+      case 'startTop':
+        return FloatingActionButtonLocation.startTop;
+      case 'miniStartTop':
+        return FloatingActionButtonLocation.miniStartTop;
+      case 'endTop':
+        return FloatingActionButtonLocation.endTop;
+      default:
+        return null;
     }
   }, mode: XmlLayout.Text);
   XmlLayout.reg(FloatingActionButtonAnimator, (node, key) {
     switch (node.text) {
-      case 'scaling': return FloatingActionButtonAnimator.scaling;
-      default: return null;
+      case 'scaling':
+        return FloatingActionButtonAnimator.scaling;
+      default:
+        return null;
     }
   }, mode: XmlLayout.Text);
 
@@ -71,7 +85,8 @@ Register reg = Register(() {
     return AppBar(
       key: key,
       leading: node.s<Widget>("leading"),
-      automaticallyImplyLeading: node.s<bool>("automaticallyImplyLeading", true),
+      automaticallyImplyLeading:
+          node.s<bool>("automaticallyImplyLeading", true),
       title: node.s<Widget>("title"),
       actions: node.arr<Widget>("actions"),
       flexibleSpace: node.s<Widget>("flexibleSpace"),
