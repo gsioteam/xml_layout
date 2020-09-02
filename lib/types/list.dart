@@ -195,7 +195,7 @@ Register reg = Register(() {
       crossAxisCount: node.s<int>("crossAxisCount"),
       mainAxisSpacing: node.s<double>("mainAxisSpacing", 0),
       crossAxisSpacing: node.s<double>("crossAxisSpacing", 0),
-      childAspectRatio: node.s<double>("childAspectRatio", 0),
+      childAspectRatio: node.s<double>("childAspectRatio", 1),
       children: node.children<Widget>(),
     );
   });
@@ -216,7 +216,7 @@ Register reg = Register(() {
           "dragStartBehavior", DragStartBehavior.start),
       mainAxisSpacing: node.s<double>("mainAxisSpacing", 0),
       crossAxisSpacing: node.s<double>("crossAxisSpacing", 0),
-      childAspectRatio: node.s<double>("childAspectRatio", 0),
+      childAspectRatio: node.s<double>("childAspectRatio", 1),
       maxCrossAxisExtent: node.s<double>("maxCrossAxisExtent"),
       children: node.children<Widget>(),
     );

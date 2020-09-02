@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:xml_layout/xml_layout.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:xml_layout/types/all.dart' as all_type;
 
 void main() {
   runApp(MyApp());
@@ -10,6 +11,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    all_type.reg();
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -51,43 +53,57 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
+Future<String> _loadLayout(String path) {
+  return rootBundle.loadString(path);
+}
+
 class _MyHomePageState extends State<MyHomePage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: ListView(
+        children: ListTile.divideTiles(tiles: [
+          ListTile(
+            title: Text("LayoutExample"),
+            onTap: ()=> Navigator.of(context).push(MaterialPageRoute(builder: (context) => _LayoutExample())),
+          ),
+
+          ListTile(
+            title: Text("GridExample"),
+            onTap: ()=> Navigator.of(context).push(MaterialPageRoute(builder: (context) => _GridExample())),
+          )
+        ], context: context, color: Colors.black12).toList()
+      ),
+    );
+  }
+}
+
+class _LayoutExample extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => _LayoutExampleState();
+}
+
+class _LayoutExampleState extends State<_LayoutExample> {
   int _counter = 0;
 
   void _incrementCounter() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
       _counter++;
     });
   }
 
-  Future<String> _loadLayout() {
-    return rootBundle.loadString("assets/layout.xml");
-  }
-
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text("Layout Example"),
       ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
         child: FutureBuilder<String>(
-            future: _loadLayout(),
+            future: _loadLayout("assets/layout.xml"),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return XmlLayout(
@@ -102,7 +118,33 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: _incrementCounter,
         tooltip: 'Increment',
         child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
+    );
+  }
+}
+
+class _GridExample extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<String>(
+      future: _loadLayout("assets/grid.xml"),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return XmlLayout(
+            template: snapshot.data,
+            objects: {
+              "map": {
+                "pictures": [
+                  "https://homepages.cae.wisc.edu/~ece533/images/baboon.png",
+                  "https://homepages.cae.wisc.edu/~ece533/images/arctichare.png",
+                  "https://homepages.cae.wisc.edu/~ece533/images/airplane.png"
+                ]
+              }
+            },
+          );
+        }
+        return Container();
+      }
     );
   }
 }

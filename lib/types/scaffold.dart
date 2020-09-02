@@ -7,11 +7,13 @@ import '../register.dart';
 import 'colors.dart' as colors;
 import 'drag.dart' as drag;
 import 'rect.dart' as rect;
+import 'text.dart' as text;
 
 Register reg = Register(() {
   colors.reg();
   drag.reg();
   rect.reg();
+  text.reg();
 
   XmlLayout.reg(Scaffold, (node, key) {
     return Scaffold(

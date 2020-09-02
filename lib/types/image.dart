@@ -131,4 +131,23 @@ Register reg = Register(() {
       scale: node.s<double>("scale"),
     );
   });
+
+  XmlLayout.reg(ImageProvider, (node, key) {
+    String url = node.text;
+    if (RegExp("^https?://").hasMatch(url)) {
+      return NetworkImage(url);
+    } else {
+      return FileImage(File(url));
+    }
+  }, mode: XmlLayout.Text);
+  XmlLayout.reg(NetworkImage, (node, key) {
+    return NetworkImage(
+      node.s<String>("src"),
+      scale: node.s<double>("scale"),
+      headers: node.s<Map<String, String>>("headers")
+    );
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(FileImage, (node, key) {
+    return FileImage(File(node.s<String>("src")),scale: node.s<double>("scale"),);
+  }, mode: XmlLayout.Element);
 });

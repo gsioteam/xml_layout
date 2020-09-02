@@ -1,0 +1,18 @@
+<Scaffold>
+    <attr:appBar>
+        <AppBar>
+            <attr:title>
+                <Text>Grid Example</Text>
+            </attr:title>
+        </AppBar>
+    </attr:appBar>
+    <attr:body>
+        <GridView.count crossAxisCount="3">
+            <for array="${map.pictures}">
+                <Container color="black26">
+                    <Image image="$item"/>
+                </Container>
+            </for>
+        </GridView.count>
+    </attr:body>
+</Scaffold>

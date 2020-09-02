@@ -1,7 +1,7 @@
 
 
 class Register {
-  static Set<Register> _registers;
+  static Set<Register> _registers = Set();
 
   void Function() initializer;
   Register(this.initializer);
