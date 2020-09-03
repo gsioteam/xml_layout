@@ -11,6 +11,7 @@ import 'scaffold.dart' as scaffold;
 import 'text.dart' as text;
 import 'function.dart' as function;
 import 'material_button.dart' as material_button;
+import 'proxy.dart' as proxy;
 
 Register reg = Register(() {
   colors.reg();
@@ -25,4 +26,5 @@ Register reg = Register(() {
   text.reg();
   function.reg();
   material_button.reg();
+  proxy.reg();
 });

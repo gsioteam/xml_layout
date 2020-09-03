@@ -1,6 +1,6 @@
 # xml_layout
 
-XML layout for flutter. You can layout your UI via xml at runtime. and support extending any customer widget.
+XML layout for flutter. Layout your UI via xml at runtime. and support extending any customer widget.
 
 ## Getting Started
 

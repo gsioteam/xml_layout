@@ -34,3 +34,11 @@
 
 * Add support for MaterialButton
 * Add support for Function
+
+## [0.2.6] -
+
+* Add support for Function
+
+## [0.2.7] -
+
+* Add support for `proxy` and `builder` tag
