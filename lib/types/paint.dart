@@ -55,7 +55,7 @@ Register reg = Register(() {
         List<String> arr = text.split(',');
         if (arr.length == 2) {
           ret = MaskFilter.blur(
-              NodeData(XmlText(arr[0]), node.state).t<BlurStyle>(),
+              NodeData(XmlText(arr[0]), node.control).t<BlurStyle>(),
               double.parse(arr[1]));
         } else {
           print("$text not match");

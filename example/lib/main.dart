@@ -75,6 +75,11 @@ class _MyHomePageState extends State<MyHomePage> {
           title: Text("GridExample"),
           onTap: () => Navigator.of(context)
               .push(MaterialPageRoute(builder: (context) => _GridExample())),
+        ),
+        ListTile(
+          title: Text("BuilderExample"),
+          onTap: () => Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => _BuilderExample())),
         )
       ], context: context, color: Colors.black12)
               .toList()),
@@ -142,6 +147,34 @@ class _GridExample extends StatelessWidget {
                   ]
                 }
               },
+            );
+          }
+          return Container();
+        });
+  }
+}
+
+class _BuilderExample extends StatelessWidget {
+  XmlLayoutBuilder _builder = XmlLayoutBuilder();
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<String>(
+        future: _loadLayout("assets/grid.xml"),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return _builder.build(
+                context,
+                template: snapshot.data,
+                objects: {
+                  "map": {
+                    "pictures": [
+                      "https://homepages.cae.wisc.edu/~ece533/images/baboon.png",
+                      "https://homepages.cae.wisc.edu/~ece533/images/arctichare.png",
+                      "https://homepages.cae.wisc.edu/~ece533/images/airplane.png"
+                    ]
+                  }
+                }
             );
           }
           return Container();

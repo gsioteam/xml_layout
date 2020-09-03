@@ -13,6 +13,21 @@ typedef ItemConstructor = dynamic Function(NodeData node, Key key);
 typedef MethodConstructor = dynamic Function();
 typedef _NodeTester = bool Function(NodeData);
 
+mixin _NodeControl {
+  Map<String, GlobalKey> _keys = Map();
+
+  GlobalKey _getKey(String id) {
+    if (_keys.containsKey(id)) return _keys[id];
+    return _keys[id] = GlobalKey();
+  }
+
+  GlobalKey find(String id) {
+    return _keys[id];
+  }
+
+  Map<String, dynamic> get objects;
+}
+
 class _StopControl {
   bool isStop = false;
 }
@@ -37,9 +52,9 @@ class _ForControlData extends _FlowControlData {
     item = element.getAttribute("item") ?? "item";
     index = element.getAttribute("index") ?? "index";
     xml.XmlNode fnode = element.getAttributeNode("array");
-    array = fnode != null ? NodeData(fnode, node.state, node) : null;
+    array = fnode != null ? NodeData(fnode, node.control, node) : null;
     fnode = element.getAttributeNode("count");
-    count = fnode != null ? NodeData(fnode, node.state, node) : null;
+    count = fnode != null ? NodeData(fnode, node.control, node) : null;
   }
 
   @override
@@ -97,7 +112,7 @@ class _IfControlData extends _FlowControlData {
   _IfControlData(NodeData node, _FlowControlData next) : super(next) {
     xml.XmlElement element = node.node as xml.XmlElement;
     xml.XmlNode fnode = element.getAttributeNode("candidate");
-    candidate = fnode != null ? NodeData(fnode, node.state, node) : null;
+    candidate = fnode != null ? NodeData(fnode, node.control, node) : null;
   }
 
   @override
@@ -132,7 +147,7 @@ class _Range {
 
 class NodeData {
   xml.XmlNode node;
-  XmlLayoutState state;
+  _NodeControl control;
   _FlowControlData _flow;
   Map<String, dynamic> _ext;
   NodeData _father;
@@ -140,7 +155,7 @@ class NodeData {
   Map<String, List<NodeData>> _attributes;
   List<NodeData> _children;
 
-  NodeData(this.node, this.state, [NodeData father]) : _father = father;
+  NodeData(this.node, this.control, [NodeData father]) : _father = father;
 
   void _setNode(String name, NodeData node) {
     name = name.toLowerCase();
@@ -154,14 +169,14 @@ class NodeData {
 
   void _processElement(xml.XmlElement element, {_FlowControlData flow}) {
     if (element.name.toString().toLowerCase() == "for") {
-      flow = _ForControlData(NodeData(element, state, this), flow);
+      flow = _ForControlData(NodeData(element, control, this), flow);
       for (xml.XmlNode node in element.children) {
         if (node is xml.XmlElement) {
           _processElement(node, flow: flow);
         }
       }
     } else if (element.name.toString().toLowerCase() == "if") {
-      flow = _IfControlData(NodeData(element, state, this), flow);
+      flow = _IfControlData(NodeData(element, control, this), flow);
       for (xml.XmlNode node in element.children) {
         if (node is xml.XmlElement) {
           _processElement(node, flow: flow);
@@ -179,9 +194,9 @@ class NodeData {
       }
 
       _setNode(element.name.local,
-          NodeData(el ?? text ?? xml.XmlText(""), state, this).._flow = flow);
+          NodeData(el ?? text ?? xml.XmlText(""), control, this).._flow = flow);
     } else if (element.name.prefix == null) {
-      _children.add(NodeData(element, state, this).._flow = flow);
+      _children.add(NodeData(element, control, this).._flow = flow);
     }
   }
 
@@ -197,7 +212,7 @@ class NodeData {
   }
 
   NodeData clone(Map<String, dynamic> ext) {
-    NodeData one = NodeData(node, state, _father);
+    NodeData one = NodeData(node, control, _father);
     one._ext = ext;
     one._attributes = _attributes;
     one._children = _children;
@@ -250,7 +265,7 @@ class NodeData {
       _attributes = Map();
       element.attributes.forEach((element) {
         if (element.name.prefix == null || element.name.prefix == "attr")
-          _setNode(element.name.local, NodeData(element, state, this));
+          _setNode(element.name.local, NodeData(element, control, this));
       });
 
       _processChild();
@@ -263,7 +278,7 @@ class NodeData {
     NodeData id = this["id"];
     Key key;
     if (id != null) {
-      key = state._getKey(id.text);
+      key = control._getKey(id.text);
     }
     return key;
   }
@@ -381,8 +396,8 @@ class NodeData {
     }
 
     dynamic ret = _getPath(_ext, segs, 0);
-    if (ret == null && state.widget?.objects != null) {
-      ret = _getPath(state.widget.objects, segs, 0);
+    if (ret == null && control.objects != null) {
+      ret = _getPath(control.objects, segs, 0);
     }
     if (ret == null) {
       NodeData father = _father;
@@ -476,7 +491,7 @@ class NodeData {
   T v<T>(String txt) {
     _ItemInfo info = XmlLayout._constructors[T];
     if (info.mode & XmlLayout.Text > 0) {
-      return info.constructor(NodeData(xml.XmlText(txt), state, this), null);
+      return info.constructor(NodeData(xml.XmlText(txt), control, this), null);
     }
     return null;
   }
@@ -553,18 +568,8 @@ class XmlLayout extends StatefulWidget {
   }
 }
 
-class XmlLayoutState extends State<XmlLayout> {
+class XmlLayoutState extends State<XmlLayout> with _NodeControl {
   NodeData _data;
-  Map<String, GlobalKey> _keys = Map();
-
-  GlobalKey _getKey(String id) {
-    if (_keys.containsKey(id)) return _keys[id];
-    return _keys[id] = GlobalKey();
-  }
-
-  GlobalKey find(String id) {
-    return _keys[id];
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -596,4 +601,50 @@ class XmlLayoutState extends State<XmlLayout> {
       _keys.clear();
     }
   }
+
+  @override
+  Map<String, dynamic> get objects => widget.objects;
+}
+
+class XmlLayoutBuilder with _NodeControl {
+  NodeData _data;
+  Map<String, GlobalKey> _keys = Map();
+  String template;
+  xml.XmlElement element;
+  Map<String, dynamic> _objects;
+
+  Widget build(BuildContext context, {Map<String, dynamic> objects, String template, xml.XmlElement element}) {
+    _objects = objects;
+    if (template != this.template) {
+      this.template = template;
+      _data = null;
+    }
+    if (this.element != element) {
+      this.element = element;
+      _data = null;
+    }
+    if (_data == null) {
+      xml.XmlElement el =
+          element ?? xml.XmlDocument.parse(template)?.firstChild;
+      if (el != null) {
+        _data = NodeData(el, this);
+      } else {
+        throw TemplateException("Can not parse template.");
+      }
+    }
+
+    dynamic tar = _data.element();
+    if (tar is Widget) {
+      return tar;
+    } else {
+      throw NotWidgetException();
+    }
+  }
+
+  GlobalKey find(String id) {
+    return _keys[id];
+  }
+
+  @override
+  Map<String, dynamic> get objects => _objects;
 }

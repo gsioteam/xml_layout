@@ -19,3 +19,5 @@
 
 * New register
 * New example
+
+## [0.2.3] - Added XmlLayoutBuilder
