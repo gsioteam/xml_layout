@@ -10,7 +10,16 @@
         <GridView.count crossAxisCount="3">
             <for array="${map.pictures}">
                 <Container color="black26">
-                    <Image image="$item"/>
+                    <MaterialButton>
+                        <attr:onPressed>
+                            <Function>
+                                <Call function="$print">
+                                    <Argument value="$index"/>
+                                </Call>
+                            </Function>
+                        </attr:onPressed>
+                        <Image image="$item"/>
+                    </MaterialButton>
                 </Container>
             </for>
         </GridView.count>

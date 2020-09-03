@@ -336,7 +336,7 @@ class NodeData {
       _raw ??
       (_raw = node is xml.XmlAttribute
           ? (node as xml.XmlAttribute).value
-          : node.text);
+          : node.text.trim());
   String get text => _processText(raw);
   int get integer => int.tryParse(text);
   double get real => double.tryParse(text);
@@ -463,6 +463,13 @@ class NodeData {
         }
       default:
         {
+          if (isElement) {
+            dynamic obj = element();
+            if (obj is T)
+              return obj;
+            else
+              return null;
+          }
           _ItemInfo info = XmlLayout._constructors[T];
           if (info == null) {
             dynamic obj = element();
@@ -613,7 +620,8 @@ class XmlLayoutBuilder with _NodeControl {
   xml.XmlElement element;
   Map<String, dynamic> _objects;
 
-  Widget build(BuildContext context, {Map<String, dynamic> objects, String template, xml.XmlElement element}) {
+  Widget build(BuildContext context,
+      {Map<String, dynamic> objects, String template, xml.XmlElement element}) {
     _objects = objects;
     if (template != this.template) {
       this.template = template;

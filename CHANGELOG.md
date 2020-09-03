@@ -21,3 +21,16 @@
 * New example
 
 ## [0.2.3] - Added XmlLayoutBuilder
+
+## [0.2.4] - 
+
+* Element build first
+
+## [0.2.5] - 
+
+* Trim xml node body text
+
+## [0.2.5] - 
+
+* Add support for MaterialButton
+* Add support for Function

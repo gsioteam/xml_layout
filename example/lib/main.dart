@@ -145,6 +145,9 @@ class _GridExample extends StatelessWidget {
                     "https://homepages.cae.wisc.edu/~ece533/images/arctichare.png",
                     "https://homepages.cae.wisc.edu/~ece533/images/airplane.png"
                   ]
+                },
+                "print": (List args) {
+                  print("click ${args.first}");
                 }
               },
             );
@@ -155,7 +158,7 @@ class _GridExample extends StatelessWidget {
 }
 
 class _BuilderExample extends StatelessWidget {
-  XmlLayoutBuilder _builder = XmlLayoutBuilder();
+  final XmlLayoutBuilder _builder = XmlLayoutBuilder();
 
   @override
   Widget build(BuildContext context) {
@@ -163,19 +166,15 @@ class _BuilderExample extends StatelessWidget {
         future: _loadLayout("assets/grid.xml"),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return _builder.build(
-                context,
-                template: snapshot.data,
-                objects: {
-                  "map": {
-                    "pictures": [
-                      "https://homepages.cae.wisc.edu/~ece533/images/baboon.png",
-                      "https://homepages.cae.wisc.edu/~ece533/images/arctichare.png",
-                      "https://homepages.cae.wisc.edu/~ece533/images/airplane.png"
-                    ]
-                  }
-                }
-            );
+            return _builder.build(context, template: snapshot.data, objects: {
+              "map": {
+                "pictures": [
+                  "https://homepages.cae.wisc.edu/~ece533/images/baboon.png",
+                  "https://homepages.cae.wisc.edu/~ece533/images/arctichare.png",
+                  "https://homepages.cae.wisc.edu/~ece533/images/airplane.png"
+                ]
+              }
+            });
           }
           return Container();
         });
