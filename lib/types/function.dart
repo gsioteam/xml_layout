@@ -4,15 +4,33 @@ import '../register.dart';
 
 class ArgsCountError extends Error {}
 
-class Call {
-  dynamic Function(List) func;
+abstract class Action {
   String ret;
   List<Argument> args;
 
-  Call({this.func, this.ret, this.args});
+  Action({this.ret, this.args});
+  dynamic call(NodeData node);
+}
 
-  dynamic call() {
+class Call extends Action {
+  dynamic Function(List) func;
+
+  Call({this.func, String ret, List<Argument> args})
+      : super(ret: ret, args: args);
+
+  dynamic call(NodeData node) {
     return func?.call(args?.map((e) => e.value)?.toList() ?? []);
+  }
+}
+
+class Apply extends Action {
+  String name;
+
+  Apply({this.name, String ret, List<Argument> args})
+      : super(ret: ret, args: args);
+
+  dynamic call(NodeData node) {
+    return node.apply(name, args?.map((e) => e.value)?.toList() ?? []);
   }
 }
 
@@ -23,22 +41,16 @@ class Argument {
 
 Register reg = Register(() {
   XmlLayout.reg("Function", (node, key) {
-    int count = node.s<int>("argsCount", 0);
-    if (count < 0 || count > 5) {
-      throw ArgsCountError();
-    }
     return ([a1, a2, a3, a4, a5]) {
       Map<String, dynamic> data = {
         "args": [a1, a2, a3, a4, a5]
       };
       NodeData newNode = node.clone(data);
-      var children = newNode.children();
+      var children = newNode.children<Action>();
       dynamic ret;
       children.forEach((element) {
-        if (element is Call) {
-          ret = element.call();
-          if (element.ret != null) data[element.ret] = ret;
-        }
+        ret = element.call(node);
+        if (element.ret != null) data[element.ret] = ret;
       });
       return ret;
     };
@@ -47,6 +59,13 @@ Register reg = Register(() {
   XmlLayout.reg(Call, (node, key) {
     return Call(
         func: node.s<void Function(List)>("function"),
+        ret: node.s<String>("return"),
+        args: node.children<Argument>());
+  });
+
+  XmlLayout.reg(Apply, (node, key) {
+    return Apply(
+        name: node.s<String>("name"),
         ret: node.s<String>("return"),
         args: node.children<Argument>());
   });

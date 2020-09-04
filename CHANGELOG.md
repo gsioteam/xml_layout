@@ -42,3 +42,7 @@
 ## [0.2.7] -
 
 * Add support for `proxy` and `builder` tag
+
+## [0.2.8] -
+
+* Added a new Apply action

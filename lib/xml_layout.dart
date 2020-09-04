@@ -12,6 +12,7 @@ import 'exceptions.dart';
 typedef ItemConstructor = dynamic Function(NodeData node, Key key);
 typedef MethodConstructor = dynamic Function();
 typedef _NodeTester = bool Function(NodeData);
+typedef ApplyFunction = dynamic Function(List args);
 
 mixin _NodeControl {
   Map<String, GlobalKey> _keys = Map();
@@ -26,6 +27,7 @@ mixin _NodeControl {
   }
 
   Map<String, dynamic> get objects;
+  Map<String, ApplyFunction> get functions;
 }
 
 class _StopControl {
@@ -515,6 +517,12 @@ class NodeData {
     }
     return null;
   }
+
+  dynamic apply(String name, List args) {
+    ApplyFunction func =
+        control.functions == null ? null : control.functions[name];
+    return func?.call(args);
+  }
 }
 
 class _ItemInfo {
@@ -532,18 +540,17 @@ class XmlLayout extends StatefulWidget {
   final xml.XmlElement element;
   final String template;
   final Map<String, dynamic> objects;
+  final Map<String, ApplyFunction> functions;
 
-  XmlLayout({Key key, @required this.template, this.objects})
+  XmlLayout({Key key, @required this.template, this.objects, this.functions})
       : element = null,
         super(key: key) {
     assert(template != null);
   }
 
-  XmlLayout.element({
-    Key key,
-    @required this.element,
-    this.objects,
-  })  : template = null,
+  XmlLayout.element(
+      {Key key, @required this.element, this.objects, this.functions})
+      : template = null,
         super(key: key) {
     assert(element != null);
   }
@@ -611,6 +618,8 @@ class XmlLayoutState extends State<XmlLayout> with _NodeControl {
 
   @override
   Map<String, dynamic> get objects => widget.objects;
+  @override
+  Map<String, ApplyFunction> get functions => widget.functions;
 }
 
 class XmlLayoutBuilder with _NodeControl {
@@ -619,10 +628,15 @@ class XmlLayoutBuilder with _NodeControl {
   String template;
   xml.XmlElement element;
   Map<String, dynamic> _objects;
+  Map<String, ApplyFunction> _functions;
 
   Widget build(BuildContext context,
-      {Map<String, dynamic> objects, String template, xml.XmlElement element}) {
+      {Map<String, dynamic> objects,
+      String template,
+      xml.XmlElement element,
+      Map<String, ApplyFunction> functions}) {
     _objects = objects;
+    _functions = functions;
     if (template != this.template) {
       this.template = template;
       _data = null;
@@ -655,4 +669,7 @@ class XmlLayoutBuilder with _NodeControl {
 
   @override
   Map<String, dynamic> get objects => _objects;
+
+  @override
+  Map<String, ApplyFunction> get functions => _functions;
 }
