@@ -1033,17 +1033,24 @@ Register reg = Register(() {
         MethodNode a;
         if ((a = node.splitMethod("all", 1)) != null) {
           return BorderRadius.all(node.v<Radius>(a[0]));
+        } else if ((a = node.splitMethod("only", 1)) != null) {
+          return BorderRadius.only(
+            topLeft: node.v<Radius>(a[0], Radius.zero),
+            topRight: node.v<Radius>(a[1], Radius.zero),
+            bottomLeft: node.v<Radius>(a[2], Radius.zero),
+            bottomRight: node.v<Radius>(a[3], Radius.zero),
+          );
         } else if ((a = node.splitMethod("circular", 1)) != null) {
           return BorderRadius.circular(double.tryParse(a[0]));
         } else if ((a = node.splitMethod("vertical", 2)) != null) {
           return BorderRadius.vertical(
-              top: node.v<Radius>(a[0]),
-              bottom: node.v<Radius>(a[1])
+              top: node.v<Radius>(a[0], Radius.zero),
+              bottom: node.v<Radius>(a[1], Radius.zero)
           );
-        } else if ((a = node.splitMethod("vertical", 2)) != null) {
+        } else if ((a = node.splitMethod("horizontal", 2)) != null) {
           return BorderRadius.horizontal(
-              left: node.v<Radius>(a[0]),
-              right: node.v<Radius>(a[1])
+              left: node.v<Radius>(a[0], Radius.zero),
+              right: node.v<Radius>(a[1], Radius.zero)
           );
         } else {
           return null;

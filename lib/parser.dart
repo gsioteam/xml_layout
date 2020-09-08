@@ -66,6 +66,7 @@ class MethodNode {
           method.arguments.add(param.substring(off, i).trim());
           off = i + 1;
         });
+        method.arguments.add(param.substring(off).trim());
       } else if (param.isNotEmpty) {
         method.arguments.add(param);
       }

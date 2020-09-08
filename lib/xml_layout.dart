@@ -505,12 +505,12 @@ class NodeData {
     return this[name]?.t<T>() ?? def;
   }
 
-  T v<T>(String txt) {
+  T v<T>(String txt, [T def]) {
     _ItemInfo info = XmlLayout._constructors[T];
     if (info.mode & XmlLayout.Text > 0) {
-      return info.constructor(NodeData(xml.XmlText(txt), control, this), null);
+      return info.constructor(NodeData(xml.XmlText(txt), control, this), null) ?? def;
     }
-    return null;
+    return def;
   }
 
   MethodNode _arguments;
@@ -522,7 +522,7 @@ class NodeData {
         _arguments = MethodNode.parse(text);
         _argvInit = true;
       }
-      if (_arguments.name == name && _arguments.length == count)
+      if (_arguments != null && _arguments.name == name && _arguments.length == count)
         return _arguments;
     }
     return null;
