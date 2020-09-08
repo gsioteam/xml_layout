@@ -124,7 +124,15 @@ class _IfControlData extends _FlowControlData {
     stop ??= _StopControl();
     if (!stop.isStop) {
       if (candidate != null) {
-        bool cand = candidate.t<bool>();
+        bool cand;
+        MethodNode a;
+        if ((a = candidate.splitMethod("isEmpty", 1)) != null) {
+          cand = a[0].isEmpty;
+        } else if ((a = candidate.splitMethod("isNotEmpty", 1)) != null) {
+          cand = a[0].isNotEmpty;
+        } else {
+          cand = candidate.boolean;
+        }
         if (cand) {
           if (tester != null) {
             bool isStop = tester(temp);
@@ -342,7 +350,7 @@ class NodeData {
   String get text => _processText(raw);
   int get integer => int.tryParse(text);
   double get real => double.tryParse(text);
-  bool get boolean => text == "true" ? true : false;
+  bool get boolean => text == "true";
 
   bool get isAttribute => node is xml.XmlAttribute;
   bool get isElement => node is xml.XmlElement;
@@ -511,9 +519,11 @@ class NodeData {
   MethodNode splitMethod(String name, int count) {
     if (!isElement) {
       if (!_argvInit) {
-        _arguments = MethodNode.parse(node.text);
+        _arguments = MethodNode.parse(text);
+        _argvInit = true;
       }
-      return _arguments;
+      if (_arguments.name == name && _arguments.length == count)
+        return _arguments;
     }
     return null;
   }

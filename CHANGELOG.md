@@ -46,3 +46,15 @@
 ## [0.2.8] -
 
 * Added a new Apply action
+
+## [0.2.11] -
+
+* Added `Listener`, `SliverGrid`
+
+## [0.2.13] -
+
+* Fixed bug
+
+## [0.2.14] -
+
+* Added `BoxDecoration`

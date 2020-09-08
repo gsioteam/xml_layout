@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'dart:math' as math;
 
 import '../parser.dart';
 import '../xml_layout.dart';
@@ -1001,4 +1002,94 @@ Register reg = Register(() {
         return null;
     }
   }, mode: XmlLayout.Text);
+  XmlLayout.reg(BoxDecoration, (node, key) {
+    return BoxDecoration(
+      color: node.s<Color>("color"),
+      image: node.s<DecorationImage>("image"),
+      border: node.s<BoxBorder>("border"),
+      borderRadius: node.s<BorderRadiusGeometry>("borderRadius"),
+      boxShadow: node.arr<BoxShadow>("boxShadow"),
+      gradient: node.s<Gradient>("gradient"),
+      backgroundBlendMode: node.s<BlendMode>("backgroundBlendMode"),
+      shape: node.s<BoxShape>("shape", BoxShape.rectangle),
+    );
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(DecorationImage, (node, key) {
+    return DecorationImage(
+      image: node.s<ImageProvider>("image"),
+      onError: node.s<ImageErrorListener>("onError"),
+      colorFilter: node.s<ColorFilter>("colorFilter"),
+      fit: node.s<BoxFit>("fit"),
+      alignment: node.s<AlignmentGeometry>("alignment", Alignment.center),
+      centerSlice: node.s<Rect>("centerSlice"),
+      repeat: node.s<ImageRepeat>("repeat", ImageRepeat.noRepeat),
+      matchTextDirection: node.s<bool>("matchTextDirection", false),
+    );
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(BorderRadiusGeometry, (node, key) {
+    switch (node.text) {
+      case 'zero': return BorderRadius.zero;
+      default: {
+        MethodNode a;
+        if ((a = node.splitMethod("all", 1)) != null) {
+          return BorderRadius.all(node.v<Radius>(a[0]));
+        } else if ((a = node.splitMethod("circular", 1)) != null) {
+          return BorderRadius.circular(double.tryParse(a[0]));
+        } else if ((a = node.splitMethod("vertical", 2)) != null) {
+          return BorderRadius.vertical(
+              top: node.v<Radius>(a[0]),
+              bottom: node.v<Radius>(a[1])
+          );
+        } else if ((a = node.splitMethod("vertical", 2)) != null) {
+          return BorderRadius.horizontal(
+              left: node.v<Radius>(a[0]),
+              right: node.v<Radius>(a[1])
+          );
+        } else {
+          return null;
+        }
+      }
+    }
+  }, mode: XmlLayout.Text);
+  XmlLayout.reg(BoxShadow, (node, key) {
+    return BoxShadow(
+      color: node.s<Color>("color", const Color(0xFF000000)),
+      offset: node.s<Offset>("offset", Offset.zero),
+      blurRadius: node.s<double>("blurRadius", 0),
+      spreadRadius: node.s<double>("spreadRadius", 0)
+    );
+  });
+  XmlLayout.reg(LinearGradient, (node, key) {
+    return LinearGradient(
+      begin: node.s<Alignment>("begin", Alignment.centerLeft),
+      end: node.s<Alignment>("end", Alignment.centerRight),
+      colors: node.arr<Color>("colors"),
+      stops: node.arr<double>("stops"),
+      tileMode: node.s<TileMode>("tileMode", TileMode.clamp),
+      transform: node.s<GradientTransform>("transform"),
+    );
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(RadialGradient, (node, key) {
+    return RadialGradient(
+      center: node.s<AlignmentGeometry>("center", Alignment.center),
+      radius: node.s<double>("radius", 0.5),
+      colors: node.arr<Color>("colors"),
+      stops: node.arr<double>("stops"),
+      tileMode: node.s<TileMode>("tileMode", TileMode.clamp),
+      focal: node.s<AlignmentGeometry>("focal"),
+      focalRadius: node.s<double>("focalRadius"),
+    );
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg(SweepGradient, (node, key) {
+    return SweepGradient(
+      center: node.s<AlignmentGeometry>("center", Alignment.center),
+      startAngle: node.s<double>("startAngle", 0),
+      endAngle: node.s<double>("endAngle", math.pi * 2),
+      colors: node.arr<Color>("colors"),
+      stops: node.arr<double>("stops"),
+      tileMode: node.s<TileMode>("tileMode", TileMode.clamp),
+      transform: node.s<GradientTransform>("transform"),
+    );
+  }, mode: XmlLayout.Element);
+  XmlLayout.regEnum(BoxShape.values);
 });

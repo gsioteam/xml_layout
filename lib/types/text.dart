@@ -151,7 +151,7 @@ Register reg = Register(() {
   XmlLayout.reg(WidgetSpan, (node, key) {
     return WidgetSpan(
         child: node.child<Widget>(),
-        alignment: node.s<PlaceholderAlignment>("alignment"),
+        alignment: node.s<PlaceholderAlignment>("alignment", PlaceholderAlignment.bottom),
         baseline: node.s<TextBaseline>("baseline"),
         style: node.s<TextStyle>("style"));
   }, mode: XmlLayout.Element);

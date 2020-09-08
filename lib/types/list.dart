@@ -221,4 +221,22 @@ Register reg = Register(() {
       children: node.children<Widget>(),
     );
   });
+
+  XmlLayout.reg(SliverGrid, (node, key) {
+    return SliverGrid(
+      key: key,
+      delegate: node.s<SliverChildDelegate>("delegate"),
+      gridDelegate: node.s<SliverGridDelegate>("gridDelegate"),
+    );
+  }, mode: XmlLayout.Element);
+  XmlLayout.reg("SliverGrid.count", (node, key) {
+    return SliverGrid.count(
+      key: key,
+      crossAxisCount: node.s<int>("crossAxisCount"),
+      mainAxisSpacing: node.s<double>("mainAxisSpacing", 0),
+      crossAxisSpacing: node.s<double>("crossAxisSpacing", 0),
+      childAspectRatio: node.s<double>("childAspectRatio", 1),
+      children: node.children<Widget>()
+    );
+  });
 });

@@ -15,6 +15,7 @@ Register reg = Register(() {
   text.reg();
 
   XmlLayout.reg(Scaffold, (node, key) {
+    var buttons = node.arr<Widget>("persistentFooterButtons");
     return Scaffold(
       key: key,
       appBar: node.s<PreferredSizeWidget>("appBar"),
@@ -24,7 +25,7 @@ Register reg = Register(() {
           node.s<FloatingActionButtonLocation>("floatingActionButtonLocation"),
       floatingActionButtonAnimator:
           node.s<FloatingActionButtonAnimator>("floatingActionButtonAnimator"),
-      persistentFooterButtons: node.arr<Widget>("persistentFooterButtons"),
+      persistentFooterButtons: buttons.isEmpty ? null : buttons,
       drawer: node.s<Widget>("drawer"),
       endDrawer: node.s<Widget>("endDrawer"),
       bottomNavigationBar: node.s<Widget>("bottomNavigationBar"),
