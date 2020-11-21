@@ -112,6 +112,8 @@ icons.register();
 
 lib/test.dart
 ```dart
+import 'package:flutter/material.dart';
+
 const List<Type> types = [
   Text,
 ];
