@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:xml/xml.dart' as xml;
 import 'parser.dart';
 import 'exceptions.dart';
+import 'types/function.dart' as function;
+import 'types/proxy.dart' as proxy;
 
 typedef ItemConstructor = dynamic Function(NodeData node, Key key);
 typedef MethodConstructor = dynamic Function();
@@ -28,6 +30,8 @@ mixin _NodeControl {
 
   Map<String, dynamic> get objects;
   ApplyFunction get apply;
+
+  ItemConstructor onUnkown;
 }
 
 class _StopControl {
@@ -207,6 +211,19 @@ class NodeData {
           NodeData(el ?? text ?? xml.XmlText(""), control, this).._flow = flow);
     } else if (element.name.prefix == null) {
       _children.add(NodeData(element, control, this).._flow = flow);
+    } else if (element.name.prefix == "arg") {
+      xml.XmlElement el;
+      xml.XmlText text;
+      for (xml.XmlNode node in element.children) {
+        if (el == null && node is xml.XmlElement) {
+          el = node;
+        } else if (text == null && node is xml.XmlText) {
+          text = node;
+        }
+      }
+
+      _setNode(element.name.toString(),
+          NodeData(el ?? text ?? xml.XmlText(""), control, this).._flow = flow);
     }
   }
 
@@ -298,7 +315,7 @@ class NodeData {
       xml.XmlElement element = this.node as xml.XmlElement;
       _ItemInfo info =
           XmlLayout._constructors[element.name.toString().toLowerCase()];
-      if (info != null && info.mode & XmlLayout.Element != 0) {
+      if (info != null) {
         return info.constructor(this, _getKey());
       }
     }
@@ -361,14 +378,19 @@ class NodeData {
     _processChild();
     if (_children != null) {
       T res;
-      _firstChild(_children, (node) {
-        dynamic obj = node.element();
-        if (obj is T) {
-          res = obj;
-          return true;
-        } else
-          return false;
-      });
+      String text;
+      if (_children.isEmpty && (text = this.text).isNotEmpty) {
+        res = v<T>(text);
+      } else {
+        _firstChild(_children, (node) {
+          dynamic obj = node.element();
+          if (obj is T) {
+            res = obj;
+            return true;
+          } else
+            return false;
+        });
+      }
       return res;
     }
     return null;
@@ -380,10 +402,15 @@ class NodeData {
     return _children == null ? [] : _convertListTo<T>(_children);
   }
 
-  List<T> arr<T>(String name) {
-    List<NodeData> attr = _attributes[name.toLowerCase()];
-
-    return attr == null ? [] : _convertListTo<T>(attr);
+  List<T> array<T>(String name) {
+    List<NodeData> attrs = _attributes[name.toLowerCase()];
+    var attr = attrs?.first;
+    if (attr == null) return null;
+    else if (attr.isElement) {
+      return _convertListTo<T>(attrs);
+    } else {
+      return attr.t<List<T>>();
+    }
   }
 
   dynamic _get(String path) {
@@ -478,40 +505,28 @@ class NodeData {
             if (obj is T)
               return obj;
             else
-              return null;
+              return control.onUnkown?.call(this, _getKey());
           }
           _ItemInfo info = XmlLayout._constructors[T];
           if (info == null) {
-            dynamic obj = element();
-            if (obj is T)
-              return obj;
-            else
-              return null;
+            return control.onUnkown?.call(this, _getKey());
           } else {
-            bool check = false;
-            check |= info.mode & XmlLayout.Element > 0 && isElement;
-            check |= info.mode & XmlLayout.Text > 0 && !isElement;
-            dynamic obj;
-            if (check) {
-              obj = info.constructor(this, _getKey());
-            }
+            dynamic obj = info.constructor(this, _getKey());
             return obj;
           }
         }
     }
   }
+  T convert<T>() => t<T>();
 
-  T s<T>(String name, [T def]) {
-    return this[name]?.t<T>() ?? def;
-  }
+  T s<T>(String name, [T def]) => this[name]?.t<T>() ?? def;
+  T attribute<T>(String attributeName, [T defaultValue]) => s<T>(name, defaultValue);
 
   T v<T>(String txt, [T def]) {
     _ItemInfo info = XmlLayout._constructors[T];
-    if (info.mode & XmlLayout.Text > 0) {
-      return info.constructor(NodeData(xml.XmlText(txt), control, this), null) ?? def;
-    }
-    return def;
+    return info.constructor(NodeData(xml.XmlText(txt), control, this), null) ?? def;
   }
+  T value<T>(String value, [T defaultValue]) => v<T>(value, defaultValue);
 
   MethodNode _arguments;
   bool _argvInit = false;
@@ -533,63 +548,172 @@ class NodeData {
   }
 }
 
-class _ItemInfo {
-  ItemConstructor constructor;
-  int mode;
+abstract class _ItemInfo {
+  _ItemInfo();
 
-  _ItemInfo(this.constructor, this.mode);
+  dynamic constructor(NodeData node, Key key);
+}
+
+class _ConstructorItemInfo extends _ItemInfo {
+  ItemConstructor _constructor;
+
+  _ConstructorItemInfo(this._constructor);
+
+  @override
+  constructor(NodeData node, Key key) {
+    return _constructor(node, key);
+  }
+}
+
+typedef InlineItemConstructor = Function(NodeData node, MethodNode method);
+
+class _InlineItemData {
+  String name;
+  bool field;
+
+  InlineItemConstructor constructor;
+}
+
+class _InlineItemInfo extends _ItemInfo {
+
+  List<_InlineItemData> dataList = [];
+
+  _InlineItemData _find(String name, bool field) {
+    for (var data in dataList) {
+      if (data.name == name && data.field == field) {
+        return data;
+      }
+    }
+  }
+
+  @override
+  constructor(NodeData node, Key key) {
+    if (node.text.contains('(')) {
+      var method = MethodNode.parse(node.text);
+      return _find(method.name, false)?.constructor?.call(node, method);
+    } else {
+      return _find(node.text, true)?.constructor?.call(node, null);
+    }
+  }
 }
 
 class XmlLayout extends StatefulWidget {
   static Map<dynamic, _ItemInfo> _constructors = Map();
 
-  static const Element = 1, Text = 2;
-
   final xml.XmlElement element;
   final String template;
   final Map<String, dynamic> objects;
   final ApplyFunction apply;
+  final ItemConstructor onUnkownElement;
 
-  XmlLayout({Key key, @required this.template, this.objects, this.apply})
+  static bool _initialized = false;
+
+  /**
+   * Constructs a XmlLayout widget
+   *
+   * [template] is the xml string to build widget.
+   * [objects] parameters will be pass to builder.
+   * [apply] handle the invoke from XmlLayout widget.
+   * [onUnkownElement] handle unkown element
+   *
+   * Example:
+   *
+   * ```dart
+   * XmlLayout(
+   *   template: "<Text>$counter</Text>",
+   *   objects: {"counter": _counter},
+   * );
+   * ```
+   *
+   */
+  XmlLayout(
+      {Key key, @required this.template, this.objects, this.apply, this.onUnkownElement})
       : element = null,
         super(key: key) {
     assert(template != null);
+    _initialize();
   }
 
+  /**
+   * Constructs a XmlLayout widget
+   *
+   * use a [XmlElement] to constructs a widget.
+   */
   XmlLayout.element(
-      {Key key, @required this.element, this.objects, this.apply})
+      {Key key, @required this.element, this.objects, this.apply, this.onUnkownElement})
       : template = null,
         super(key: key) {
     assert(element != null);
+    _initialize();
+  }
+
+  static void _initialize() {
+    if (!_initialized) {
+      function.register();
+      proxy.register();
+      _initialized = true;
+    }
   }
 
   @override
-  State<StatefulWidget> createState() => XmlLayoutState();
+  State<StatefulWidget> createState() => XmlLayoutState()..onUnkown = onUnkownElement;
 
-  static void reg(dynamic nameOrType, ItemConstructor constructor,
-      {int mode = Element | Text}) {
-    assert(mode != null);
-    if (nameOrType is String) mode = Element;
-    dynamic info = _ItemInfo(constructor, mode);
-    if (nameOrType is Type) {
-      _constructors[nameOrType] = info;
-      nameOrType = nameOrType.toString();
-    }
-    _constructors[nameOrType.toLowerCase()] = info;
+  /**
+   * Register a constructor method, which is used to convert
+   * xml tag to a dart Object
+   */
+  static void register(String name, ItemConstructor constructor) {
+    _constructors[name.toLowerCase()] = _ConstructorItemInfo(constructor);
   }
 
-  static void regEnum<T>(List<T> values) {
+  /**
+   * Shortcat to register a enum type.
+   *
+   * Example:
+   *
+   * ```dart
+   * XmlLayout.registerEnum(Brightness.values);
+   * ```
+   */
+  static void registerEnum<T>(List<T> values) {
     Map<String, T> map = Map();
     values.forEach((element) {
       map[element.toString().split(".").last] = element;
     });
-    reg(T, (node, _) {
+    _constructors[T] = _ConstructorItemInfo((node, _) {
       String name = node.text;
       return map[name];
-    }, mode: Text);
+    });
+  }
+
+  /**
+   * Register a constructor method, which is used to convert
+   * a attribute data to a Object.
+   */
+  static void registerInline(Type type, String name, bool field, InlineItemConstructor constructor) {
+    var item = _constructors[type];
+    if (item == null) {
+      _constructors[type] = item = _InlineItemInfo();
+    }
+    if (item is _InlineItemInfo) {
+      item.dataList.add(_InlineItemData()
+          ..name = name
+          ..field = field
+          ..constructor = constructor
+      );
+    } else {
+      throw "Target is not a inline item";
+    }
   }
 }
 
+/**
+ *
+ * If a element has a [id] attribute, you can use
+ * [find] method to get the [GlobalKey] of built widget
+ * by the id string.
+ *
+ */
 class XmlLayoutState extends State<XmlLayout> with _NodeControl {
   NodeData _data;
 
@@ -642,7 +766,10 @@ class XmlLayoutBuilder with _NodeControl {
       {Map<String, dynamic> objects,
       String template,
       xml.XmlElement element,
+      ItemConstructor onUnkownElement,
       ApplyFunction apply}) {
+    XmlLayout._initialize();
+    onUnkown = onUnkownElement;
     _objects = objects;
     _apply = apply;
     if (template != this.template) {

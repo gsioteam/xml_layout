@@ -2,10 +2,9 @@ import '../xml_layout.dart';
 import 'function.dart' as function;
 import '../register.dart';
 
-Register reg = Register(() {
-  function.reg();
+Register register = Register(() {
 
-  XmlLayout.reg("builder", (node, key) {
+  XmlLayout.register("builder", (node, key) {
     var builder = node.s<dynamic Function(List)>("builder");
     if (builder != null) {
       var args = node.children<function.Argument>();
@@ -13,7 +12,7 @@ Register reg = Register(() {
     }
     return null;
   });
-  XmlLayout.reg("proxy", (node, key) {
+  XmlLayout.register("proxy", (node, key) {
     return node.s("target");
   });
 });

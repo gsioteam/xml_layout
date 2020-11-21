@@ -1,11 +1,12 @@
 <Column mainAxisAlignment="center">
     <for count="6">
-        <Text text="$item, You have pushed the button this many times:"/>
+        <Text>$item, You have pushed the button this many times:</Text>
     </for>
-    <Text text="$counter" id="text-id">
+    <Text id="text-id">
         <attr:style>
             <TextStyle color="red"/>
         </attr:style>
+        <arg:0>$counter</arg:0>
     </Text>
-    <Icon icon="airport_shuttle" color="blue"/>
+    <Icon color="blue">airport_shuttle</Icon>
 </Column>

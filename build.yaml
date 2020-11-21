@@ -1,0 +1,15 @@
+builders:
+  xml_layout:
+    import: "package:xml_layout/builder/builder.dart"
+    builder_factories: ["builderFactory"]
+    build_extensions: {".dart": [".xml_layout.dart"]}
+    auto_apply: dependents
+    build_to: source
+    defaults:
+      generate_for:
+        - lib/xml_config.dart
+      options:
+        entry_name: types
+        collections_name: collections
+        coverts_name: converts
+        imports_name: imports

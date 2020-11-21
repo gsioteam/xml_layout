@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:xml_layout/xml_layout.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:xml_layout/types/all.dart' as all_type;
+import 'test.xml_layout.dart' as xml_layout;
+import 'package:xml_layout/types/colors.dart' as colors;
+import 'package:xml_layout/types/icons.dart' as icons;
 
 void main() {
+  colors.register();
+  icons.register();
+  xml_layout.register();
   runApp(MyApp());
 }
 
@@ -11,7 +16,6 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    all_type.reg();
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -115,6 +119,9 @@ class _LayoutExampleState extends State<_LayoutExample> {
                 return XmlLayout(
                   template: snapshot.data,
                   objects: {"counter": _counter},
+                  onUnkownElement: (node, key) {
+                    print("Unkown ${node.name ?? node.text}");
+                  },
                 );
               }
               return Container();
@@ -149,6 +156,9 @@ class _GridExample extends StatelessWidget {
                 "print": (List args) {
                   print("click ${args.first}");
                 }
+              },
+              onUnkownElement: (node, key) {
+                print("Unkown ${node.name ?? node.text}");
               },
             );
           }

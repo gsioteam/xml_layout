@@ -18,7 +18,7 @@
                                 </Call>
                             </Function>
                         </attr:onPressed>
-                        <Image image="$item"/>
+                        <Image.network>$item</Image.network>
                     </MaterialButton>
                 </Container>
             </for>

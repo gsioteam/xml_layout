@@ -2,153 +2,161 @@ import 'package:flutter/material.dart';
 import '../xml_layout.dart';
 import '../register.dart';
 
-Color _colorGenerator(node, key) {
-  String text = node.text;
-  switch (text) {
-    case 'transparent':
-      return Colors.transparent;
-    case 'black':
-      return Colors.black;
-    case 'black87':
-      return Colors.black87;
-    case 'black54':
-      return Colors.black54;
-    case 'black45':
-      return Colors.black45;
-    case 'black38':
-      return Colors.black38;
-    case 'black26':
-      return Colors.black26;
-    case 'black12':
-      return Colors.black12;
-    case 'white':
-      return Colors.white;
-    case 'white70':
-      return Colors.white70;
-    case 'white60':
-      return Colors.white60;
-    case 'white54':
-      return Colors.white54;
-    case 'white38':
-      return Colors.white38;
-    case 'white30':
-      return Colors.white30;
-    case 'white24':
-      return Colors.white24;
-    case 'white12':
-      return Colors.white12;
-    case 'white10':
-      return Colors.white10;
-    case 'red':
-      return Colors.red;
-    case 'redAccent':
-      return Colors.redAccent;
-    case 'pink':
-      return Colors.pink;
-    case 'pinkAccent':
-      return Colors.pinkAccent;
-    case 'purple':
-      return Colors.purple;
-    case 'purpleAccent':
-      return Colors.purpleAccent;
-    case 'deepPurple':
-      return Colors.deepPurple;
-    case 'deepPurpleAccent':
-      return Colors.deepPurpleAccent;
-    case 'indigo':
-      return Colors.indigo;
-    case 'indigoAccent':
-      return Colors.indigoAccent;
-    case 'blue':
-      return Colors.blue;
-    case 'blueAccent':
-      return Colors.blueAccent;
-    case 'lightBlue':
-      return Colors.lightBlue;
-    case 'lightBlueAccent':
-      return Colors.lightBlueAccent;
-    case 'cyan':
-      return Colors.cyan;
-    case 'cyanAccent':
-      return Colors.cyanAccent;
-    case 'teal':
-      return Colors.teal;
-    case 'tealAccent':
-      return Colors.tealAccent;
-    case 'green':
-      return Colors.green;
-    case 'greenAccent':
-      return Colors.greenAccent;
-    case 'lightGreen':
-      return Colors.lightGreen;
-    case 'lightGreenAccent':
-      return Colors.lightGreenAccent;
-    case 'lime':
-      return Colors.lime;
-    case 'limeAccent':
-      return Colors.limeAccent;
-    case 'yellow':
-      return Colors.yellow;
-    case 'yellowAccent':
-      return Colors.yellowAccent;
-    case 'amber':
-      return Colors.amber;
-    case 'amberAccent':
-      return Colors.amberAccent;
-    case 'orange':
-      return Colors.orange;
-    case 'orangeAccent':
-      return Colors.orangeAccent;
-    case 'deepOrange':
-      return Colors.deepOrange;
-    case 'deepOrangeAccent':
-      return Colors.deepOrangeAccent;
-    case 'brown':
-      return Colors.brown;
-    case 'grey':
-      return Colors.grey;
-    case 'blueGrey':
-      return Colors.blueGrey;
-    default:
-      {
-        if (text.startsWith("0x") || text.startsWith("0X")) {
-          return Color(int.tryParse(text.substring(2), radix: 16));
-        }
-        if (text.startsWith('#')) {
-          return Color(int.tryParse(text.substring(1), radix: 16));
-        } else {
-          var matches;
-          if ((matches = RegExp(r"(\w+)\[(\d+)\]$").allMatches(text)).length >
-              0) {
-            RegExpMatch match = matches.first;
-            Color color = _colorGenerator(match.group(1), key);
-            if (color is MaterialColor)
-              return color[int.tryParse(match.group(2))];
-          } else if ((matches = RegExp(r"^rgb\(([^\)]+)\)$").allMatches(text))
-                  .length >
-              0) {
-            RegExpMatch match = matches.first;
-            var arr = match.group(1).split(",");
-            if (arr.length == 3) {
-              return Color.fromRGBO(int.tryParse(arr[0]), int.tryParse(arr[1]),
-                  int.tryParse(arr[2]), 1);
-            }
-          } else if ((matches = RegExp(r"^rgba\(([^\)]+)\)$").allMatches(text))
-                  .length >
-              0) {
-            RegExpMatch match = matches.first;
-            var arr = match.group(1).split(",");
-            if (arr.length == 4) {
-              return Color.fromRGBO(int.tryParse(arr[0]), int.tryParse(arr[1]),
-                  int.tryParse(arr[2]), double.tryParse(arr[3]));
-            }
-          }
-        }
-        return null;
-      }
-  }
-}
-
-Register reg = Register(() {
-  XmlLayout.reg(Color, _colorGenerator);
+Register register = Register(() {
+  XmlLayout.registerInline(Color, "transparent", true, (node, method) {
+    return Colors.transparent;
+  });
+  XmlLayout.registerInline(Color, "black", true, (node, method) {
+    return Colors.black;
+  });
+  XmlLayout.registerInline(Color, "black87", true, (node, method) {
+    return Colors.black87;
+  });
+  XmlLayout.registerInline(Color, "black54", true, (node, method) {
+    return Colors.black54;
+  });
+  XmlLayout.registerInline(Color, "black45", true, (node, method) {
+    return Colors.black45;
+  });
+  XmlLayout.registerInline(Color, "black38", true, (node, method) {
+    return Colors.black38;
+  });
+  XmlLayout.registerInline(Color, "black26", true, (node, method) {
+    return Colors.black26;
+  });
+  XmlLayout.registerInline(Color, "black12", true, (node, method) {
+    return Colors.black12;
+  });
+  XmlLayout.registerInline(Color, "white", true, (node, method) {
+    return Colors.white;
+  });
+  XmlLayout.registerInline(Color, "white70", true, (node, method) {
+    return Colors.white70;
+  });
+  XmlLayout.registerInline(Color, "white60", true, (node, method) {
+    return Colors.white60;
+  });
+  XmlLayout.registerInline(Color, "white54", true, (node, method) {
+    return Colors.white54;
+  });
+  XmlLayout.registerInline(Color, "white38", true, (node, method) {
+    return Colors.white38;
+  });
+  XmlLayout.registerInline(Color, "white30", true, (node, method) {
+    return Colors.white30;
+  });
+  XmlLayout.registerInline(Color, "white24", true, (node, method) {
+    return Colors.white24;
+  });
+  XmlLayout.registerInline(Color, "white12", true, (node, method) {
+    return Colors.white12;
+  });
+  XmlLayout.registerInline(Color, "white10", true, (node, method) {
+    return Colors.white10;
+  });
+  XmlLayout.registerInline(Color, "red", true, (node, method) {
+    return Colors.red;
+  });
+  XmlLayout.registerInline(Color, "redAccent", true, (node, method) {
+    return Colors.redAccent;
+  });
+  XmlLayout.registerInline(Color, "pink", true, (node, method) {
+    return Colors.pink;
+  });
+  XmlLayout.registerInline(Color, "pinkAccent", true, (node, method) {
+    return Colors.pinkAccent;
+  });
+  XmlLayout.registerInline(Color, "purple", true, (node, method) {
+    return Colors.purple;
+  });
+  XmlLayout.registerInline(Color, "purpleAccent", true, (node, method) {
+    return Colors.purpleAccent;
+  });
+  XmlLayout.registerInline(Color, "deepPurple", true, (node, method) {
+    return Colors.deepPurple;
+  });
+  XmlLayout.registerInline(Color, "deepPurpleAccent", true, (node, method) {
+    return Colors.deepPurpleAccent;
+  });
+  XmlLayout.registerInline(Color, "indigo", true, (node, method) {
+    return Colors.indigo;
+  });
+  XmlLayout.registerInline(Color, "indigoAccent", true, (node, method) {
+    return Colors.indigoAccent;
+  });
+  XmlLayout.registerInline(Color, "blue", true, (node, method) {
+    return Colors.blue;
+  });
+  XmlLayout.registerInline(Color, "blueAccent", true, (node, method) {
+    return Colors.blueAccent;
+  });
+  XmlLayout.registerInline(Color, "lightBlue", true, (node, method) {
+    return Colors.lightBlue;
+  });
+  XmlLayout.registerInline(Color, "lightBlueAccent", true, (node, method) {
+    return Colors.lightBlueAccent;
+  });
+  XmlLayout.registerInline(Color, "cyan", true, (node, method) {
+    return Colors.cyan;
+  });
+  XmlLayout.registerInline(Color, "cyanAccent", true, (node, method) {
+    return Colors.cyanAccent;
+  });
+  XmlLayout.registerInline(Color, "teal", true, (node, method) {
+    return Colors.teal;
+  });
+  XmlLayout.registerInline(Color, "tealAccent", true, (node, method) {
+    return Colors.tealAccent;
+  });
+  XmlLayout.registerInline(Color, "green", true, (node, method) {
+    return Colors.green;
+  });
+  XmlLayout.registerInline(Color, "greenAccent", true, (node, method) {
+    return Colors.greenAccent;
+  });
+  XmlLayout.registerInline(Color, "lightGreen", true, (node, method) {
+    return Colors.lightGreen;
+  });
+  XmlLayout.registerInline(Color, "lightGreenAccent", true, (node, method) {
+    return Colors.lightGreenAccent;
+  });
+  XmlLayout.registerInline(Color, "lime", true, (node, method) {
+    return Colors.lime;
+  });
+  XmlLayout.registerInline(Color, "limeAccent", true, (node, method) {
+    return Colors.limeAccent;
+  });
+  XmlLayout.registerInline(Color, "yellow", true, (node, method) {
+    return Colors.yellow;
+  });
+  XmlLayout.registerInline(Color, "yellowAccent", true, (node, method) {
+    return Colors.yellowAccent;
+  });
+  XmlLayout.registerInline(Color, "amber", true, (node, method) {
+    return Colors.amber;
+  });
+  XmlLayout.registerInline(Color, "amberAccent", true, (node, method) {
+    return Colors.amberAccent;
+  });
+  XmlLayout.registerInline(Color, "orange", true, (node, method) {
+    return Colors.orange;
+  });
+  XmlLayout.registerInline(Color, "orangeAccent", true, (node, method) {
+    return Colors.orangeAccent;
+  });
+  XmlLayout.registerInline(Color, "deepOrange", true, (node, method) {
+    return Colors.deepOrange;
+  });
+  XmlLayout.registerInline(Color, "deepOrangeAccent", true, (node, method) {
+    return Colors.deepOrangeAccent;
+  });
+  XmlLayout.registerInline(Color, "brown", true, (node, method) {
+    return Colors.brown;
+  });
+  XmlLayout.registerInline(Color, "grey", true, (node, method) {
+    return Colors.grey;
+  });
+  XmlLayout.registerInline(Color, "blueGrey", true, (node, method) {
+    return Colors.blueGrey;
+  });
 });

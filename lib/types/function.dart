@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:xml_layout/xml_layout.dart';
 
 import '../register.dart';
@@ -39,8 +40,8 @@ class Argument {
   Argument(this.value);
 }
 
-Register reg = Register(() {
-  XmlLayout.reg("Function", (node, key) {
+Register register = Register(() {
+  XmlLayout.register("Function", (node, key) {
     return ([a1, a2, a3, a4, a5]) {
       Map<String, dynamic> data = {
         "args": [a1, a2, a3, a4, a5]
@@ -55,20 +56,19 @@ Register reg = Register(() {
       return ret;
     };
   });
-
-  XmlLayout.reg(Call, (node, key) {
+  XmlLayout.register("Call", (node, key) {
     return Call(
         func: node.s<void Function(List)>("function"),
         ret: node.s<String>("return"),
         args: node.children<Argument>());
   });
 
-  XmlLayout.reg(Apply, (node, key) {
+  XmlLayout.register("Apply", (node, key) {
     return Apply(
         name: node.s<String>("name"),
         ret: node.s<String>("return"),
         args: node.children<Argument>());
   });
 
-  XmlLayout.reg(Argument, (node, key) => Argument(node.s("value")));
+  XmlLayout.register("Argument", (node, key) => Argument(node.s("value")));
 });

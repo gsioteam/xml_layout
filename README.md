@@ -8,11 +8,11 @@ write xml layout file like:
 
 *xml*
 ```xml
-<Column mainAxisAlignment="center">
+<Text mainAxisAlignment="center">
     <for count="6">
-        <Text text="$item, You have pushed the button this many times:"/>
+        <Text>$item, You have pushed the button this many times:</Text>
     </for>
-    <Text text="$counter" id="text-id">
+    <Text id="text-id">$counter</Text>
         <attr:style>
             <TextStyle color="red"/>
         </attr:style>
@@ -69,3 +69,63 @@ XMLLayout.regEnum(MyEnum.values);
 
 `node.v<T>("value")` convert text to target type
 
+## Builder
+
+You can write a script to generate the constructor code. 
+In the example `test.dart` is the builder script.
+
+#### Builder options:
+
+- `entry_name`
+    - default: `types`
+    - type: `List<Type>`
+    - description: types in this list, will be processed.
+- `collections_name`
+    - default: `collections`
+    - type: `List<Collection>`
+    - description: Collection type is used to process the collection class, such as: `Colors` 
+    and `Icons`.
+     
+ps: `Colors` and `Icons` is preprocessed just import it via:
+    
+```dart
+import 'package:xml_layout/types/colors.dart' as colors;
+import 'package:xml_layout/types/icons.dart' as icons;
+
+// ...
+
+colors.register();
+icons.register();
+```
+ 
+- `coverts_name`
+    - default: `converts`
+    - type: `Map<String, String>`
+    - description: Every import uri will be test by the key value pair in this variable.
+    if a import source uri is start with the key then it will be convert to the value. 
+- `imports_name`
+    - default: `imports`
+    - type: `List<String>`
+    - description: Extension import uris, all of it will be write to the generated code.
+    
+#### Example
+
+lib/test.dart
+```dart
+const List<Type> types = [
+  Text,
+];
+```
+
+build.yaml
+```yaml
+targets:
+  $default:
+    builders:
+      xml_layout:
+        generate_for:
+          - lib/test.dart
+```
+
+Create the files above. then just run `flutter pub run build_runner build`.
+Then you will get the generated code in `lib/test.xml_layout.dart`.
