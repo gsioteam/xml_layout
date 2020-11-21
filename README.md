@@ -79,7 +79,7 @@ In the example `test.dart` is the builder script.
 - `entry_name`
     - default: `types`
     - type: `List<Type>`
-    - description: types in this list, will be processed.
+    - description: types in this list which will be processed.
 - `collections_name`
     - default: `collections`
     - type: `List<Collection>`
@@ -106,7 +106,7 @@ icons.register();
 - `imports_name`
     - default: `imports`
     - type: `List<String>`
-    - description: Extension import uris, all of it will be write to the generated code.
+    - description: Extension import uris which will be write to the generated code.
     
 #### Example
 
