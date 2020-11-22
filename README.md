@@ -129,5 +129,5 @@ targets:
           - lib/test.dart
 ```
 
-Create the files above. then just run `flutter pub run build_runner build`.
-Then you will get the generated code in `lib/test.xml_layout.dart`.
+Create the files above, then just run `flutter pub run build_runner build`.
+and you will get the generated code in `lib/test.xml_layout.dart`.
