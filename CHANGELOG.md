@@ -1,4 +1,8 @@
 
+## [1.0.2] - 
+
+* Modified `README.md`
+
 ## [1.0.0] - Build script
 
 * Added a build_runner script to generate codes.
