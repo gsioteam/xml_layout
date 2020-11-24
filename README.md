@@ -42,11 +42,20 @@ XMLLayoutState state = ...;
 GlobalKey key = state.find('text-id');
 ```
 
-## Support Customer Widget
+## Registers
+
+- `register` 
+    - description: Register a constructor. It could convert a xml element to target object.
 
 ```dart
-// Register a class
-XMLLayout.reg(MyClass, (node, key) {
+/**
+ * Register a constructor
+ * 
+ * xml:
+ * <MyClass width="10" height="10" />
+ * 
+ */
+XMLLayout.register('MyClass', (node, key) {
     return MyClass(
         key: key,
         child: node.child<Widget>(),
@@ -54,9 +63,41 @@ XMLLayout.reg(MyClass, (node, key) {
         height: node.s<double>("height"),
     );
 });
+```
 
-// Register a Enum
-XMLLayout.registerEnum(MyEnum.values);
+- `registerEnum` 
+    - description: A shortcat to register a enum class. It could convert a attribute to the enum.
+ 
+ ```dart
+/**
+ * Register a enum type
+ * 
+ * xml:
+ * <Text textAlign="center">str</Text>
+ */
+XMLLayout.registerEnum(TextAlign.values);
+ ```
+
+ - `registerInline(Type type, String name, bool field, InlineItemConstructor constructor)` 
+    - description: Register a constructor which could convert a attribute to target type.
+    - arguments: 
+        - `field` this constructor is for a static field or a constructor.
+
+```dart
+/**
+ * <Text fontWeight="w200">str</Text>
+ */
+XmlLayout.registerInline(FontWeight, "w200", true, (node, method) {
+  return FontWeight.w200;
+});
+
+/**
+ * <Text textHeightBehavior="fromEncoded(20)">str</Text>
+ */
+XmlLayout.registerInline(TextHeightBehavior, "fromEncoded", false,
+      (node, method) {
+  return TextHeightBehavior.fromEncoded(int.tryParse(method[0]));
+});
 ```
 
 `node.s<T>("name")`, `node.attribute<T>("name")` convert subnode to target type
@@ -126,4 +167,4 @@ targets:
 ```
 
 Create the files above, then just run `flutter pub run build_runner build`.
-and you will get the generated code in `lib/test.xml_layout.dart`.
+And you will get the generated code in `lib/test.xml_layout.dart`.
