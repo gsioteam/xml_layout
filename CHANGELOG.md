@@ -1,4 +1,6 @@
-
+## [1.0.4] -
+* Support multi subelement in attr element.
+ 
 ## [1.0.2] - 
 
 * Modified `README.md`

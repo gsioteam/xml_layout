@@ -197,18 +197,24 @@ class NodeData {
         }
       }
     } else if (element.name.prefix == "attr") {
-      xml.XmlElement el;
+      List<xml.XmlElement> els = [];
       xml.XmlText text;
       for (xml.XmlNode node in element.children) {
-        if (el == null && node is xml.XmlElement) {
-          el = node;
+        if (node is xml.XmlElement) {
+          els.add(node);
         } else if (text == null && node is xml.XmlText) {
           text = node;
         }
       }
 
-      _setNode(element.name.local,
-          NodeData(el ?? text ?? xml.XmlText(""), control, this).._flow = flow);
+      if (els.length == 0) {
+        _setNode(element.name.local, NodeData(text ?? xml.XmlText(""), control, this).._flow = flow);
+      } else {
+        els.forEach((el) {
+          _setNode(element.name.local,
+              NodeData(el, control, this).._flow = flow);
+        });
+      }
     } else if (element.name.prefix == null) {
       _children.add(NodeData(element, control, this).._flow = flow);
     } else if (element.name.prefix == "arg") {
