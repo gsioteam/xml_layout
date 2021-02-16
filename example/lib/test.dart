@@ -10,6 +10,10 @@ const Map<String, String> converts = {
   "package:vector_math/src/vector_math/": "package:vector_math/vector_math.dart",
 };
 
+const Map<Type, Type> convertTypes = {
+  EdgeInsetsGeometry: EdgeInsets
+};
+
 const List<Type> types = [
   MaterialButton,
   Column,

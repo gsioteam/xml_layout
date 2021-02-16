@@ -1,3 +1,7 @@
+## [1.0.7] -
+
+* Fixed convert type not working bug
+
 ## [1.0.6] -
 
 * Added convert type

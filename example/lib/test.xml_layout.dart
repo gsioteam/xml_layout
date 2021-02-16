@@ -74,7 +74,7 @@ Register register = Register(() {
         hoverElevation: node.s<double>("hoverElevation"),
         highlightElevation: node.s<double>("highlightElevation"),
         disabledElevation: node.s<double>("disabledElevation"),
-        padding: node.s<EdgeInsetsGeometry>("padding"),
+        padding: node.s<EdgeInsets>("padding"),
         visualDensity: node.s<VisualDensity>("visualDensity"),
         shape: node.s<ShapeBorder>("shape"),
         clipBehavior: node.s<Clip>("clipBehavior", Clip.none),
@@ -107,9 +107,37 @@ Register register = Register(() {
         int.tryParse(method[2]), double.tryParse(method[3]));
   });
   XmlLayout.registerEnum(Brightness.values);
-  XmlLayout.registerInline(EdgeInsetsGeometry, "infinity", true,
-      (node, method) {
-    return EdgeInsetsGeometry.infinity;
+  XmlLayout.registerInline(EdgeInsets, "fromLTRB", false, (node, method) {
+    return EdgeInsets.fromLTRB(
+        double.tryParse(method[0]),
+        double.tryParse(method[1]),
+        double.tryParse(method[2]),
+        double.tryParse(method[3]));
+  });
+  XmlLayout.registerInline(EdgeInsets, "all", false, (node, method) {
+    return EdgeInsets.all(double.tryParse(method[0]));
+  });
+  XmlLayout.register("EdgeInsets.only", (node, key) {
+    return EdgeInsets.only(
+        left: node.s<double>("left", 0.0),
+        top: node.s<double>("top", 0.0),
+        right: node.s<double>("right", 0.0),
+        bottom: node.s<double>("bottom", 0.0));
+  });
+  XmlLayout.register("EdgeInsets.symmetric", (node, key) {
+    return EdgeInsets.symmetric(
+        vertical: node.s<double>("vertical", 0.0),
+        horizontal: node.s<double>("horizontal", 0.0));
+  });
+  XmlLayout.register("EdgeInsets.fromWindowPadding", (node, key) {
+    return EdgeInsets.fromWindowPadding(
+        node.s<WindowPadding>("arg:0"), node.s<double>("arg:1"));
+  });
+  XmlLayout.registerInline(EdgeInsets, "zero", true, (node, method) {
+    return EdgeInsets.zero;
+  });
+  XmlLayout.registerInline(WindowPadding, "zero", true, (node, method) {
+    return WindowPadding.zero;
   });
   XmlLayout.register("VisualDensity", (node, key) {
     return VisualDensity(
@@ -455,7 +483,7 @@ Register register = Register(() {
         primary: node.s<bool>("primary"),
         physics: node.s<ScrollPhysics>("physics"),
         shrinkWrap: node.s<bool>("shrinkWrap", false),
-        padding: node.s<EdgeInsetsGeometry>("padding"),
+        padding: node.s<EdgeInsets>("padding"),
         gridDelegate: node.s<SliverGridDelegate>("gridDelegate"),
         addAutomaticKeepAlives: node.s<bool>("addAutomaticKeepAlives", true),
         addRepaintBoundaries: node.s<bool>("addRepaintBoundaries", true),
@@ -480,7 +508,7 @@ Register register = Register(() {
         primary: node.s<bool>("primary"),
         physics: node.s<ScrollPhysics>("physics"),
         shrinkWrap: node.s<bool>("shrinkWrap", false),
-        padding: node.s<EdgeInsetsGeometry>("padding"),
+        padding: node.s<EdgeInsets>("padding"),
         gridDelegate: node.s<SliverGridDelegate>("gridDelegate"),
         itemBuilder: node.s<Widget Function(BuildContext, int)>("itemBuilder"),
         itemCount: node.s<int>("itemCount"),
@@ -506,7 +534,7 @@ Register register = Register(() {
         primary: node.s<bool>("primary"),
         physics: node.s<ScrollPhysics>("physics"),
         shrinkWrap: node.s<bool>("shrinkWrap", false),
-        padding: node.s<EdgeInsetsGeometry>("padding"),
+        padding: node.s<EdgeInsets>("padding"),
         gridDelegate: node.s<SliverGridDelegate>("gridDelegate"),
         childrenDelegate: node.s<SliverChildDelegate>("childrenDelegate"),
         cacheExtent: node.s<double>("cacheExtent"),
@@ -528,7 +556,7 @@ Register register = Register(() {
         primary: node.s<bool>("primary"),
         physics: node.s<ScrollPhysics>("physics"),
         shrinkWrap: node.s<bool>("shrinkWrap", false),
-        padding: node.s<EdgeInsetsGeometry>("padding"),
+        padding: node.s<EdgeInsets>("padding"),
         crossAxisCount: node.s<int>("crossAxisCount"),
         mainAxisSpacing: node.s<double>("mainAxisSpacing", 0.0),
         crossAxisSpacing: node.s<double>("crossAxisSpacing", 0.0),
@@ -556,7 +584,7 @@ Register register = Register(() {
         primary: node.s<bool>("primary"),
         physics: node.s<ScrollPhysics>("physics"),
         shrinkWrap: node.s<bool>("shrinkWrap", false),
-        padding: node.s<EdgeInsetsGeometry>("padding"),
+        padding: node.s<EdgeInsets>("padding"),
         maxCrossAxisExtent: node.s<double>("maxCrossAxisExtent"),
         mainAxisSpacing: node.s<double>("mainAxisSpacing", 0.0),
         crossAxisSpacing: node.s<double>("crossAxisSpacing", 0.0),
@@ -590,14 +618,14 @@ Register register = Register(() {
     return Container(
         key: key,
         alignment: node.s<AlignmentGeometry>("alignment"),
-        padding: node.s<EdgeInsetsGeometry>("padding"),
+        padding: node.s<EdgeInsets>("padding"),
         color: node.s<Color>("color"),
         decoration: node.s<Decoration>("decoration"),
         foregroundDecoration: node.s<Decoration>("foregroundDecoration"),
         width: node.s<double>("width"),
         height: node.s<double>("height"),
         constraints: node.s<BoxConstraints>("constraints"),
-        margin: node.s<EdgeInsetsGeometry>("margin"),
+        margin: node.s<EdgeInsets>("margin"),
         transform: node.s<Matrix4>("transform"),
         child: node.child<Widget>(),
         clipBehavior: node.s<Clip>("clipBehavior", Clip.none));

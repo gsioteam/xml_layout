@@ -39,6 +39,7 @@ class XmlLayoutBuilder extends Builder {
     String convertsName = options.config["coverts_name"];
     String importsName = options.config["imports_name"];
     String convertName = options.config["convert_types"];
+    List<DartType> entries = new List();
     for (var element in library.topLevelElements) {
       if (element.kind == ElementKind.TOP_LEVEL_VARIABLE) {
         var topLevelElement = element as TopLevelVariableElement;
@@ -46,13 +47,8 @@ class XmlLayoutBuilder extends Builder {
           if (topLevelElement.name == entryName) {
             var types = topLevelElement.computeConstantValue();
             for (var type in types.toListValue()) {
-              _processDartType(type.toTypeValue());
+              entries.add(type.toTypeValue());
             }
-          } else if (topLevelElement.name == convertName) {
-            var types = topLevelElement.computeConstantValue();
-            types.toMapValue().forEach((key, value) {
-              _convertTypes[key.toTypeValue()] = value.toTypeValue();
-            });
           } else if (topLevelElement.name == collectionsName) {
             var types = topLevelElement.computeConstantValue();
             for (var type in types.toListValue()) {
@@ -67,15 +63,23 @@ class XmlLayoutBuilder extends Builder {
               }
             }
           }
-        }
-        if (topLevelElement.type?.isDartCoreMap == true && topLevelElement.name == convertsName) {
-          var converts = topLevelElement.computeConstantValue();
-          converts.toMapValue().forEach((key, value) {
-            print("${key} : $value");
-            _inputConvert[key.toStringValue()] = value.toStringValue();
-          });
+        } else if (topLevelElement.type?.isDartCoreMap == true) {
+          if (topLevelElement.name == convertName) {
+            var types = topLevelElement.computeConstantValue();
+            types.toMapValue().forEach((key, value) {
+              _convertTypes[key.toTypeValue()] = value.toTypeValue();
+            });
+          } else if (topLevelElement.name == convertsName) {
+            var converts = topLevelElement.computeConstantValue();
+            converts.toMapValue().forEach((key, value) {
+              _inputConvert[key.toStringValue()] = value.toStringValue();
+            });
+          }
         }
       }
+    }
+    for (var entry in entries) {
+      _processDartType(entry);
     }
 
     List<String> codes = [];
