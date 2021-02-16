@@ -393,8 +393,12 @@ class NodeData {
           if (obj is T) {
             res = obj;
             return true;
-          } else
+          } else {
+            if (obj == null) {
+              control.onUnkown?.call(node, node._getKey());
+            }
             return false;
+          }
         });
       }
       return res;

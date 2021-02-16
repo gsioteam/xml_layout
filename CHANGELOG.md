@@ -1,4 +1,13 @@
+## [1.0.6] -
+
+* Added convert type
+
+## [1.0.5] -
+
+* Send unkown event when unkown child
+
 ## [1.0.4] -
+
 * Support multi subelement in attr element.
  
 ## [1.0.2] - 

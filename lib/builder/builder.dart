@@ -15,10 +15,18 @@ class XmlLayoutBuilder extends Builder {
   final BuilderOptions options;
   Map<ClassElement, List<String>> _processed = Map();
   List<String> imports = List();
+  Map<DartType, DartType> _convertTypes = Map();
 
   static Map<Pattern, String> _inputConvert = {};
 
   XmlLayoutBuilder(this.options);
+
+  DartType convertType(DartType dartType) {
+    if (_convertTypes.containsKey(dartType)) {
+      dartType = _convertTypes[dartType];
+    }
+    return dartType;
+  }
 
   @override
   FutureOr<void> build(BuildStep buildStep) async {
@@ -30,6 +38,7 @@ class XmlLayoutBuilder extends Builder {
     String collectionsName = options.config["collections_name"];
     String convertsName = options.config["coverts_name"];
     String importsName = options.config["imports_name"];
+    String convertName = options.config["convert_types"];
     for (var element in library.topLevelElements) {
       if (element.kind == ElementKind.TOP_LEVEL_VARIABLE) {
         var topLevelElement = element as TopLevelVariableElement;
@@ -39,6 +48,11 @@ class XmlLayoutBuilder extends Builder {
             for (var type in types.toListValue()) {
               _processDartType(type.toTypeValue());
             }
+          } else if (topLevelElement.name == convertName) {
+            var types = topLevelElement.computeConstantValue();
+            types.toMapValue().forEach((key, value) {
+              _convertTypes[key.toTypeValue()] = value.toTypeValue();
+            });
           } else if (topLevelElement.name == collectionsName) {
             var types = topLevelElement.computeConstantValue();
             for (var type in types.toListValue()) {
@@ -203,7 +217,7 @@ class XmlLayoutBuilder extends Builder {
               List<String> argv = [];
               for (int i = 0, t = con.parameters.length; i < t; i++) {
                 var param = con.parameters[i];
-                var type = param.type;
+                var type = convertType(param.type);
                 if (type.isDartCoreInt) {
                   String str = 'int.tryParse(method[$i])';
                   if (param.hasDefaultValue) {
@@ -219,7 +233,7 @@ class XmlLayoutBuilder extends Builder {
                 } else if (type.isDartCoreString) {
                   argv.add('jsonDecode(method[$i])');
                 } else {
-                  String str = 'node.v<${param.type.getDisplayString(withNullability: false)}>(method[$i]';
+                  String str = 'node.v<${type.getDisplayString(withNullability: false)}>(method[$i]';
                   if (param.hasDefaultValue) {
                     str += ',${param.defaultValueCode}';
                   }
@@ -240,7 +254,7 @@ class XmlLayoutBuilder extends Builder {
               List<String> params = [];
 
               void insertNamedParam(ParameterElement param) {
-                var type = param.type;
+                var type = convertType(param.type);
                 List<String> argv = [];
                 argv.add('"${param.name}"');
                 if (param.hasDefaultValue) {
@@ -256,7 +270,7 @@ class XmlLayoutBuilder extends Builder {
                 }
 
                 if (type.isDartCoreList || type.isDartCoreIterable) {
-                  var dartType = (type as ParameterizedType).typeArguments.first;
+                  var dartType = convertType((type as ParameterizedType).typeArguments.first);
                   params.add('${param.name}: node.array<${dartType.getDisplayString(withNullability: false)}>(${argv[0]})');
                 } else {
                   params.add('${param.name}: node.s<${type.getDisplayString(withNullability: false)}>(${argv.join(',')})');
@@ -290,14 +304,15 @@ class XmlLayoutBuilder extends Builder {
                     }
                     case 'child': {
                       hasChild = true;
-                      _processDartType(param.type);
-                      params.add('${param.name}: node.child<${param.type.getDisplayString(withNullability: false)}>()');
+                      var type = convertType(param.type);
+                      _processDartType(type);
+                      params.add('${param.name}: node.child<${type.getDisplayString(withNullability: false)}>()');
                       break;
                     }
                     case 'children':
                     case 'slivers': {
                       hasChild = true;
-                      var type = param.type;
+                      var type = convertType(param.type);
                       if (type.isDartCoreList) {
                         String typeName;
                         if (type is ParameterizedType) {
@@ -332,8 +347,8 @@ class XmlLayoutBuilder extends Builder {
                   if (param.hasDefaultValue) {
                     argv.add(param.defaultValueCode);
                   }
-                  String typeName = param.type.getDisplayString(withNullability: false);
-                  var type = param.type;
+                  var type = convertType(param.type);
+                  String typeName = type.getDisplayString(withNullability: false);
                   String child;
                   if (type.isDartCoreString ||
                       type.isDartCoreInt ||

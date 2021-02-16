@@ -13,3 +13,4 @@ builders:
         collections_name: collections
         coverts_name: converts
         imports_name: imports
+        convert_types: convertTypes
