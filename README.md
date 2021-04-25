@@ -1,6 +1,6 @@
 # xml_layout
 
-XML layout for flutter. Layout your UI via xml at runtime. and support extending any customer widget. [Preview](https://gsioteam.github.io/xml_layout_preview/)
+XML layout for flutter. Layout your UI via xml at runtime. and support extending any customer widget. Tere is a [preview](https://gsioteam.github.io/xml_layout_preview/) website.
 
 ## Getting Started
 
