@@ -1,3 +1,7 @@
+## [1.1.3] - 
+
+* Added `registerTypes`
+
 ## [1.1.3] -
 
 * Update readme, added preview link

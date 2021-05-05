@@ -668,6 +668,8 @@ class XmlLayout extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => XmlLayoutState()..onUnkown = onUnkownElement;
 
+  static Iterable<String> get registerTypes => _constructors.keys;
+
   /**
    * Register a constructor method, which is used to convert
    * xml tag to a dart Object
