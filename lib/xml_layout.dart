@@ -668,7 +668,29 @@ class XmlLayout extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => XmlLayoutState()..onUnkown = onUnkownElement;
 
-  static Iterable<String> get registerTypes => _constructors.keys;
+  static Iterable<String> get registerTypes {
+    Map<String, String> types = Map();
+    void add(String type) {
+      String lower = type.toLowerCase();
+      if (!types.containsKey(lower))
+        types[lower] = type;
+    }
+
+    List<String> strArr = [];
+    for (var type in _constructors.keys) {
+      if (type is Type) {
+        add(type.toString());
+      } else if (type is String) {
+        strArr.add(type);
+      }
+    }
+
+    for (var type in strArr) {
+      var arr = type.split(".");
+      add(arr[0]);
+    }
+    return types.values;
+  }
 
   /**
    * Register a constructor method, which is used to convert
