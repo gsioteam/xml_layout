@@ -1,0 +1,48 @@
+<Scaffold>
+    <attr:appBar>
+        <AppBar>
+            <attr:title>
+                <Text>$title</Text>
+            </attr:title>
+        </AppBar>
+    </attr:appBar>
+    <attr:body>
+        <ListView.separated itemCount="$itemCount">
+            <attr:itemBuilder>
+                <Function returnType="Widget">
+                    <SetArgument return="index" argument="${args[1]}"/>
+                    <Call function="$getItem" return="itemData">
+                        <Argument value="$index"/>
+                    </Call>
+                    <Builder>
+                        <ListTile>
+                            <attr:title>
+                                <Text>${itemData.title}</Text>
+                            </attr:title>
+                            <attr:subtitle>
+                                <Text>${itemData.subtitle}</Text>
+                            </attr:subtitle>
+                            <attr:leading>
+                                <Image.network>${itemData.image}</Image.network>
+                            </attr:leading>
+                            <attr:onTap>
+                                <Function>
+                                    <Call function="$print">
+                                        <Argument value="$index"/>
+                                    </Call>
+                                </Function>
+                            </attr:onTap>
+                        </ListTile>
+                    </Builder>
+                </Function>
+            </attr:itemBuilder>
+            <attr:separatorBuilder>
+                <Function returnType="Widget">
+                    <Builder>
+                        <Divider/>
+                    </Builder>
+                </Function>
+            </attr:separatorBuilder>
+        </ListView.separated>
+    </attr:body>
+</Scaffold>

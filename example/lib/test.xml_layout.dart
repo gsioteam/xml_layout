@@ -11,8 +11,8 @@ import 'package:flutter/src/painting/edge_insets.dart';
 import 'package:flutter/src/material/theme_data.dart';
 import 'package:flutter/src/painting/borders.dart';
 import 'package:flutter/src/widgets/focus_manager.dart';
-import 'dart:core';
 import 'package:flutter/src/services/raw_keyboard.dart';
+import 'dart:core';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/basic.dart';
 import 'package:flutter/src/rendering/flex.dart';
@@ -43,6 +43,7 @@ import 'dart:typed_data';
 import 'package:flutter/src/material/app_bar.dart';
 import 'package:flutter/src/widgets/icon_theme_data.dart';
 import 'package:flutter/src/material/text_theme.dart';
+import 'package:flutter/src/services/system_chrome.dart';
 import 'package:flutter/src/widgets/image.dart';
 import 'package:flutter/src/painting/image_provider.dart';
 import 'package:flutter/src/painting/image_stream.dart';
@@ -50,6 +51,8 @@ import 'package:flutter/src/painting/box_fit.dart';
 import 'package:flutter/src/painting/decoration_image.dart';
 import 'dart:io';
 import 'package:flutter/src/services/asset_bundle.dart';
+import 'package:flutter/src/material/divider.dart';
+import 'package:flutter/src/material/list_tile.dart';
 
 Register register = Register(() {
   XmlLayout.register("MaterialButton", (node, key) {
@@ -161,7 +164,7 @@ Register register = Register(() {
   XmlLayout.register("FocusNode", (node, key) {
     return FocusNode(
         debugLabel: node.s<String>("debugLabel"),
-        onKey: node.s<bool Function(FocusNode, RawKeyEvent)>("onKey"),
+        onKey: node.s<dynamic Function(FocusNode, RawKeyEvent)>("onKey"),
         skipTraversal: node.s<bool>("skipTraversal", false),
         canRequestFocus: node.s<bool>("canRequestFocus", true),
         descendantsAreFocusable: node.s<bool>("descendantsAreFocusable", true));
@@ -211,11 +214,12 @@ Register register = Register(() {
             .s<FloatingActionButtonAnimator>("floatingActionButtonAnimator"),
         persistentFooterButtons: node.array<Widget>("persistentFooterButtons"),
         drawer: node.s<Widget>("drawer"),
+        onDrawerChanged: node.s<void Function(bool)>("onDrawerChanged"),
         endDrawer: node.s<Widget>("endDrawer"),
+        onEndDrawerChanged: node.s<void Function(bool)>("onEndDrawerChanged"),
         bottomNavigationBar: node.s<Widget>("bottomNavigationBar"),
         bottomSheet: node.s<Widget>("bottomSheet"),
         backgroundColor: node.s<Color>("backgroundColor"),
-        // resizeToAvoidBottomPadding: node.s<bool>("resizeToAvoidBottomPadding"),
         resizeToAvoidBottomInset: node.s<bool>("resizeToAvoidBottomInset"),
         primary: node.s<bool>("primary", true),
         drawerDragStartBehavior: node.s<DragStartBehavior>(
@@ -227,7 +231,8 @@ Register register = Register(() {
         drawerEnableOpenDragGesture:
             node.s<bool>("drawerEnableOpenDragGesture", true),
         endDrawerEnableOpenDragGesture:
-            node.s<bool>("endDrawerEnableOpenDragGesture", true));
+            node.s<bool>("endDrawerEnableOpenDragGesture", true),
+        restorationId: node.s<String>("restorationId"));
   });
   XmlLayout.registerInline(FloatingActionButtonLocation, "startTop", true,
       (node, method) {
@@ -627,6 +632,7 @@ Register register = Register(() {
         constraints: node.s<BoxConstraints>("constraints"),
         margin: node.s<EdgeInsets>("margin"),
         transform: node.s<Matrix4>("transform"),
+        transformAlignment: node.s<AlignmentGeometry>("transformAlignment"),
         child: node.child<Widget>(),
         clipBehavior: node.s<Clip>("clipBehavior", Clip.none));
   });
@@ -759,6 +765,7 @@ Register register = Register(() {
         shadowColor: node.s<Color>("shadowColor"),
         shape: node.s<ShapeBorder>("shape"),
         backgroundColor: node.s<Color>("backgroundColor"),
+        foregroundColor: node.s<Color>("foregroundColor"),
         brightness: node.s<Brightness>("brightness"),
         iconTheme: node.s<IconThemeData>("iconTheme"),
         actionsIconTheme: node.s<IconThemeData>("actionsIconTheme"),
@@ -766,12 +773,15 @@ Register register = Register(() {
         primary: node.s<bool>("primary", true),
         centerTitle: node.s<bool>("centerTitle"),
         excludeHeaderSemantics: node.s<bool>("excludeHeaderSemantics", false),
-        titleSpacing:
-            node.s<double>("titleSpacing", NavigationToolbar.kMiddleSpacing),
+        titleSpacing: node.s<double>("titleSpacing"),
         toolbarOpacity: node.s<double>("toolbarOpacity", 1.0),
         bottomOpacity: node.s<double>("bottomOpacity", 1.0),
         toolbarHeight: node.s<double>("toolbarHeight"),
-        leadingWidth: node.s<double>("leadingWidth"));
+        leadingWidth: node.s<double>("leadingWidth"),
+        backwardsCompatibility: node.s<bool>("backwardsCompatibility"),
+        toolbarTextStyle: node.s<TextStyle>("toolbarTextStyle"),
+        titleTextStyle: node.s<TextStyle>("titleTextStyle"),
+        systemOverlayStyle: node.s<SystemUiOverlayStyle>("systemOverlayStyle"));
   });
   XmlLayout.register("IconThemeData", (node, key) {
     return IconThemeData(
@@ -807,6 +817,23 @@ Register register = Register(() {
         subtitle: node.s<TextStyle>("subtitle"),
         body2: node.s<TextStyle>("body2"),
         body1: node.s<TextStyle>("body1"));
+  });
+  XmlLayout.register("SystemUiOverlayStyle", (node, key) {
+    return SystemUiOverlayStyle(
+        systemNavigationBarColor: node.s<Color>("systemNavigationBarColor"),
+        systemNavigationBarDividerColor:
+            node.s<Color>("systemNavigationBarDividerColor"),
+        systemNavigationBarIconBrightness:
+            node.s<Brightness>("systemNavigationBarIconBrightness"),
+        statusBarColor: node.s<Color>("statusBarColor"),
+        statusBarBrightness: node.s<Brightness>("statusBarBrightness"),
+        statusBarIconBrightness: node.s<Brightness>("statusBarIconBrightness"));
+  });
+  XmlLayout.registerInline(SystemUiOverlayStyle, "light", true, (node, method) {
+    return SystemUiOverlayStyle.light;
+  });
+  XmlLayout.registerInline(SystemUiOverlayStyle, "dark", true, (node, method) {
+    return SystemUiOverlayStyle.dark;
   });
   XmlLayout.register("Image", (node, key) {
     return Image(
@@ -990,4 +1017,140 @@ Register register = Register(() {
     return Offset.infinite;
   });
   XmlLayout.registerEnum(FilterQuality.values);
+  XmlLayout.register("ListView", (node, key) {
+    return ListView(
+        key: key,
+        scrollDirection: node.s<Axis>("scrollDirection", Axis.vertical),
+        reverse: node.s<bool>("reverse", false),
+        controller: node.s<ScrollController>("controller"),
+        primary: node.s<bool>("primary"),
+        physics: node.s<ScrollPhysics>("physics"),
+        shrinkWrap: node.s<bool>("shrinkWrap", false),
+        padding: node.s<EdgeInsets>("padding"),
+        itemExtent: node.s<double>("itemExtent"),
+        addAutomaticKeepAlives: node.s<bool>("addAutomaticKeepAlives", true),
+        addRepaintBoundaries: node.s<bool>("addRepaintBoundaries", true),
+        addSemanticIndexes: node.s<bool>("addSemanticIndexes", true),
+        cacheExtent: node.s<double>("cacheExtent"),
+        children: node.children<Widget>(),
+        semanticChildCount: node.s<int>("semanticChildCount"),
+        dragStartBehavior: node.s<DragStartBehavior>(
+            "dragStartBehavior", DragStartBehavior.start),
+        keyboardDismissBehavior: node.s<ScrollViewKeyboardDismissBehavior>(
+            "keyboardDismissBehavior",
+            ScrollViewKeyboardDismissBehavior.manual),
+        restorationId: node.s<String>("restorationId"),
+        clipBehavior: node.s<Clip>("clipBehavior", Clip.hardEdge));
+  });
+  XmlLayout.register("ListView.builder", (node, key) {
+    return ListView.builder(
+        key: key,
+        scrollDirection: node.s<Axis>("scrollDirection", Axis.vertical),
+        reverse: node.s<bool>("reverse", false),
+        controller: node.s<ScrollController>("controller"),
+        primary: node.s<bool>("primary"),
+        physics: node.s<ScrollPhysics>("physics"),
+        shrinkWrap: node.s<bool>("shrinkWrap", false),
+        padding: node.s<EdgeInsets>("padding"),
+        itemExtent: node.s<double>("itemExtent"),
+        itemBuilder: node.s<Widget Function(BuildContext, int)>("itemBuilder"),
+        itemCount: node.s<int>("itemCount"),
+        addAutomaticKeepAlives: node.s<bool>("addAutomaticKeepAlives", true),
+        addRepaintBoundaries: node.s<bool>("addRepaintBoundaries", true),
+        addSemanticIndexes: node.s<bool>("addSemanticIndexes", true),
+        cacheExtent: node.s<double>("cacheExtent"),
+        semanticChildCount: node.s<int>("semanticChildCount"),
+        dragStartBehavior: node.s<DragStartBehavior>(
+            "dragStartBehavior", DragStartBehavior.start),
+        keyboardDismissBehavior: node.s<ScrollViewKeyboardDismissBehavior>(
+            "keyboardDismissBehavior",
+            ScrollViewKeyboardDismissBehavior.manual),
+        restorationId: node.s<String>("restorationId"),
+        clipBehavior: node.s<Clip>("clipBehavior", Clip.hardEdge));
+  });
+  XmlLayout.register("ListView.separated", (node, key) {
+    return ListView.separated(
+        key: key,
+        scrollDirection: node.s<Axis>("scrollDirection", Axis.vertical),
+        reverse: node.s<bool>("reverse", false),
+        controller: node.s<ScrollController>("controller"),
+        primary: node.s<bool>("primary"),
+        physics: node.s<ScrollPhysics>("physics"),
+        shrinkWrap: node.s<bool>("shrinkWrap", false),
+        padding: node.s<EdgeInsets>("padding"),
+        itemBuilder: node.s<Widget Function(BuildContext, int)>("itemBuilder"),
+        separatorBuilder:
+            node.s<Widget Function(BuildContext, int)>("separatorBuilder"),
+        itemCount: node.s<int>("itemCount"),
+        addAutomaticKeepAlives: node.s<bool>("addAutomaticKeepAlives", true),
+        addRepaintBoundaries: node.s<bool>("addRepaintBoundaries", true),
+        addSemanticIndexes: node.s<bool>("addSemanticIndexes", true),
+        cacheExtent: node.s<double>("cacheExtent"),
+        dragStartBehavior: node.s<DragStartBehavior>(
+            "dragStartBehavior", DragStartBehavior.start),
+        keyboardDismissBehavior: node.s<ScrollViewKeyboardDismissBehavior>(
+            "keyboardDismissBehavior",
+            ScrollViewKeyboardDismissBehavior.manual),
+        restorationId: node.s<String>("restorationId"),
+        clipBehavior: node.s<Clip>("clipBehavior", Clip.hardEdge));
+  });
+  XmlLayout.register("ListView.custom", (node, key) {
+    return ListView.custom(
+        key: key,
+        scrollDirection: node.s<Axis>("scrollDirection", Axis.vertical),
+        reverse: node.s<bool>("reverse", false),
+        controller: node.s<ScrollController>("controller"),
+        primary: node.s<bool>("primary"),
+        physics: node.s<ScrollPhysics>("physics"),
+        shrinkWrap: node.s<bool>("shrinkWrap", false),
+        padding: node.s<EdgeInsets>("padding"),
+        itemExtent: node.s<double>("itemExtent"),
+        childrenDelegate: node.s<SliverChildDelegate>("childrenDelegate"),
+        cacheExtent: node.s<double>("cacheExtent"),
+        semanticChildCount: node.s<int>("semanticChildCount"),
+        dragStartBehavior: node.s<DragStartBehavior>(
+            "dragStartBehavior", DragStartBehavior.start),
+        keyboardDismissBehavior: node.s<ScrollViewKeyboardDismissBehavior>(
+            "keyboardDismissBehavior",
+            ScrollViewKeyboardDismissBehavior.manual),
+        restorationId: node.s<String>("restorationId"),
+        clipBehavior: node.s<Clip>("clipBehavior", Clip.hardEdge));
+  });
+  XmlLayout.register("Divider", (node, key) {
+    return Divider(
+        key: key,
+        height: node.s<double>("height"),
+        thickness: node.s<double>("thickness"),
+        indent: node.s<double>("indent"),
+        endIndent: node.s<double>("endIndent"),
+        color: node.s<Color>("color"));
+  });
+  XmlLayout.register("ListTile", (node, key) {
+    return ListTile(
+        key: key,
+        leading: node.s<Widget>("leading"),
+        title: node.s<Widget>("title"),
+        subtitle: node.s<Widget>("subtitle"),
+        trailing: node.s<Widget>("trailing"),
+        isThreeLine: node.s<bool>("isThreeLine", false),
+        dense: node.s<bool>("dense"),
+        visualDensity: node.s<VisualDensity>("visualDensity"),
+        shape: node.s<ShapeBorder>("shape"),
+        contentPadding: node.s<EdgeInsets>("contentPadding"),
+        enabled: node.s<bool>("enabled", true),
+        onTap: node.s<void Function()>("onTap"),
+        onLongPress: node.s<void Function()>("onLongPress"),
+        mouseCursor: node.s<MouseCursor>("mouseCursor"),
+        selected: node.s<bool>("selected", false),
+        focusColor: node.s<Color>("focusColor"),
+        hoverColor: node.s<Color>("hoverColor"),
+        focusNode: node.s<FocusNode>("focusNode"),
+        autofocus: node.s<bool>("autofocus", false),
+        tileColor: node.s<Color>("tileColor"),
+        selectedTileColor: node.s<Color>("selectedTileColor"),
+        enableFeedback: node.s<bool>("enableFeedback"),
+        horizontalTitleGap: node.s<double>("horizontalTitleGap"),
+        minVerticalPadding: node.s<double>("minVerticalPadding"),
+        minLeadingWidth: node.s<double>("minLeadingWidth"));
+  });
 });

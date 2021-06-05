@@ -246,9 +246,13 @@ class NodeData {
 
   NodeData clone(Map<String, dynamic> ext) {
     NodeData one = NodeData(node, control, _father);
-    one._ext = ext;
+    one._ext = ext ?? _ext;
     one._attributes = _attributes;
-    one._children = _children;
+    one._children = _children?.map<NodeData>((element) {
+      var child = element.clone(null);
+      child._father = one;
+      return child;
+    })?.toList();
     return one;
   }
 
@@ -390,7 +394,7 @@ class NodeData {
       } else {
         _firstChild(_children, (node) {
           dynamic obj = node.element();
-          if (obj is T) {
+          if (obj != null && obj is T) {
             res = obj;
             return true;
           } else {

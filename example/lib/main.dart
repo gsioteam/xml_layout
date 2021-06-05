@@ -1,14 +1,17 @@
+
 import 'package:flutter/material.dart';
 import 'package:xml_layout/xml_layout.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'test.xml_layout.dart' as xml_layout;
 import 'package:xml_layout/types/colors.dart' as colors;
 import 'package:xml_layout/types/icons.dart' as icons;
+import 'package:xml_layout/types/function.dart';
 
 void main() {
   colors.register();
   icons.register();
   xml_layout.register();
+  registerReturnType<Widget>();
   runApp(MyApp());
 }
 
@@ -153,8 +156,8 @@ class _GridExample extends StatelessWidget {
                     "https://homepages.cae.wisc.edu/~ece533/images/airplane.png"
                   ]
                 },
-                "print": (List args) {
-                  print("click ${args.first}");
+                "print": (int idx) {
+                  print("click ${idx}");
                 }
               },
               onUnkownElement: (node, key) {
@@ -168,23 +171,42 @@ class _GridExample extends StatelessWidget {
 }
 
 class _BuilderExample extends StatelessWidget {
-  final XmlLayoutBuilder _builder = XmlLayoutBuilder();
 
   @override
   Widget build(BuildContext context) {
+    List data = [{
+      "title": "Title1",
+      "subtitle": "Content1",
+      "image": "https://homepages.cae.wisc.edu/~ece533/images/baboon.png"
+    }, {
+      "title": "Title2",
+      "subtitle": "Content2",
+      "image": "https://homepages.cae.wisc.edu/~ece533/images/arctichare.png"
+    }, {
+      "title": "Title3",
+      "subtitle": "Content3",
+      "image": "https://homepages.cae.wisc.edu/~ece533/images/airplane.png"
+    }];
     return FutureBuilder<String>(
-        future: _loadLayout("assets/grid.xml"),
+        future: _loadLayout("assets/list.xml"),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return _builder.build(context, template: snapshot.data, objects: {
-              "map": {
-                "pictures": [
-                  "https://homepages.cae.wisc.edu/~ece533/images/baboon.png",
-                  "https://homepages.cae.wisc.edu/~ece533/images/arctichare.png",
-                  "https://homepages.cae.wisc.edu/~ece533/images/airplane.png"
-                ]
-              }
-            });
+            return XmlLayout(
+              template: snapshot.data,
+              objects: {
+                "title": "BuilderExample",
+                "itemCount": data.length,
+                "getItem": (int idx) {
+                  return data[idx];
+                },
+                "print": (int idx) {
+                  print("click $idx");
+                }
+              },
+              onUnkownElement: (node, key) {
+                print("Unkown ${node.name ?? node.text}");
+              },
+            );
           }
           return Container();
         });

@@ -24,7 +24,10 @@ const List<Type> types = [
   Container,
   MaterialButton,
   AppBar,
-  Image
+  Image,
+  ListView,
+  Divider,
+  ListTile,
 ];
 
 // const List<Collection> collections = [
