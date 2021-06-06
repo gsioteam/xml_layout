@@ -15,24 +15,40 @@
                         <Argument value="$index"/>
                     </Call>
                     <Builder>
-                        <ListTile>
-                            <attr:title>
-                                <Text>${itemData.title}</Text>
-                            </attr:title>
-                            <attr:subtitle>
-                                <Text>${itemData.subtitle}</Text>
-                            </attr:subtitle>
-                            <attr:leading>
-                                <Image.network>${itemData.image}</Image.network>
-                            </attr:leading>
-                            <attr:onTap>
-                                <Function>
-                                    <Call function="$print">
-                                        <Argument value="$index"/>
-                                    </Call>
-                                </Function>
-                            </attr:onTap>
-                        </ListTile>
+                        <if candidate="true">
+                            <ListTile>
+                                <attr:title>
+                                    <Text>${itemData.title}</Text>
+                                </attr:title>
+                                <attr:subtitle>
+                                    <Text>${itemData.subtitle}</Text>
+                                </attr:subtitle>
+                                <attr:leading>
+                                    <Image.network>${itemData.image}</Image.network>
+                                </attr:leading>
+                                <attr:onTap>
+                                    <Function>
+                                        <Call function="$print">
+                                            <Argument value="$index"/>
+                                        </Call>
+                                    </Function>
+                                </attr:onTap>
+                            </ListTile>
+                        </if>
+                        <else>
+                            <ListTile>
+                                <attr:title>
+                                    <Text>what</Text>
+                                </attr:title>
+                                <attr:onTap>
+                                    <Function>
+                                        <Call function="$print">
+                                            <Argument value="$index"/>
+                                        </Call>
+                                    </Function>
+                                </attr:onTap>
+                            </ListTile>
+                        </else>
                     </Builder>
                 </Function>
             </attr:itemBuilder>

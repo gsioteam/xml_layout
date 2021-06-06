@@ -115,6 +115,7 @@ class _ForControlData extends _FlowControlData {
 class _IfControlData extends _FlowControlData {
   NodeData candidate;
 
+
   _IfControlData(NodeData node, _FlowControlData next) : super(next) {
     xml.XmlElement element = node.node as xml.XmlElement;
     xml.XmlNode fnode = element.getAttributeNode("candidate");
@@ -152,6 +153,44 @@ class _IfControlData extends _FlowControlData {
   }
 }
 
+class _ElseControlData extends _FlowControlData {
+  _IfControlData ifControl;
+
+  _ElseControlData(NodeData node, _FlowControlData next, this.ifControl) : super(next);
+
+
+  @override
+  List<NodeData> process(NodeData temp, _NodeTester tester,
+      [_StopControl stop]) {
+    List<NodeData> res = [];
+    stop ??= _StopControl();
+    if (!stop.isStop) {
+      var candidate = ifControl.candidate;
+      if (candidate != null) {
+        bool cand;
+        MethodNode a;
+        if ((a = candidate.splitMethod("isEmpty", 1)) != null) {
+          cand = a[0].isEmpty;
+        } else if ((a = candidate.splitMethod("isNotEmpty", 1)) != null) {
+          cand = a[0].isNotEmpty;
+        } else {
+          cand = candidate.boolean;
+        }
+        if (!cand) {
+          if (tester != null) {
+            bool isStop = tester(temp);
+            if (isStop)
+              stop.isStop = true;
+            else
+              res.add(temp);
+          }
+        }
+      }
+    }
+    return res;
+  }
+}
+
 class _Range {
   int start;
   int end;
@@ -175,25 +214,42 @@ class NodeData {
     name = name.toLowerCase();
     List<NodeData> list = _attributes[name];
     if (list == null) {
-      list = List();
+      list = [];
       _attributes[name] = list;
     }
     list.add(node);
   }
 
-  void _processElement(xml.XmlElement element, {_FlowControlData flow}) {
+  void _processChildren(xml.XmlElement element, {_FlowControlData flow}) {
+    int idx = 0, length = element.children.length;
+    while (idx < length) {
+      var child = element.children[idx];
+      if (child is xml.XmlElement) {
+        idx = _processElement(element.children, idx, flow: flow);
+      } else ++idx;
+    }
+  }
+
+  int _processElement(List<xml.XmlNode> list, int idx, {_FlowControlData flow}) {
+    xml.XmlElement element = list[idx];
     if (element.name.toString().toLowerCase() == "for") {
       flow = _ForControlData(NodeData(element, control, this), flow);
-      for (xml.XmlNode node in element.children) {
-        if (node is xml.XmlElement) {
-          _processElement(node, flow: flow);
-        }
-      }
+      _processChildren(element, flow: flow);
     } else if (element.name.toString().toLowerCase() == "if") {
+      var parentFlow = flow;
       flow = _IfControlData(NodeData(element, control, this), flow);
-      for (xml.XmlNode node in element.children) {
+      _processChildren(element, flow: flow);
+      xml.XmlElement next;
+      for (int i = idx + 1; i < list.length; ++i) {
+        xml.XmlNode node = list[i];
         if (node is xml.XmlElement) {
-          _processElement(node, flow: flow);
+          if (node.name.toString().toLowerCase() == "else") {
+            flow = _ElseControlData(NodeData(node, control, this), parentFlow, (flow as _IfControlData));
+            _processChildren(node, flow: flow);
+            return i + 1;
+          } else {
+            break;
+          }
         }
       }
     } else if (element.name.prefix == "attr") {
@@ -231,15 +287,14 @@ class NodeData {
       _setNode(element.name.toString(),
           NodeData(el ?? text ?? xml.XmlText(""), control, this).._flow = flow);
     }
+    return idx + 1;
   }
 
   void _processChild() {
     if (_children == null) {
       _children = [];
       if (node is xml.XmlElement) {
-        for (xml.XmlNode child in node.children) {
-          if (child is xml.XmlElement) _processElement(child);
-        }
+        _processChildren(node);
       }
     }
   }
