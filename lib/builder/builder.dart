@@ -8,13 +8,11 @@ import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/dart/constant/value.dart';
 import 'package:dart_style/dart_style.dart';
 
-/**
- * Build to a [.xml_layout.dart] file
- */
+/// Build a [.xml_layout.dart] file
 class XmlLayoutBuilder extends Builder {
   final BuilderOptions options;
   Map<ClassElement, List<String>> _processed = Map();
-  List<String> imports = List();
+  List<String> imports = [];
   Map<DartType, DartType> _convertTypes = Map();
 
   static Map<Pattern, String> _inputConvert = {};
@@ -30,6 +28,10 @@ class XmlLayoutBuilder extends Builder {
 
   @override
   FutureOr<void> build(BuildStep buildStep) async {
+    _processed.clear();
+    imports.clear();
+    _convertTypes.clear();
+    _inputConvert.clear();
     imports.add("package:xml_layout/xml_layout.dart");
     imports.add("package:xml_layout/register.dart");
     imports.add("dart:convert");
@@ -39,7 +41,7 @@ class XmlLayoutBuilder extends Builder {
     String convertsName = options.config["coverts_name"];
     String importsName = options.config["imports_name"];
     String convertName = options.config["convert_types"];
-    List<DartType> entries = new List();
+    List<DartType> entries = [];
     for (var element in library.topLevelElements) {
       if (element.kind == ElementKind.TOP_LEVEL_VARIABLE) {
         var topLevelElement = element as TopLevelVariableElement;
@@ -223,19 +225,19 @@ class XmlLayoutBuilder extends Builder {
                 var param = con.parameters[i];
                 var type = convertType(param.type);
                 if (type.isDartCoreInt) {
-                  String str = 'int.tryParse(method[$i])';
+                  String str = 'method[$i]';
                   if (param.hasDefaultValue) {
                     str += '??${param.defaultValueCode}';
                   }
                   argv.add(str);
                 } else if (type.isDartCoreDouble || type.isDartCoreNum) {
-                  String str = 'double.tryParse(method[$i])';
+                  String str = 'method[$i]';
                   if (param.hasDefaultValue) {
                     str += '??${param.defaultValueCode}';
                   }
                   argv.add(str);
                 } else if (type.isDartCoreString) {
-                  argv.add('jsonDecode(method[$i])');
+                  argv.add('method[$i]');
                 } else {
                   String str = 'node.v<${type.getDisplayString(withNullability: false)}>(method[$i]';
                   if (param.hasDefaultValue) {

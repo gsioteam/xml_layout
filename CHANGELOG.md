@@ -1,3 +1,12 @@
+## [2.0.1] - 
+
+* New architecture design
+
+## [2.0.0] - 
+
+* Fixed problem in `for` flow.
+* Added function for attribute string.
+
 ## [1.1.6] - 
 
 * Added `registerTypes`

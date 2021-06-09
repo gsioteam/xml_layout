@@ -1,0 +1,293 @@
+
+import 'package:xml/xml.dart' as xml;
+
+import 'status.dart';
+import 'xml_layout.dart';
+
+typedef TemplateConstructor<T extends Template> = T Function(xml.XmlNode node, Template parent);
+
+Map<String, TemplateConstructor> _flowConstructors = {
+  "for": (node, parent) => ForFlowTemplate(node, parent),
+  "if": (node, parent) => IfFlowTemplate(node, parent),
+  "else": (node, parent) => ElseFlowTemplate(node, parent),
+};
+
+void registerFlowTemplate<T extends Template>(String tagName, TemplateConstructor<T> constructor) {
+  _flowConstructors[tagName] = constructor;
+}
+
+class _InnerMessage {
+  String type;
+  dynamic data;
+}
+
+class FlowMessage {
+  _InnerMessage _inner;
+
+  void clear() {
+    _inner = null;
+  }
+
+  void set(String type, dynamic data) {
+    _inner = _InnerMessage()
+      ..type = type
+      ..data = data;
+  }
+
+  dynamic get data => _inner?.data;
+}
+
+abstract class Template {
+  xml.XmlNode node;
+  Template parent;
+
+  List<Template> _children;
+  List<Template> get children {
+    if (_children == null) {
+      _children = [];
+      if (node is xml.XmlElement) {
+        for (var child in node.children) {
+          if (child is xml.XmlElement) {
+            _children.add(Template(child, this));
+          } else if (child is xml.XmlText) {
+            if (child.text.trim().isNotEmpty)
+              _children.add(Template(child, this));
+          }
+        }
+      }
+    }
+    return _children;
+  }
+
+  List<Template> _attributes;
+  List<Template> get attributes {
+    if (_attributes == null) {
+      _attributes = [];
+      if (node is xml.XmlElement) {
+        for (var attr in node.attributes) {
+          _attributes.add(Template(attr, this));
+        }
+      }
+    }
+    return _attributes;
+  }
+
+  xml.XmlName get name {
+    if (node is xml.XmlElement) {
+      return (node as xml.XmlElement).name;
+    } else if (node is xml.XmlAttribute) {
+      return (node as xml.XmlAttribute).name;
+    } else {
+      return null;
+    }
+  }
+
+  String get messageFilter => null;
+
+  Template._(this.node, this.parent);
+  List<NodeData> generate(Status status, NodeControl control, [FlowMessage message]) {
+    if (message == null) message = FlowMessage();
+    if (message._inner?.type != messageFilter) {
+      message.clear();
+    }
+    return processChildren(status, control, message);
+  }
+
+  List<NodeData> processChildren(Status status, NodeControl control, FlowMessage message);
+
+  factory Template(xml.XmlNode node, [Template parent]) {
+    if (node is xml.XmlElement) {
+      String tagName = node.name.toString().toLowerCase();
+      if (_flowConstructors.containsKey(tagName)) {
+        var constructor = _flowConstructors[tagName];
+        return constructor(node, parent);
+      } else {
+        return ElementTemplate(node, parent);
+      }
+    } else if (node is xml.XmlText) {
+      return TextTemplate(node, parent);
+    } else if (node is xml.XmlAttribute) {
+      return AttributeTemplate(node, parent);
+    }
+    return null;
+  }
+}
+
+class ElementTemplate extends Template {
+  ElementTemplate(xml.XmlElement node, [Template parent]) : super._(node, parent);
+
+  Status _oldStatus;
+  NodeData _cachedNode;
+
+  @override
+  List<NodeData> processChildren(Status status, NodeControl control, FlowMessage message) {
+    if (_oldStatus != status) {
+      _cachedNode = null;
+      _oldStatus = status;
+    }
+    if (_cachedNode == null)
+      _cachedNode = NodeData(this, status, control);
+    else
+      _cachedNode.clear();
+    return [_cachedNode];
+  }
+}
+
+class TextTemplate extends Template {
+  TextTemplate(xml.XmlText node, [Template parent]) : super._(node, parent);
+
+  Status _oldStatus;
+  NodeData _cachedNode;
+
+  @override
+  List<NodeData> processChildren(Status status, NodeControl control, FlowMessage message) {
+    if (_oldStatus != status) {
+      _cachedNode = null;
+      _oldStatus = status;
+    }
+    if (_cachedNode == null)
+      _cachedNode = NodeData(this, status, control);
+    else
+      _cachedNode.clear();
+    return [_cachedNode];
+  }
+}
+
+class AttributeTemplate extends Template {
+  AttributeTemplate(xml.XmlAttribute node, [Template parent]) : super._(node, parent);
+
+  Status _oldStatus;
+  NodeData _cachedNode;
+
+  @override
+  List<NodeData> processChildren(Status status, NodeControl control, FlowMessage message) {
+    if (_oldStatus != status) {
+      _cachedNode = null;
+      _oldStatus = status;
+    }
+    if (_cachedNode == null)
+      _cachedNode = NodeData(this, status, control);
+    else
+      _cachedNode.clear();
+    return [_cachedNode];
+  }
+}
+
+class ForFlowTemplate extends Template {
+  ForFlowTemplate(xml.XmlElement node, [Template parent]) : super._(node, parent);
+
+  List _oldList;
+  List<Status> _oldStatus;
+
+  bool _testArray(List list1, List list2) {
+    if (list1 != null && list2 != null && list1.length == list2.length) {
+      int n = list1.length;
+      for (int i = 0; i < n; ++i) {
+        if (list1[i] != list2[i]) return false;
+      }
+    }
+    return false;
+  }
+
+  @override
+  List<NodeData> processChildren(Status status, NodeControl control, FlowMessage message) {
+    xml.XmlElement element = node as xml.XmlElement;
+    String item = element.getAttribute("item") ?? "item";
+    String index = element.getAttribute("index") ?? "index";
+
+    List arr;
+    xml.XmlAttribute fnode = element.getAttributeNode("array");
+    if (fnode != null) {
+      arr = status.execute(fnode.text) as List;
+    }
+    if (arr == null) {
+      fnode = element.getAttributeNode("count");
+      arr = [];
+      var num = status.execute(fnode.value);
+      if (num is int) {
+        for (int i = 0; i < num; ++i) {
+          arr.add(i);
+        }
+      }
+    }
+
+    List<NodeData> res;
+    if (_testArray(_oldList, arr)) {
+      res = [];
+      for (int i = 0, t = _oldList.length; i < t; ++i) {
+        Status newStatus = _oldStatus[i];
+        FlowMessage message = FlowMessage();
+        for (var child in children) {
+          res.addAll(child.generate(newStatus, control, message));
+        }
+      }
+      return res;
+    } else {
+      res = [];
+      _oldStatus = [];
+      for (int i = 0, t = arr.length; i < t; ++i) {
+        Status newStatus = status.child({
+          item: arr[i],
+          index: i
+        });
+        _oldStatus.add(newStatus);
+        FlowMessage message = FlowMessage();
+        for (var child in children) {
+          res.addAll(child.generate(newStatus, control, message));
+        }
+      }
+      _oldList = arr;
+    }
+    return res;
+  }
+}
+
+const String _ifFlowType = "if";
+
+class IfFlowTemplate extends Template {
+  IfFlowTemplate(xml.XmlElement node, [Template parent]) : super._(node, parent);
+
+  @override
+  List<NodeData> processChildren(Status status, NodeControl control, FlowMessage message) {
+    xml.XmlElement element = node as xml.XmlElement;
+    xml.XmlAttribute fnode = element.getAttributeNode("candidate");
+    bool candidate = fnode == null ? false : status.execute(fnode.value);
+
+    List<NodeData> res = [];
+    if (candidate) {
+      FlowMessage message = FlowMessage();
+      for (var child in children) {
+        res.addAll(child.generate(status, control, message));
+      }
+    }
+    message.set(_ifFlowType, candidate);
+    return res;
+  }
+}
+
+class ElseFlowTemplate extends Template {
+  ElseFlowTemplate(xml.XmlElement node, [Template parent]) : super._(node, parent);
+
+  @override
+  String get messageFilter => _ifFlowType;
+
+  @override
+  List<NodeData> processChildren(Status status, NodeControl control, FlowMessage message) {
+    bool candidate = true, checkCandi = message.data == false;
+    List<NodeData> res = [];
+    if (checkCandi) {
+      xml.XmlElement element = node as xml.XmlElement;
+      xml.XmlAttribute fnode = element.getAttributeNode("candidate");
+      candidate = fnode == null ? true : status.execute(fnode.value);
+
+      if (candidate) {
+        FlowMessage message = FlowMessage();
+        for (var child in children) {
+          res.addAll(child.generate(status, control, message));
+        }
+      }
+    }
+    message.set(_ifFlowType, candidate || !checkCandi);
+    return res;
+  }
+}

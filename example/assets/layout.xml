@@ -1,6 +1,9 @@
 <Column mainAxisAlignment="center">
-    <for count="6">
+    <for count="$counter">
         <Text>$item, You have pushed the button this many times:</Text>
+        <if candidate="equal(1, mod($item, 2))">
+            <Text>Test2</Text>
+        </if>
     </for>
     <Text id="text-id">
         <attr:style>

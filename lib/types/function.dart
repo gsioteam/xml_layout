@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:xml_layout/xml_layout.dart';
+import '../xml_layout.dart';
 
 import '../register.dart';
 
@@ -23,17 +23,6 @@ class Call extends Action {
     if (func != null) {
       return Function.apply(func, args?.map((e) => e.value)?.toList() ?? []);
     }
-  }
-}
-
-class Apply extends Action {
-  String name;
-
-  Apply({this.name, String ret, List<Argument> args})
-      : super(ret: ret, args: args);
-
-  dynamic call(NodeData node) {
-    return node.apply(name, args?.map((e) => e.value)?.toList() ?? []);
   }
 }
 
@@ -120,13 +109,6 @@ Register register = Register(() {
   XmlLayout.register("Call", (node, key) {
     return Call(
         func: node.s<Function>("function"),
-        ret: node.s<String>("return"),
-        args: node.children<Argument>());
-  });
-
-  XmlLayout.register("Apply", (node, key) {
-    return Apply(
-        name: node.s<String>("name"),
         ret: node.s<String>("return"),
         args: node.children<Argument>());
   });
