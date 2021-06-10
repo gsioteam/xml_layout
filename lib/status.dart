@@ -102,7 +102,10 @@ class Status {
     String param = text.trim();
     if (param.indexOf("(") > 0) {
       MethodNode m = MethodNode.parse(param, this);
-      if (_methods.containsKey(m.name)) {
+      dynamic func = get(m.name);
+      if (func is Function) {
+        return Function.apply(func, m.arguments);
+      } else if (_methods.containsKey(m.name)) {
         var handler = _methods[m.name];
         return handler(m);
       } else {
