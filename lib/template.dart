@@ -198,7 +198,7 @@ class ForFlowTemplate extends Template {
     List arr;
     xml.XmlAttribute fnode = element.getAttributeNode("array");
     if (fnode != null) {
-      arr = status.execute(fnode.text) as List;
+      arr = status.execute(fnode.value) as List;
     }
     if (arr == null) {
       fnode = element.getAttributeNode("count");
