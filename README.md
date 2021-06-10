@@ -120,7 +120,7 @@ XmlLayout.registerInline(TextHeightBehavior, "fromEncoded", false,
             </Call>
             <!-- The last element of Function tag would be the final result -->
             <Builder>
-                <Text>${itemData.title} $index</Text>
+                <Text>${itemData.title}</Text>
             </Builder>
         </Function>
     </attr:itemBuilder>
