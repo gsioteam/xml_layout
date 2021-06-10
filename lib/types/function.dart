@@ -86,20 +86,22 @@ class _ReturnType<T> {
         "args": [a1, a2, a3, a4, a5]
       };
       node.status.data = data;
-      dynamic ret = creator(node);
 
-      return ret as T;
+      return creator(node);
     };
   }
   T creator(NodeData node) {
-    var data = node.status.data;
     var children = node.children<Action>();
     dynamic ret;
     children.forEach((element) {
       ret = element.result;
     });
 
-    return ret as T;
+    if (T != Null) {
+      return ret as T;
+    } else {
+      return null;
+    }
   }
 }
 Map<String, _ReturnType> _returnTypes = {};

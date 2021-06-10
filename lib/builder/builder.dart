@@ -225,19 +225,19 @@ class XmlLayoutBuilder extends Builder {
                 var param = con.parameters[i];
                 var type = convertType(param.type);
                 if (type.isDartCoreInt) {
-                  String str = 'method[$i]';
+                  String str = 'method[$i]?.toInt()';
                   if (param.hasDefaultValue) {
                     str += '??${param.defaultValueCode}';
                   }
                   argv.add(str);
                 } else if (type.isDartCoreDouble || type.isDartCoreNum) {
-                  String str = 'method[$i]';
+                  String str = 'method[$i]?.toDouble()';
                   if (param.hasDefaultValue) {
                     str += '??${param.defaultValueCode}';
                   }
                   argv.add(str);
                 } else if (type.isDartCoreString) {
-                  argv.add('method[$i]');
+                  argv.add('method[$i]?.toString()');
                 } else {
                   String str = 'node.v<${type.getDisplayString(withNullability: false)}>(method[$i]';
                   if (param.hasDefaultValue) {
