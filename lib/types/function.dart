@@ -13,7 +13,26 @@ abstract class Action {
   List<Argument> args;
 
   Action({this.ret, this.args});
-  dynamic call(NodeData node);
+
+  bool _loaded = false;
+  dynamic _result;
+  dynamic get result {
+    if (!_loaded) {
+      _result = call();
+      _loaded = true;
+    }
+    return _result;
+  }
+
+  void execute(Status status) {
+    if (ret != null) {
+      if (status.data == null) {
+        status.data = {};
+      }
+      status.data[ret] = result;
+    }
+  }
+  dynamic call();
 }
 
 class Call extends Action {
@@ -22,7 +41,7 @@ class Call extends Action {
   Call({this.func, String ret, List<Argument> args})
       : super(ret: ret, args: args);
 
-  dynamic call(NodeData node) {
+  dynamic call() {
     if (func != null) {
       return Function.apply(func, args?.map((e) => e.value)?.toList() ?? []);
     }
@@ -37,7 +56,7 @@ class Builder extends Action {
   }) : super(ret: ret);
 
   @override
-  call(NodeData node) {
+  call() {
     return this.node.child();
   }
 }
@@ -47,7 +66,7 @@ class SetArgument extends Action {
   SetArgument({String ret, this.argument}) : super(ret: ret);
 
   @override
-  call(NodeData node) {
+  call() {
     return argument;
   }
 }
@@ -77,8 +96,7 @@ class _ReturnType<T> {
     var children = node.children<Action>();
     dynamic ret;
     children.forEach((element) {
-      ret = element.call(node);
-      if (element.ret != null) data[element.ret] = ret;
+      ret = element.result;
     });
 
     return ret as T;
@@ -119,21 +137,27 @@ Register register = Register(() {
       return returnType.function(node);
   });
   XmlLayout.register("Call", (node, key) {
-    return Call(
+    var call = Call(
         func: node.s<Function>("function"),
         ret: node.s<String>("return"),
         args: node.children<Argument>());
+    call.execute(node.status);
+    return call;
   });
   XmlLayout.register("Builder", (node, key) {
-    return Builder(
+    var builder = Builder(
       node,
     );
+    builder.execute(node.status);
+    return builder;
   });
   XmlLayout.register("SetArgument", (node, key) {
-    return SetArgument(
-      ret: node.s<String>("return"),
-      argument: node.s("argument")
+    var set = SetArgument(
+        ret: node.s<String>("return"),
+        argument: node.s("argument")
     );
+    set.execute(node.status);
+    return set;
   });
 
   XmlLayout.register("Argument", (node, key) {

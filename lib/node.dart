@@ -47,8 +47,9 @@ class NodeData {
     if (_rawChildren == null) {
       _rawChildren = [];
       if (_template.node is xml.XmlElement) {
+        FlowMessage message = FlowMessage();
         for (var childTemplate in _template.children) {
-          _rawChildren.addAll(childTemplate.generate(status, control));
+          _rawChildren.addAll(childTemplate.generate(status, control, message));
         }
       }
     }
