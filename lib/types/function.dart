@@ -61,46 +61,37 @@ class Argument {
 
 typedef _Func<T> = T Function([dynamic, dynamic, dynamic, dynamic, dynamic]);
 class _ReturnType<T> {
-  _Func<T> Function(NodeData node, Key key) function;
-}
-Map<String, _ReturnType> _returnTypes = {};
-
-void registerReturnType<T>() {
-  String typeName = T.toString().toLowerCase();
-  _returnTypes[typeName] = _ReturnType<T>()
-    ..function = (node, key) {
-      return ([a1, a2, a3, a4, a5]) {
-        Map<String, dynamic> data = {
-          "args": [a1, a2, a3, a4, a5]
-        };
-        node.status.data = data;
-        var children = node.children<Action>();
-        dynamic ret;
-        children.forEach((element) {
-          ret = element.call(node);
-          if (element.ret != null) data[element.ret] = ret;
-        });
-
-        return ret as T;
+  _Func<T> function(NodeData node) {
+    return ([a1, a2, a3, a4, a5]) {
+      Map<String, dynamic> data = {
+        "args": [a1, a2, a3, a4, a5]
       };
-    };
-}
+      node.status.data = data;
+      dynamic ret = creator(node);
 
-_ReturnType<Null> _defaultReturnType = _ReturnType<Null>()
-  ..function = (node, key) {
-  return ([a1, a2, a3, a4, a5]) {
-    Map<String, dynamic> data = {
-      "args": [a1, a2, a3, a4, a5]
+      return ret as T;
     };
-    node.status.data = data;
+  }
+  T creator(NodeData node) {
+    var data = node.status.data;
     var children = node.children<Action>();
     dynamic ret;
     children.forEach((element) {
       ret = element.call(node);
       if (element.ret != null) data[element.ret] = ret;
     });
-  };
-};
+
+    return ret as T;
+  }
+}
+Map<String, _ReturnType> _returnTypes = {};
+
+void registerReturnType<T>() {
+  String typeName = T.toString().toLowerCase();
+  _returnTypes[typeName] = _ReturnType<T>();
+}
+
+_ReturnType<Null> _defaultReturnType = _ReturnType<Null>();
 
 class FunctionTemplate extends Template {
   FunctionTemplate(xml.XmlElement node, [Template parent]) : super.init(node, parent);
@@ -122,7 +113,10 @@ Register register = Register(() {
     String type = node.s<String>("returnType")?.toLowerCase();
     _ReturnType returnType = _returnTypes.containsKey(type) ? _returnTypes[type] : _defaultReturnType;
 
-    return returnType.function(node, key);
+    if (node.s<bool>("creator") == true) {
+      return returnType.creator(node);
+    } else
+      return returnType.function(node);
   });
   XmlLayout.register("Call", (node, key) {
     return Call(
