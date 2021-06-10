@@ -106,6 +106,27 @@ XmlLayout.registerInline(TextHeightBehavior, "fromEncoded", false,
 
 `node.v<T>("value")`, `node.value<T>("value")` convert text to target type
 
+### Widget Builder 
+
+```xml
+<ListView.separated itemCount="$itemCount">
+    <attr:itemBuilder>
+        <Function returnType="Widget">
+            <!-- get arguments of function via args -->
+            <SetArgument return="index" argument="${args[1]}"/>
+            <Call function="$getItem" return="itemData">
+                <!-- pass argument to getItem function -->
+                <Argument value="$index"/>
+            </Call>
+            <!-- The last element of Function tag would be the final result -->
+            <Builder>
+                <Text>${itemData.title} $index</Text>
+            </Builder>
+        </Function>
+    </attr:itemBuilder>
+</ListView.separated>
+```
+
 ## Builder
 
 You can write a script to generate the constructor code. 

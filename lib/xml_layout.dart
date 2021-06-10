@@ -12,7 +12,6 @@ import 'exceptions.dart';
 import 'status.dart';
 import 'template.dart';
 import 'types/function.dart' as function;
-import 'types/function.dart';
 import 'types/proxy.dart' as proxy;
 
 part 'node.dart';
@@ -131,7 +130,7 @@ class XmlLayout extends StatefulWidget {
     if (!_initialized) {
       function.register();
       proxy.register();
-      registerReturnType<Widget>();
+      function.registerReturnType<Widget>();
       _initialized = true;
     }
   }
@@ -203,6 +202,14 @@ class XmlLayout extends StatefulWidget {
     } else {
       throw "Target is not a inline item";
     }
+  }
+
+  static void registerInlineMethod(String name, MethodHandler handler) {
+    registerMethod(name, handler);
+  }
+
+  static void registerFunctionReturn<T>() {
+    function.registerReturnType<T>();
   }
 }
 
