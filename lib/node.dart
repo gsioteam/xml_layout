@@ -89,14 +89,21 @@ class NodeData {
     _children = null;
   }
 
+  NodeData _cloneAsChild(NodeData father) {
+    var child = NodeData(_template, father.status.child(null), control);
+    child._attributes = _attributes;
+    child._children = _children?.map<NodeData>((e) {
+      return e._cloneAsChild(child);
+    })?.toList();
+    return child;
+  }
+
   NodeData clone(Map<String, dynamic> ext) {
     Status newStatus = status.child(ext);
     NodeData one = NodeData(_template, newStatus, control);
     one._attributes = _attributes;
     one._children = _children?.map<NodeData>((element) {
-      var child = element.clone(null);
-      child._father = one;
-      return child;
+      return element._cloneAsChild(one);
     })?.toList();
     return one;
   }
@@ -206,8 +213,10 @@ class NodeData {
   int get integer => int.tryParse(text);
   double get real => double.tryParse(text);
   bool get boolean {
-    MethodNode obj = MethodNode.parse(raw, _status);
-    return obj == null ? text == "true" : obj.execute() == true;
+    dynamic res = status.execute(raw);
+    if (res is String) return res == "true";
+    else if (res is bool) return res;
+    return res != null;
   }
 
   bool get isAttribute => _template.node is xml.XmlAttribute;
@@ -258,7 +267,7 @@ class NodeData {
 
   T t<T>() {
     if (!isElement) {
-      dynamic obj = MethodNode.inlineParse(raw, status);
+      dynamic obj = status.execute(raw);
       if (obj is T) return obj;
       if (T == String) return obj.toString() as T;
     }

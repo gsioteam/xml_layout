@@ -11,7 +11,6 @@ void main() {
   colors.register();
   icons.register();
   xml_layout.register();
-  registerReturnType<Widget>();
   runApp(MyApp());
 }
 

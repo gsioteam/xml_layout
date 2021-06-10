@@ -3,37 +3,6 @@ import 'dart:convert';
 
 import 'status.dart';
 
-typedef MethodHandler = dynamic Function(MethodNode);
-typedef ValueGetter = dynamic Function(String path);
-
-Map<String, MethodHandler> _methods = {
-  "isEmpty": (method) {
-    return method[0].isEmpty;
-  },
-  "isNotEmpty": (method) {
-    return method[0].isNotEmpty;
-  },
-  "equal": (method) {
-    if (method.length > 0) {
-      var last = method[0];
-      for (int i = 1, t = method.length; i < t; ++i) {
-        if (last != method[i]) return false;
-      }
-    }
-    return true;
-  },
-  "mod": (method) {
-    return method[0] % method[1];
-  },
-  "div": (method) {
-    return method[0] / method[1];
-  },
-};
-
-void registerMethod(String name, MethodHandler handler) {
-  _methods[name] = handler;
-}
-
 List<int> _dots(String p) {
   List<int> dots = [];
   int deep = 0, deep1 = 0, deep2 = 0;
@@ -81,8 +50,6 @@ List<int> _dots(String p) {
   return dots;
 }
 
-RegExp _matchRegExp1 = RegExp(r"^\$([\w_]+)$");
-RegExp _matchRegExp2 = RegExp(r"^\$\{([^\}]+)\}$");
 RegExp _regExp = RegExp(r"^(\w*)\(([^`]*)\)$");
 
 class MethodNode {
@@ -101,30 +68,7 @@ class MethodNode {
       List<int> dots = _dots(param);
 
       void insertParam(String param) {
-        if (param.indexOf("(") > 0) {
-          MethodNode m = MethodNode.parse(param, status);
-          if (_methods.containsKey(m.name)) {
-            var handler = _methods[m.name];
-            method.arguments.add(handler(m));
-          } else {
-            method.arguments.add(null);
-          }
-        } else {
-          if (param.startsWith("\$")) {
-            Match regExp = _matchRegExp1.firstMatch(param);
-            if (regExp == null) {
-              regExp = _matchRegExp2.firstMatch(param);
-            }
-
-            if (regExp != null) {
-              method.arguments.add(status.get(regExp.group(1)));
-            } else {
-              method.arguments.add(null);
-            }
-          } else {
-            method.arguments.add(jsonDecode(param));
-          }
-        }
+        method.arguments.add(status.execute(param));
       }
       if (dots.length > 0) {
         int off = 0;
@@ -145,40 +89,5 @@ class MethodNode {
   dynamic operator [](int idx) => arguments[idx];
   List<T> map<T>(T Function(dynamic) fn) => arguments.map(fn);
 
-  dynamic execute() {
-    if (_methods.containsKey(name)) {
-      return _methods[name](this);
-    } else {
-      return null;
-    }
-  }
-
-  static dynamic inlineParse(String str, Status status) {
-    String param = str.trim();
-    if (param.indexOf("(") > 0) {
-      MethodNode m = MethodNode.parse(param, status);
-      if (_methods.containsKey(m.name)) {
-        var handler = _methods[m.name];
-        return handler(m);
-      } else {
-        return null;
-      }
-    } else {
-      if (param.startsWith("\$")) {
-        Match regExp = _matchRegExp1.firstMatch(param);
-        if (regExp == null) {
-          regExp = _matchRegExp2.firstMatch(param);
-        }
-
-        if (regExp != null) {
-          return status.get(regExp.group(1));
-        } else {
-          return null;
-        }
-      } else {
-        return param;
-      }
-    }
-  }
 }
 

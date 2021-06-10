@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:xml_layout/status.dart';
+import '../template.dart';
 import '../xml_layout.dart';
 
 import '../register.dart';
+import 'package:xml/xml.dart' as xml;
 
 class ArgsCountError extends Error {}
 
@@ -70,8 +73,8 @@ void registerReturnType<T>() {
         Map<String, dynamic> data = {
           "args": [a1, a2, a3, a4, a5]
         };
-        NodeData newNode = node.clone(data);
-        var children = newNode.children<Action>();
+        node.status.data = data;
+        var children = node.children<Action>();
         dynamic ret;
         children.forEach((element) {
           ret = element.call(node);
@@ -89,8 +92,8 @@ _ReturnType<Null> _defaultReturnType = _ReturnType<Null>()
     Map<String, dynamic> data = {
       "args": [a1, a2, a3, a4, a5]
     };
-    NodeData newNode = node.clone(data);
-    var children = newNode.children<Action>();
+    node.status.data = data;
+    var children = node.children<Action>();
     dynamic ret;
     children.forEach((element) {
       ret = element.call(node);
@@ -99,7 +102,22 @@ _ReturnType<Null> _defaultReturnType = _ReturnType<Null>()
   };
 };
 
+class FunctionTemplate extends Template {
+  FunctionTemplate(xml.XmlElement node, [Template parent]) : super.init(node, parent);
+
+  NodeData _cachedNode;
+
+  @override
+  List<NodeData> processChildren(Status status, NodeControl control, FlowMessage message) {
+    if (_cachedNode == null) {
+      _cachedNode = NodeData(this, status.child({}), control);
+    }
+    return [_cachedNode];
+  }
+}
+
 Register register = Register(() {
+  registerFlowTemplate<FunctionTemplate>("Function", (node, parent) => FunctionTemplate(node, parent));
   XmlLayout.register("Function", (node, key) {
     String type = node.s<String>("returnType")?.toLowerCase();
     _ReturnType returnType = _returnTypes.containsKey(type) ? _returnTypes[type] : _defaultReturnType;
@@ -127,4 +145,5 @@ Register register = Register(() {
   XmlLayout.register("Argument", (node, key) {
     return Argument(node);
   });
+
 });

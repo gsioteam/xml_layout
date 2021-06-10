@@ -5,12 +5,14 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:xml/xml.dart' as xml;
 import 'parser.dart';
 import 'exceptions.dart';
 import 'status.dart';
 import 'template.dart';
 import 'types/function.dart' as function;
+import 'types/function.dart';
 import 'types/proxy.dart' as proxy;
 
 part 'node.dart';
@@ -129,6 +131,7 @@ class XmlLayout extends StatefulWidget {
     if (!_initialized) {
       function.register();
       proxy.register();
+      registerReturnType<Widget>();
       _initialized = true;
     }
   }

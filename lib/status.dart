@@ -3,6 +3,37 @@ import 'dart:collection';
 import 'dart:convert';
 import 'parser.dart';
 
+
+typedef MethodHandler = dynamic Function(MethodNode);
+
+Map<String, MethodHandler> _methods = {
+  "isEmpty": (method) {
+    return method[0].isEmpty;
+  },
+  "isNotEmpty": (method) {
+    return method[0].isNotEmpty;
+  },
+  "equal": (method) {
+    if (method.length > 0) {
+      var last = method[0];
+      for (int i = 1, t = method.length; i < t; ++i) {
+        if (last != method[i]) return false;
+      }
+    }
+    return true;
+  },
+  "mod": (method) {
+    return method[0] % method[1];
+  },
+  "div": (method) {
+    return method[0] / method[1];
+  },
+};
+
+void registerMethod(String name, MethodHandler handler) {
+  _methods[name] = handler;
+}
+
 _getPath(dynamic tar, List path, int offset) {
   if (offset >= path.length) {
     return tar;
@@ -22,6 +53,9 @@ _getPath(dynamic tar, List path, int offset) {
     }
   }
 }
+
+RegExp _matchRegExp1 = RegExp(r"^\$([\w_]+)$");
+RegExp _matchRegExp2 = RegExp(r"^\$\{([^\}]+)\}$");
 
 class Status {
   Map<String, dynamic> data;
@@ -65,6 +99,34 @@ class Status {
   }
 
   dynamic execute(String text) {
-    return MethodNode.inlineParse(text, this);
+    String param = text.trim();
+    if (param.indexOf("(") > 0) {
+      MethodNode m = MethodNode.parse(param, this);
+      if (_methods.containsKey(m.name)) {
+        var handler = _methods[m.name];
+        return handler(m);
+      } else {
+        return null;
+      }
+    } else {
+      if (param.startsWith("\$")) {
+        Match regExp = _matchRegExp1.firstMatch(param);
+        if (regExp == null) {
+          regExp = _matchRegExp2.firstMatch(param);
+        }
+
+        if (regExp != null) {
+          return get(regExp.group(1));
+        } else {
+          return null;
+        }
+      } else {
+        try {
+          return jsonDecode(param);
+        } catch (e) {
+          return param;
+        }
+      }
+    }
   }
 }
