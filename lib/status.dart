@@ -100,7 +100,7 @@ class Status {
 
   dynamic execute(String text) {
     String param = text.trim();
-    String _stringResult() {
+    dynamic _stringResult() {
       try {
         return jsonDecode(param);
       } catch (e) {
