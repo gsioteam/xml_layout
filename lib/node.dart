@@ -91,7 +91,7 @@ class NodeData {
   }
 
   NodeData _cloneAsChild(NodeData father) {
-    var child = NodeData(_template, father.status.child(null), control);
+    var child = NodeData(_template, father.status, control);
     child._attributes = _attributes;
     child._children = _children?.map<NodeData>((e) {
       return e._cloneAsChild(child);

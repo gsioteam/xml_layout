@@ -82,12 +82,11 @@ typedef _Func<T> = T Function([dynamic, dynamic, dynamic, dynamic, dynamic]);
 class _ReturnType<T> {
   _Func<T> function(NodeData node) {
     return ([a1, a2, a3, a4, a5]) {
-      Map<String, dynamic> data = {
+      NodeData newNode = node.clone({
         "args": [a1, a2, a3, a4, a5]
-      };
-      node.status.data = data;
+      });
 
-      return creator(node);
+      return creator(newNode);
     };
   }
   T creator(NodeData node) {
@@ -113,30 +112,17 @@ void registerReturnType<T>() {
 
 _ReturnType<Null> _defaultReturnType = _ReturnType<Null>();
 
-class FunctionTemplate extends Template {
-  FunctionTemplate(xml.XmlElement node, [Template parent]) : super.init(node, parent);
-
-  NodeData _cachedNode;
-
-  @override
-  List<NodeData> processChildren(Status status, NodeControl control, FlowMessage message) {
-    if (_cachedNode == null) {
-      _cachedNode = NodeData(this, status.child({}), control);
-    }
-    return [_cachedNode];
-  }
-}
-
 Register register = Register(() {
-  registerFlowTemplate<FunctionTemplate>("Function", (node, parent) => FunctionTemplate(node, parent));
+  // registerFlowTemplate<FunctionTemplate>("Function", (node, parent) => FunctionTemplate(node, parent));
   XmlLayout.register("Function", (node, key) {
     String type = node.s<String>("returnType")?.toLowerCase();
     _ReturnType returnType = _returnTypes.containsKey(type) ? _returnTypes[type] : _defaultReturnType;
 
     if (node.s<bool>("creator") == true) {
       return returnType.creator(node);
-    } else
+    } else {
       return returnType.function(node);
+    }
   });
   XmlLayout.register("Call", (node, key) {
     var call = Call(
