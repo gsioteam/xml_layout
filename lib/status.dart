@@ -109,7 +109,11 @@ class Status {
         var handler = _methods[m.name];
         return handler(m);
       } else {
-        return null;
+        try {
+          return jsonDecode(param);
+        } catch (e) {
+          return param;
+        }
       }
     } else {
       if (param.startsWith("\$")) {
