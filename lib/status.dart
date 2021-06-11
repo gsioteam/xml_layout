@@ -100,6 +100,13 @@ class Status {
 
   dynamic execute(String text) {
     String param = text.trim();
+    String _stringResult() {
+      try {
+        return jsonDecode(param);
+      } catch (e) {
+        return param;
+      }
+    }
     if (param.indexOf("(") > 0) {
       MethodNode m = MethodNode.parse(param, this);
       dynamic func = get(m.name);
@@ -109,11 +116,7 @@ class Status {
         var handler = _methods[m.name];
         return handler(m);
       } else {
-        try {
-          return jsonDecode(param);
-        } catch (e) {
-          return param;
-        }
+        return _stringResult();
       }
     } else {
       if (param.startsWith("\$")) {
@@ -125,14 +128,10 @@ class Status {
         if (regExp != null) {
           return get(regExp.group(1));
         } else {
-          return null;
+          return _stringResult();
         }
       } else {
-        try {
-          return jsonDecode(param);
-        } catch (e) {
-          return param;
-        }
+        return _stringResult();
       }
     }
   }
