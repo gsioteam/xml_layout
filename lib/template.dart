@@ -204,10 +204,12 @@ class ForFlowTemplate extends Template {
     if (arr == null) {
       fnode = element.getAttributeNode("count");
       arr = [];
-      var num = status.execute(fnode.value);
-      if (num is int) {
-        for (int i = 0; i < num; ++i) {
-          arr.add(i);
+      if (fnode != null) {
+        var num = status.execute(fnode.value);
+        if (num is int) {
+          for (int i = 0; i < num; ++i) {
+            arr.add(i);
+          }
         }
       }
     }

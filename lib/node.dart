@@ -91,19 +91,17 @@ class NodeData {
   }
 
   NodeData _cloneAsChild(NodeData father) {
-    var child = NodeData(_template, father.status, control);
-    child._attributes = _attributes;
-    child._children = _children?.map<NodeData>((e) {
-      return e._cloneAsChild(child);
+    var one = NodeData(_template, father.status, control);
+    one._rawChildren = _rawChildren?.map<NodeData>((element) {
+      return element._cloneAsChild(one);
     })?.toList();
-    return child;
+    return one;
   }
 
   NodeData clone(Map<String, dynamic> ext) {
     Status newStatus = status.child(ext);
     NodeData one = NodeData(_template, newStatus, control);
-    one._attributes = _attributes;
-    one._children = _children?.map<NodeData>((element) {
+    one._rawChildren = _rawChildren?.map<NodeData>((element) {
       return element._cloneAsChild(one);
     })?.toList();
     return one;
