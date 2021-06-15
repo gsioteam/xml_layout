@@ -11,6 +11,7 @@ class ArgsCountError extends Error {}
 abstract class Action {
   String ret;
   List<Argument> args;
+  Status _status;
 
   Action({this.ret, this.args});
 
@@ -18,21 +19,25 @@ abstract class Action {
   dynamic _result;
   dynamic get result {
     if (!_loaded) {
-      _result = call();
+      _result = call(_status);
       _loaded = true;
     }
     return _result;
   }
 
   void execute(Status status) {
-    if (ret != null) {
-      if (status.data == null) {
-        status.data = {};
+    _status = status;
+    if (status.tag == _functionTag) {
+      _result = call(status);
+      if (ret != null) {
+        if (status.data == null) {
+          status.data = {};
+        }
+        status.data[ret] = _result;
       }
-      status.data[ret] = result;
     }
   }
-  dynamic call();
+  dynamic call(Status status);
 }
 
 class Call extends Action {
@@ -41,7 +46,7 @@ class Call extends Action {
   Call({this.func, String ret, List<Argument> args})
       : super(ret: ret, args: args);
 
-  dynamic call() {
+  dynamic call(Status status) {
     if (func != null) {
       return Function.apply(func, args?.map((e) => e.value)?.toList() ?? []);
     }
@@ -56,7 +61,7 @@ class Builder extends Action {
   }) : super(ret: ret);
 
   @override
-  call() {
+  call(Status status) {
     return this.node.child();
   }
 }
@@ -66,9 +71,30 @@ class SetArgument extends Action {
   SetArgument({String ret, this.argument}) : super(ret: ret);
 
   @override
-  call() {
+  call(Status status) {
     return argument;
   }
+}
+
+class Script extends Action {
+  final String raw;
+  Script(this.raw);
+
+  @override
+  call(Status status) {
+    dynamic ret;
+    if (status != null) {
+      var lines = raw.split('\n');
+      for (var line in lines) {
+        String script = line.trim();
+        if (script.isNotEmpty) {
+          ret = status.execute(script);
+        }
+      }
+    }
+    return ret;
+  }
+
 }
 
 class Argument {
@@ -78,15 +104,14 @@ class Argument {
   dynamic get value => node.s("value");
 }
 
+const List _emptyArgs = [null, null, null, null, null];
 typedef _Func<T> = T Function([dynamic, dynamic, dynamic, dynamic, dynamic]);
 class _ReturnType<T> {
   _Func<T> function(NodeData node) {
     return ([a1, a2, a3, a4, a5]) {
-      NodeData newNode = node.clone({
+      return creator(_createNewNode(node, {
         "args": [a1, a2, a3, a4, a5]
-      });
-
-      return creator(newNode);
+      }));
     };
   }
   T creator(NodeData node) {
@@ -109,26 +134,34 @@ void registerReturnType<T>() {
   String typeName = T.toString().toLowerCase();
   _returnTypes[typeName] = _ReturnType<T>();
 }
+int _functionTag = 0x10003;
 
 _ReturnType<Null> _defaultReturnType = _ReturnType<Null>();
 
+NodeData _createNewNode(NodeData node, Map<String, dynamic> data) {
+  var ret = node.clone(data);
+  ret.status.tag = _functionTag;
+  return ret;
+}
+
 Register register = Register(() {
-  // registerFlowTemplate<FunctionTemplate>("Function", (node, parent) => FunctionTemplate(node, parent));
   XmlLayout.register("Function", (node, key) {
     String type = node.s<String>("returnType")?.toLowerCase();
     _ReturnType returnType = _returnTypes.containsKey(type) ? _returnTypes[type] : _defaultReturnType;
 
     if (node.s<bool>("creator") == true) {
-      return returnType.creator(node);
+      return returnType.creator(_createNewNode(node, {
+        "args": _emptyArgs
+      }));
     } else {
       return returnType.function(node);
     }
   });
   XmlLayout.register("Call", (node, key) {
     var call = Call(
-        func: node.s<Function>("function"),
-        ret: node.s<String>("return"),
-        args: node.children<Argument>());
+      func: node.s<Function>("function"),
+      ret: node.s<String>("return"),
+      args: node.children<Argument>());
     call.execute(node.status);
     return call;
   });
@@ -147,7 +180,11 @@ Register register = Register(() {
     set.execute(node.status);
     return set;
   });
-
+  XmlLayout.register("Script", (node, key) {
+    var script = Script(node.raw);
+    script.execute(node.status);
+    return script;
+  });
   XmlLayout.register("Argument", (node, key) {
     return Argument(node);
   });

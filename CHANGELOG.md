@@ -1,3 +1,7 @@
+## [2.1.0] - 
+
+* Added script support in `Function` tag.
+
 ## [2.0.1] - 
 
 * New architecture design

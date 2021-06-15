@@ -127,6 +127,27 @@ XmlLayout.registerInline(TextHeightBehavior, "fromEncoded", false,
 </ListView.separated>
 ```
 
+### Script
+
+```xml
+<Function>
+    <Script>
+        set("index", ${args[1]})
+        set("itemData", getItem($index))
+    </Script>
+    <!-- same as -->
+    <SetArgument return="index" argument="${args[1]}"/>
+    <Call function="$getItem" return="itemData">
+        <Argument value="$index"/>
+    </Call>
+    <!-- end(same as) -->
+
+    <Builder>
+        <Text>${itemData.title}</Text>
+    </Builder>
+</Function>
+```
+
 ## Builder
 
 You can write a script to generate the constructor code. 

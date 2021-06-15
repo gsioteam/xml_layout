@@ -10,10 +10,10 @@
         <ListView.separated itemCount="$itemCount">
             <attr:itemBuilder>
                 <Function returnType="Widget">
-                    <SetArgument return="index" argument="${args[1]}"/>
-                    <Call function="$getItem" return="itemData">
-                        <Argument value="$index"/>
-                    </Call>
+                    <Script>
+                        set("index", ${args[1]})
+                        set("itemData", getItem($index))
+                    </Script>
                     <Builder>
                         <if candidate="true">
                             <ListTile>

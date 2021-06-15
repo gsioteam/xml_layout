@@ -4,16 +4,16 @@ import 'dart:convert';
 import 'parser.dart';
 
 
-typedef MethodHandler = dynamic Function(MethodNode);
+typedef MethodHandler = dynamic Function(MethodNode, Status);
 
 Map<String, MethodHandler> _methods = {
-  "isEmpty": (method) {
+  "isEmpty": (method, status) {
     return method[0].isEmpty;
   },
-  "isNotEmpty": (method) {
+  "isNotEmpty": (method, status) {
     return method[0].isNotEmpty;
   },
-  "equal": (method) {
+  "equal": (method, status) {
     if (method.length > 0) {
       var last = method[0];
       for (int i = 1, t = method.length; i < t; ++i) {
@@ -22,11 +22,14 @@ Map<String, MethodHandler> _methods = {
     }
     return true;
   },
-  "mod": (method) {
+  "mod": (method, status) {
     return method[0] % method[1];
   },
-  "div": (method) {
+  "div": (method, status) {
     return method[0] / method[1];
+  },
+  "set": (method, status) {
+    return status.data[method[0]] = method[1];
   },
 };
 
@@ -62,6 +65,7 @@ class Status {
 
   Status _parent;
   Status get parent => _parent;
+  dynamic tag = 0;
 
   Status(this.data);
 
@@ -114,7 +118,7 @@ class Status {
         return Function.apply(func, m.arguments);
       } else if (_methods.containsKey(m.name)) {
         var handler = _methods[m.name];
-        return handler(m);
+        return handler(m, this);
       } else {
         return _stringResult();
       }
