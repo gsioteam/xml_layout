@@ -28,7 +28,10 @@ abstract class Action {
   void execute(Status status) {
     _status = status;
     if (status.tag == _functionTag) {
-      _result = call(status);
+      if (!_loaded) {
+        _result = call(_status);
+        _loaded = true;
+      }
       if (ret != null) {
         if (status.data == null) {
           status.data = {};
