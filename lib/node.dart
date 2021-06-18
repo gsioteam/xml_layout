@@ -63,7 +63,7 @@ class NodeData {
       _text = [];
       if (_template.node is xml.XmlElement) {
         for (var attr in _template.attributes) {
-          _setNode(attr.name.local, NodeData(attr, _status, control));
+          _setNode(attr.name.toString(), NodeData(attr, _status, control));
         }
 
         for (var child in rawChildren) {
