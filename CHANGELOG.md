@@ -1,3 +1,7 @@
+## [2.2.0] - 
+
+* Added some math methods.
+
 ## [2.1.0] - 
 
 * Added script support in `Function` tag.

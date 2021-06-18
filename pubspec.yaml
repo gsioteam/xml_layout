@@ -2,7 +2,7 @@ name: xml_layout
 description: >
   XML layout for flutter.
   Layout your widgets with xml at runtime.
-version: 2.1.0
+version: 2.2.0
 #author:
 homepage: https://github.com/gsioteam/xml_layout
 

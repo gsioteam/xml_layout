@@ -22,6 +22,9 @@ Map<String, MethodHandler> _methods = {
     }
     return true;
   },
+  "net": (method, status) {
+    return method[0] != method[1];
+  },
   "mod": (method, status) {
     return method[0] % method[1];
   },
@@ -31,6 +34,49 @@ Map<String, MethodHandler> _methods = {
   "set": (method, status) {
     return status.data[method[0]] = method[1];
   },
+  "not": (method, status) {
+    return !method[0];
+  },
+  "lt": (method, status) {
+    return method[0] < method[1];
+  },
+  "nlt": (method, status) {
+    return method[0] >= method[1];
+  },
+  "gt": (method, status) {
+    return method[0] > method[1];
+  },
+  "ngt": (method, status) {
+    return method[0] <= method[1];
+  },
+  "plus": (method, status) {
+    var ret = method[0];
+    for (int i = 1, t = method.length; i < t; ++i) {
+      ret += method[i];
+    }
+    return ret;
+  },
+  "minus": (method, status) {
+    var ret = method[0];
+    for (int i = 1, t = method.length; i < t; ++i) {
+      ret -= method[i];
+    }
+    return ret;
+  },
+  "multiply": (method, status) {
+    var ret = method[0];
+    for (int i = 1, t = method.length; i < t; ++i) {
+      ret *= method[i];
+    }
+    return ret;
+  },
+  "divide": (method, status) {
+    var ret = method[0];
+    for (int i = 1, t = method.length; i < t; ++i) {
+      ret /= method[i];
+    }
+    return ret;
+  }
 };
 
 void registerMethod(String name, MethodHandler handler) {

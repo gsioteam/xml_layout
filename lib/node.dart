@@ -223,28 +223,26 @@ class NodeData {
   xml.XmlName get name => _template.name;
 
   T child<T>() {
-    if (rawChildren != null) {
-      T res;
-      String text;
-      if (_children.isEmpty && (text = this.text).isNotEmpty) {
-        res = v<T>(text);
-      } else {
-        _firstChild(_children, (node) {
-          dynamic obj = node.element();
-          if (obj != null && obj is T) {
-            res = obj;
-            return true;
-          } else {
-            if (obj == null) {
-              control.onUnkown?.call(node, node._getKey());
-            }
-            return false;
+    _processNode();
+    T res;
+    String text;
+    if (_children.isEmpty && (text = this.text).isNotEmpty) {
+      res = v<T>(text);
+    } else {
+      _firstChild(_children, (node) {
+        dynamic obj = node.element();
+        if (obj != null && obj is T) {
+          res = obj;
+          return true;
+        } else {
+          if (obj == null) {
+            control.onUnkown?.call(node, node._getKey());
           }
-        });
-      }
-      return res;
+          return false;
+        }
+      });
     }
-    return null;
+    return res;
   }
 
   List<T> children<T>() {
