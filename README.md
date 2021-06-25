@@ -148,6 +148,30 @@ XmlLayout.registerInline(TextHeightBehavior, "fromEncoded", false,
 </Function>
 ```
 
+### Method
+
+`Method` could be registerd via `XmlLayout.registerInlineMethod`, and 
+can be used in a Xml attribute or Script tag.
+
+Default methods:
+
+- `isEmpty(a)` => a.isEmpty()
+- `isNotEmpty(a)` => a.isNotEmpty()
+- `equal(a, b, ...)` => a == b ...
+- `net(a, b)` => a != b
+- `mod(a, b)` => a % b
+- `div(a, b)` => a / b
+- `set(name, a)` => env[name] = a
+- `not(a)` => !a
+- `lt(a, b)` => a < b
+- `nlt(a, b)` => a >= b
+- `gt(a, b)` => a > b
+- `ngt(a, b)` => a <= b
+- `plus(a, b, ...)` => a + b ...
+- `minus(a, b, ...)` => a - b ...
+- `multiply(a, b, ...)` => a * b ...
+- `divide(a, b, ...)` => a / b ...
+
 ## Builder
 
 You can write a script to generate the constructor code. 
