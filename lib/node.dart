@@ -208,7 +208,7 @@ class NodeData {
     }
     return _raw;
   }
-  String get text => _processText(raw);
+  String get text => _processText(raw.trim());
   int get integer => int.tryParse(text);
   double get real => double.tryParse(text);
   bool get boolean {
