@@ -1,3 +1,7 @@
+## [2.2.4] -
+
+* `Builder` tag is not necessary now, direct using Widget tag in Function tag would be accepted. 
+
 ## [2.2.0] - 
 
 * Added some math methods.

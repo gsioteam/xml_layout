@@ -204,6 +204,17 @@ class XmlLayout extends StatefulWidget {
     }
   }
 
+  /// Register a method
+  ///
+  /// The method can be used in the Xml attribute or the Script tag.
+  ///
+  /// Example:
+  ///
+  /// ```xml
+  /// <if candidate="equal(1, mod($item, 2))">
+  ///   <Text>Test</Text>
+  /// </if>
+  /// ```
   static void registerInlineMethod(String name, MethodHandler handler) {
     registerMethod(name, handler);
   }
