@@ -172,6 +172,21 @@ Default methods:
 - `multiply(a, b, ...)` => a * b ...
 - `divide(a, b, ...)` => a / b ...
 
+### Control Flow 
+
+- `if` tag is a if control flow.
+    - attributes:
+        - `candidate` a Boolean value, if true the children would be rendered, otherwise not be rendered.
+- `else` tag is a else control flow, could be used after `if` or another `else` tag.
+    - attributes:
+        - `candidate` same as `if` tag.
+- `for` tag is a loop control flow.
+    - attributes: 
+        - `array` a List value, iterates over array elements, each element for children one time.
+        - `count` a Integer value, iterates children the value times. It is mutually exclusive with the `array` attribute.
+        - `item` a String value, the name of each element, default is `item`.
+        - `index` a String value, the name of the index of element, default is `index`.
+
 ## Builder
 
 You can write a script to generate the constructor code. 
