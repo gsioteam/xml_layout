@@ -8,16 +8,11 @@ import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/dart/constant/value.dart';
 import 'package:dart_style/dart_style.dart';
 
-/// Build a [.xml_layout.dart] file
-class XmlLayoutBuilder extends Builder {
-  final BuilderOptions options;
-  Map<ClassElement, List<String>> _processed = Map();
+class BuilderStatus {
+  Map<ClassElement, List<String>> _processed = {};
   List<String> imports = [];
-  Map<DartType, DartType> _convertTypes = Map();
-
-  static Map<Pattern, String> _inputConvert = {};
-
-  XmlLayoutBuilder(this.options);
+  Map<DartType, DartType> _convertTypes = {};
+  Map<Pattern, String> _inputConvert = {};
 
   DartType convertType(DartType dartType) {
     if (_convertTypes.containsKey(dartType)) {
@@ -26,15 +21,44 @@ class XmlLayoutBuilder extends Builder {
     return dartType;
   }
 
+  String transformInputUri(Uri uri) {
+    String src = uri.toString();
+    for (var pattern in _inputConvert.keys) {
+      if (pattern.matchAsPrefix(src) != null) {
+        return _inputConvert[pattern];
+      }
+    }
+    return src;
+  }
+
+  void insertSource(Source source) {
+    if (source != null) {
+      var uri = source.uri;
+      if (uri.scheme == 'dart') {
+        uri = Uri.parse('${uri.scheme}:${uri.pathSegments.first}');
+      }
+
+      String str = transformInputUri(uri);
+      if (!imports.contains(str)) {
+        imports.add(str);
+      }
+    }
+  }
+}
+
+/// Build a [.xml_layout.dart] file
+class XmlLayoutBuilder extends Builder {
+  final BuilderOptions options;
+
+  XmlLayoutBuilder(this.options);
+
   @override
   FutureOr<void> build(BuildStep buildStep) async {
-    _processed.clear();
-    imports.clear();
-    _convertTypes.clear();
-    _inputConvert.clear();
-    imports.add("package:xml_layout/xml_layout.dart");
-    imports.add("package:xml_layout/register.dart");
-    imports.add("dart:convert");
+    BuilderStatus status = BuilderStatus();
+    status.imports.add("package:xml_layout/xml_layout.dart");
+    status.imports.add("package:xml_layout/register.dart");
+    status.imports.add("dart:convert");
+
     var library = await buildStep.inputLibrary;
     String entryName = options.config["entry_name"];
     String collectionsName = options.config["collections_name"];
@@ -48,20 +72,26 @@ class XmlLayoutBuilder extends Builder {
         if (topLevelElement.type?.isDartCoreList == true) {
           if (topLevelElement.name == entryName) {
             var types = topLevelElement.computeConstantValue();
-            for (var type in types.toListValue()) {
-              entries.add(type.toTypeValue());
+            if (types != null) {
+              for (var type in types.toListValue()) {
+                entries.add(type.toTypeValue());
+              }
             }
           } else if (topLevelElement.name == collectionsName) {
             var types = topLevelElement.computeConstantValue();
-            for (var type in types.toListValue()) {
-              _processCollectionType(type);
+            if (types != null) {
+              for (var type in types.toListValue()) {
+                _processCollectionType(status, type);
+              }
             }
           } else if (topLevelElement.name == importsName) {
             var importsList = topLevelElement.computeConstantValue();
-            for (var importUri in importsList.toListValue()) {
-              String str = importUri.toStringValue();
-              if (!imports.contains(str)) {
-                imports.add(str);
+            if (importsList != null) {
+              for (var importUri in importsList.toListValue()) {
+                String str = importUri.toStringValue();
+                if (!status.imports.contains(str)) {
+                  status.imports.add(str);
+                }
               }
             }
           }
@@ -69,27 +99,27 @@ class XmlLayoutBuilder extends Builder {
           if (topLevelElement.name == convertName) {
             var types = topLevelElement.computeConstantValue();
             types.toMapValue().forEach((key, value) {
-              _convertTypes[key.toTypeValue()] = value.toTypeValue();
+              status._convertTypes[key.toTypeValue()] = value.toTypeValue();
             });
           } else if (topLevelElement.name == convertsName) {
             var converts = topLevelElement.computeConstantValue();
             converts.toMapValue().forEach((key, value) {
-              _inputConvert[key.toStringValue()] = value.toStringValue();
+              status._inputConvert[key.toStringValue()] = value.toStringValue();
             });
           }
         }
       }
     }
     for (var entry in entries) {
-      _processDartType(entry);
+      _processDartType(status, entry);
     }
 
     List<String> codes = [];
-    imports.forEach((element) {
+    status.imports.forEach((element) {
       codes.add("import '$element';");
     });
     codes.add("Register register = Register(() {");
-    codes.addAll(_processed.values.expand<String>((element) => element));
+    codes.addAll(status._processed.values.expand<String>((element) => element));
     codes.add("});");
 
     String output = DartFormatter().format(codes.join('\n'));
@@ -99,7 +129,7 @@ class XmlLayoutBuilder extends Builder {
     );
   }
 
-  void _processDartType(DartType dartType) {
+  void _processDartType(BuilderStatus status, DartType dartType) {
     if (dartType != null) {
       if (!dartType.isDartCoreIterable &&
           !dartType.isDartCoreMap &&
@@ -117,32 +147,8 @@ class XmlLayoutBuilder extends Builder {
           !dartType.isDartCoreSymbol) {
         var element = dartType.element;
         if (element != null && (element.kind == ElementKind.CLASS || element.kind == ElementKind.ENUM)) {
-          _processType(element as ClassElement);
+          _processType(status, element as ClassElement);
         }
-      }
-    }
-  }
-
-  String _transformInputUri(Uri uri) {
-    String src = uri.toString();
-    for (var pattern in _inputConvert.keys) {
-      if (pattern.matchAsPrefix(src) != null) {
-        return _inputConvert[pattern];
-      }
-    }
-    return src;
-  }
-
-  void _insertSource(Source source) {
-    if (source != null) {
-      var uri = source.uri;
-      if (uri.scheme == 'dart') {
-        uri = Uri.parse('${uri.scheme}:${uri.pathSegments.first}');
-      }
-
-      String str = _transformInputUri(uri);
-      if (!imports.contains(str)) {
-        imports.add(str);
       }
     }
   }
@@ -198,12 +204,12 @@ class XmlLayoutBuilder extends Builder {
     return true;
   }
 
-  void _processType(ClassElement classElement) {
-    if (_processed.containsKey(classElement)) return;
-    _insertSource(classElement.source);
+  void _processType(BuilderStatus status, ClassElement classElement) {
+    if (status._processed.containsKey(classElement)) return;
+    status.insertSource(classElement.source);
 
     List<String> codes = [];
-    _processed[classElement] = codes;
+    status._processed[classElement] = codes;
     if (classElement.isEnum) {
       codes.add('XmlLayout.registerEnum(${classElement.name}.values);');
     } else {
@@ -223,7 +229,7 @@ class XmlLayoutBuilder extends Builder {
               List<String> argv = [];
               for (int i = 0, t = con.parameters.length; i < t; i++) {
                 var param = con.parameters[i];
-                var type = convertType(param.type);
+                var type = status.convertType(param.type);
                 if (type.isDartCoreInt) {
                   String str = 'method[$i]?.toInt()';
                   if (param.hasDefaultValue) {
@@ -260,23 +266,23 @@ class XmlLayoutBuilder extends Builder {
               List<String> params = [];
 
               void insertNamedParam(ParameterElement param) {
-                var type = convertType(param.type);
+                var type = status.convertType(param.type);
                 List<String> argv = [];
                 argv.add('"${param.name}"');
                 if (param.hasDefaultValue) {
                   argv.add(param.defaultValueCode);
                 }
-                _processDartType(type);
+                _processDartType(status, type);
                 if (type.element?.kind == ElementKind.GENERIC_FUNCTION_TYPE) {
                   var elem = (type.element as GenericFunctionTypeElement);
-                  _insertSource(elem.returnType.element?.source);
+                  status.insertSource(elem.returnType.element?.source);
                   for (var param in elem.parameters) {
-                    _insertSource(param.type.element?.source);
+                    status.insertSource(param.type.element?.source);
                   }
                 }
 
                 if (type.isDartCoreList || type.isDartCoreIterable) {
-                  var dartType = convertType((type as ParameterizedType).typeArguments.first);
+                  var dartType = status.convertType((type as ParameterizedType).typeArguments.first);
                   params.add('${param.name}: node.array<${dartType.getDisplayString(withNullability: false)}>(${argv[0]})');
                 } else {
                   params.add('${param.name}: node.s<${type.getDisplayString(withNullability: false)}>(${argv.join(',')})');
@@ -290,7 +296,7 @@ class XmlLayoutBuilder extends Builder {
                 if (param.hasDefaultValue) {
                   argv.add(param.defaultValueCode);
                 }
-                _processDartType(type);
+                _processDartType(status, type);
                 if (type.isDartCoreList || type.isDartCoreIterable) {
                   var dartType = (type as ParameterizedType).typeArguments.first;
                   params.insert(index, 'node.array<${dartType.getDisplayString(withNullability: false)}>(${argv[0]})');
@@ -310,15 +316,15 @@ class XmlLayoutBuilder extends Builder {
                     }
                     case 'child': {
                       hasChild = true;
-                      var type = convertType(param.type);
-                      _processDartType(type);
+                      var type = status.convertType(param.type);
+                      _processDartType(status, type);
                       params.add('${param.name}: node.child<${type.getDisplayString(withNullability: false)}>()');
                       break;
                     }
                     case 'children':
                     case 'slivers': {
                       hasChild = true;
-                      var type = convertType(param.type);
+                      var type = status.convertType(param.type);
                       if (type.isDartCoreList) {
                         String typeName;
                         if (type is ParameterizedType) {
@@ -326,7 +332,7 @@ class XmlLayoutBuilder extends Builder {
                         } else {
                           typeName = 'dynamic';
                         }
-                        _processDartType(type);
+                        _processDartType(status, type);
                         params.add('${param.name}: node.children<$typeName>()');
                       } else {
                         insertNamedParam(param);
@@ -353,7 +359,7 @@ class XmlLayoutBuilder extends Builder {
                   if (param.hasDefaultValue) {
                     argv.add(param.defaultValueCode);
                   }
-                  var type = convertType(param.type);
+                  var type = status.convertType(param.type);
                   String typeName = type.getDisplayString(withNullability: false);
                   String child;
                   if (type.isDartCoreString ||
@@ -364,7 +370,7 @@ class XmlLayoutBuilder extends Builder {
                     child = 'node.t<$typeName>()';
                   } else {
                     child = 'node.child<$typeName>()';
-                    _insertSource(param.type?.element?.source);
+                    status.insertSource(param.type?.element?.source);
                   }
                   params.insert(0, 'node.s<$typeName>(${argv.join(',')}) ?? $child');
                 }
@@ -406,15 +412,15 @@ class XmlLayoutBuilder extends Builder {
     return false;
   }
 
-  void _processCollectionType(DartObject dartObject) {
+  void _processCollectionType(BuilderStatus status, DartObject dartObject) {
     DartType dartType = dartObject.getField("collectionType").toTypeValue();
     DartType targetType = dartObject.getField("targetType").toTypeValue();
     ClassElement classElement = dartType.element as ClassElement;
-    if (_processed.containsKey(classElement)) return;
-    _insertSource(classElement.source);
+    if (status._processed.containsKey(classElement)) return;
+    status.insertSource(classElement.source);
 
     List<String> codes = [];
-    _processed[classElement] = codes;
+    status._processed[classElement] = codes;
 
     for (var field in classElement.fields) {
       if (field.isStatic && field.isPublic) {
@@ -422,10 +428,10 @@ class XmlLayoutBuilder extends Builder {
         if (type is InterfaceType && targetType != null && !_isSubTypeOf(type, targetType)) {
           continue;
         }
-        _insertSource(type.element?.source);
+        status.insertSource(type.element?.source);
         if (type is ParameterizedType) {
           for (var arg in type.typeArguments) {
-            _insertSource(arg.element?.source);
+            status.insertSource(arg.element?.source);
           }
         }
         List<String> segs = [];

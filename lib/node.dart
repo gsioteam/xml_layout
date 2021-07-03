@@ -138,12 +138,14 @@ class NodeData {
   }
 
   Key _getKey() {
-    NodeData id = this["id"];
-    Key key;
+    String id = _template.node.getAttribute("id");
     if (id != null) {
-      key = control._getKey(id.text);
+      id = status.execute(id);
+      if (id != null) {
+        return control._getKey(id);
+      }
     }
-    return key;
+    return null;
   }
 
   dynamic element() {
@@ -308,6 +310,8 @@ class NodeData {
 
   T s<T>(String name, [T def]) => this[name]?.t<T>() ?? def;
   T attribute<T>(String name, [T defaultValue]) => s<T>(name, defaultValue);
+
+  String rawAttribute(String name) => _template.node.getAttribute(name);
 
   T v<T>(String txt, [T def]) {
     _ItemInfo info = XmlLayout._constructors[T];

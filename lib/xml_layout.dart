@@ -86,7 +86,6 @@ class XmlLayout extends StatefulWidget {
   final xml.XmlElement element;
   final String template;
   final Map<String, dynamic> objects;
-  final ApplyFunction apply;
   final ItemConstructor onUnkownElement;
 
   static bool _initialized = false;
@@ -108,7 +107,7 @@ class XmlLayout extends StatefulWidget {
   /// ```
   ///
   XmlLayout(
-      {Key key, @required this.template, this.objects, this.apply, this.onUnkownElement})
+      {Key key, @required this.template, this.objects, this.onUnkownElement})
       : element = null,
         super(key: key) {
     assert(template != null);
@@ -119,7 +118,7 @@ class XmlLayout extends StatefulWidget {
   ///
   /// use a [XmlElement] to constructs a widget.
   XmlLayout.element(
-      {Key key, @required this.element, this.objects, this.apply, this.onUnkownElement})
+      {Key key, @required this.element, this.objects, this.onUnkownElement})
       : template = null,
         super(key: key) {
     assert(element != null);
@@ -219,8 +218,8 @@ class XmlLayout extends StatefulWidget {
     registerMethod(name, handler);
   }
 
-  static void registerFunctionReturn<T>() {
-    function.registerReturnType<T>();
+  static void registerFunctionReturn<T>([String name]) {
+    function.registerReturnType<T>(name);
   }
 }
 
@@ -270,8 +269,5 @@ class XmlLayoutState extends State<XmlLayout> with NodeControl {
     super.initState();
     status = Status(widget.objects);
   }
-
-  @override
-  Map<String, dynamic> get objects => widget.objects;
 
 }

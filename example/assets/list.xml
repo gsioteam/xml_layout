@@ -10,6 +10,9 @@
         <ListView.separated itemCount="$itemCount">
             <attr:itemBuilder>
                 <Function returnType="Widget">
+                    <if candidate="nlt(${args[1]}, $itemCount)">
+
+                    </if>
                     <Script>
                         set("index", ${args[1]})
                         set("itemData", getItem($index))

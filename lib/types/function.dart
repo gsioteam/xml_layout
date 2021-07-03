@@ -137,8 +137,8 @@ class _ReturnType<T> {
 }
 Map<String, _ReturnType> _returnTypes = {};
 
-void registerReturnType<T>() {
-  String typeName = T.toString().toLowerCase();
+void registerReturnType<T>([String name]) {
+  String typeName = name ?? T.toString().toLowerCase();
   _returnTypes[typeName] = _ReturnType<T>();
 }
 int _functionTag = 0x10003;
@@ -153,10 +153,15 @@ NodeData _createNewNode(NodeData node, Map<String, dynamic> data) {
 
 Register register = Register(() {
   XmlLayout.register("Function", (node, key) {
-    String type = node.s<String>("returnType")?.toLowerCase();
+    String type = node.rawAttribute("returnType")?.toLowerCase();
     _ReturnType returnType = _returnTypes.containsKey(type) ? _returnTypes[type] : _defaultReturnType;
 
-    if (node.s<bool>("creator") == true) {
+    String creator = node.rawAttribute("creator");
+    dynamic ret;
+    if (creator != null) {
+      ret = node.status.execute(creator);
+    }
+    if (ret == true) {
       return returnType.creator(_createNewNode(node, {
         "args": _emptyArgs
       }));
