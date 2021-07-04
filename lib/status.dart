@@ -32,6 +32,7 @@ Map<String, MethodHandler> _methods = {
     return method[0] / method[1];
   },
   "set": (method, status) {
+    if (status.data == null) status.data = {};
     return status.data[method[0]] = method[1];
   },
   "not": (method, status) {

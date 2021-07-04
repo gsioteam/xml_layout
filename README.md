@@ -119,9 +119,7 @@ XmlLayout.registerInline(TextHeightBehavior, "fromEncoded", false,
                 <Argument value="$index"/>
             </Call>
             <!-- The last element of Function tag would be the final result -->
-            <Builder>
-                <Text>${itemData.title}</Text>
-            </Builder>
+            <Text>${itemData.title}</Text>
         </Function>
     </attr:itemBuilder>
 </ListView.separated>
@@ -142,9 +140,7 @@ XmlLayout.registerInline(TextHeightBehavior, "fromEncoded", false,
     </Call>
     <!-- end(same as) -->
 
-    <Builder>
-        <Text>${itemData.title}</Text>
-    </Builder>
+    <Text>${itemData.title}</Text>
 </Function>
 ```
 
@@ -173,6 +169,17 @@ Default methods:
 - `divide(a, b, ...)` => a / b ...
 
 ### Control Flow 
+
+A util to control the rendering logic. like:
+
+```xml
+<for count="$counter">
+    <Text>$item, You have pushed the button this many times:</Text>
+    <if candidate="equal(1, mod($item, 2))">
+        <Text>Test text</Text>
+    </if>
+</for>
+```
 
 - `if` tag is a if control flow.
     - attributes:
