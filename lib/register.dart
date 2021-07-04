@@ -1,12 +1,12 @@
 class Register {
-  static Set<Register> _registers = Set();
+  bool _registered = false;
 
   void Function() initializer;
   Register(this.initializer);
 
   void call() {
-    if (!_registers.contains(this)) {
-      _registers.add(this);
+    if (!_registered) {
+      _registered = true;
       initializer();
     }
   }
