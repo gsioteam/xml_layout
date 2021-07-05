@@ -9,7 +9,7 @@
         <attr:style>
             <TextStyle color="red"/>
         </attr:style>
-        <arg:0>$counter</arg:0>
+        $counter
     </Text>
     <Icon color="blue">airport_shuttle</Icon>
 </Column>
