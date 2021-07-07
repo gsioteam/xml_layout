@@ -12,10 +12,11 @@ write xml layout file like:
     <for count="6">
         <Text>$item, You have pushed the button this many times:</Text>
     </for>
-    <Text id="text-id">$counter</Text>
+    <Text id="text-id">
         <attr:style>
             <TextStyle color="red"/>
         </attr:style>
+        $counter
     </Text>
 </Column>
 ```
