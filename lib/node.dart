@@ -221,7 +221,7 @@ class NodeData {
   }
 
   bool get isAttribute => _template.node is xml.XmlAttribute;
-  bool get isElement => _template.node is xml.XmlElement;
+  bool get isElement => _template.node is xml.XmlElement && _template.name.prefix == null;
   xml.XmlName get name => _template.name;
 
   T child<T>() {
@@ -251,6 +251,25 @@ class NodeData {
     _processNode();
 
     return _children == null ? [] : _convertListTo<T>(_children);
+  }
+
+  Iterable<T> iterable<T>() {
+    return RecursionIterable(() {
+      FlowMessage message = FlowMessage();
+      var iterator = RecursionIterator.expand(_template.children.map((e) => e.generate(status, control, message)));
+      return RecursionIterator((that) {
+        while (true) {
+          if (iterator.moveNext()) {
+            var elem = iterator.current.element();
+            if (elem is T && elem != null) {
+              return elem;
+            }
+          } else {
+            return that.stop;
+          }
+        }
+      });
+    });
   }
 
   List<T> array<T>(String name) {

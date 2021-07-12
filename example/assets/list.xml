@@ -14,7 +14,7 @@
                         set("index", ${args[1]})
                         set("itemData", getItem($index))
                     </Script>
-                    <if candidate="true">
+                    <if candidate="lt($index, 2)">
                         <ListTile>
                             <attr:title>
                                 <Text>${itemData.title}</Text>

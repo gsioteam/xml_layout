@@ -118,9 +118,9 @@ class _ReturnType<T> {
     };
   }
   T creator(NodeData node) {
-    var children = node.children();
+    var iter = node.iterable();
     dynamic ret;
-    children.forEach((element) {
+    iter.forEach((element) {
       if (element is Action) {
         ret = element.result;
       } else {

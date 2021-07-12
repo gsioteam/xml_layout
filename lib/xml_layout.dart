@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:recursion_iterator/recursion_iterator.dart';
 import 'package:xml/xml.dart' as xml;
 import 'parser.dart';
 import 'exceptions.dart';
