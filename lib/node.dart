@@ -253,23 +253,16 @@ class NodeData {
     return _children == null ? [] : _convertListTo<T>(_children);
   }
 
-  Iterable<T> iterable<T>() {
-    return RecursionIterable(() {
-      FlowMessage message = FlowMessage();
-      var iterator = RecursionIterator.expand(_template.children.map((e) => e.generate(status, control, message)));
-      return RecursionIterator((that) {
-        while (true) {
-          if (iterator.moveNext()) {
-            var elem = iterator.current.element();
-            if (elem is T && elem != null) {
-              return elem;
-            }
-          } else {
-            return that.stop;
-          }
-        }
-      });
-    });
+  Iterable<T> iterable<T>() sync* {
+    FlowMessage message = FlowMessage();
+    for (var child in _template.children) {
+      var nodes = child.generate(status, control, message);
+      for (var node in nodes) {
+        var elem = node.element();
+        if (elem is T && elem != null)
+          yield elem;
+      }
+    }
   }
 
   List<T> array<T>(String name) {

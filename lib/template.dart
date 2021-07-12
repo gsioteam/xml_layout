@@ -3,7 +3,6 @@ import 'dart:async';
 
 import 'package:xml/xml.dart' as xml;
 
-import 'package:recursion_iterator/recursion_iterator.dart';
 import 'status.dart';
 import 'xml_layout.dart';
 
@@ -157,8 +156,6 @@ class TextTemplate extends Template {
   }
 }
 
-Iterator<NodeData> _empty = <NodeData>[].iterator;
-
 class AttributeTemplate extends Template {
   AttributeTemplate(xml.XmlAttribute node, [Template parent]) : super.init(node, parent);
 
@@ -193,54 +190,41 @@ class ForFlowTemplate extends Template {
   }
 
   @override
-  Iterable<NodeData> processChildren(Status status, NodeControl control, FlowMessage message) {
-    return RecursionIterable<NodeData>(() {
-      xml.XmlElement element = node as xml.XmlElement;
-      String item = element.getAttribute("item") ?? "item";
-      String index = element.getAttribute("index") ?? "index";
+  Iterable<NodeData> processChildren(Status status, NodeControl control, FlowMessage message) sync* {
+    xml.XmlElement element = node as xml.XmlElement;
+    String item = element.getAttribute("item") ?? "item";
+    String index = element.getAttribute("index") ?? "index";
 
-      List arr;
-      xml.XmlAttribute fnode = element.getAttributeNode("array");
+    List arr;
+    xml.XmlAttribute fnode = element.getAttributeNode("array");
+    if (fnode != null) {
+      arr = status.execute(fnode.value) as List;
+    }
+    if (arr == null) {
+      fnode = element.getAttributeNode("count");
+      arr = [];
       if (fnode != null) {
-        arr = status.execute(fnode.value) as List;
-      }
-      if (arr == null) {
-        fnode = element.getAttributeNode("count");
-        arr = [];
-        if (fnode != null) {
-          var num = status.execute(fnode.value);
-          if (num is int) {
-            for (int i = 0; i < num; ++i) {
-              arr.add(i);
-            }
+        var num = status.execute(fnode.value);
+        if (num is int) {
+          for (int i = 0; i < num; ++i) {
+            arr.add(i);
           }
         }
       }
+    }
 
-      if (arr?.length??0 > 0) {
-        int count = 0;
-        return RecursionIterator((iter) {
-          if (count < arr.length) {
-            int i = count++;
-            Status newStatus = status.child({
-              item: arr[i],
-              index: i
-            });
-            FlowMessage message = FlowMessage();
-            var childrenIterator = children.map((e) => e.generate(newStatus, control, message)).iterator;
-            return iter.iterator(RecursionIterator((iter) {
-              if (childrenIterator.moveNext()) {
-                return childrenIterator.current;
-              } else {
-                return iter.stop;
-              }
-            }));
-          }
+    if ((arr?.length??0) > 0) {
+      for (int i = 0, t = arr.length; i < t; ++i) {
+        Status newStatus = status.child({
+          item: arr[i],
+          index: i
         });
-      } else {
-        return _empty;
+        FlowMessage message = FlowMessage();
+        for (var child in children) {
+          yield* child.generate(newStatus, control, message);
+        }
       }
-    });
+    }
   }
 }
 
@@ -250,25 +234,23 @@ class IfFlowTemplate extends Template {
   IfFlowTemplate(xml.XmlElement node, [Template parent]) : super.init(node, parent);
 
   @override
-  Iterable<NodeData> processChildren(Status status, NodeControl control, FlowMessage message) {
-    return RecursionIterable<NodeData>(() {
-      xml.XmlElement element = node as xml.XmlElement;
-      xml.XmlAttribute fnode = element.getAttributeNode("candidate");
-      bool candidate = false;
-      if (fnode != null) {
-        var res = status.execute(fnode.value);
-        if (res is String) candidate = res == "true";
-        else if (res is bool) candidate = res;
-      }
+  Iterable<NodeData> processChildren(Status status, NodeControl control, FlowMessage message) sync* {
+    xml.XmlElement element = node as xml.XmlElement;
+    xml.XmlAttribute fnode = element.getAttributeNode("candidate");
+    bool candidate = false;
+    if (fnode != null) {
+      var res = status.execute(fnode.value);
+      if (res is String) candidate = res == "true";
+      else if (res is bool) candidate = res;
+    }
 
-      Iterator<NodeData> res = _empty;
-      message.set(_ifFlowType, candidate);
-      if (candidate) {
-        FlowMessage message = FlowMessage();
-        res = RecursionIterator.expand(children.map((element) => element.generate(status, control, message)));
+    if (candidate) {
+      FlowMessage message = FlowMessage();
+      for (var child in children) {
+        yield* child.generate(status, control, message);
       }
-      return res;
-    });
+    }
+    message.set(_ifFlowType, candidate);
   }
 }
 
@@ -279,27 +261,25 @@ class ElseFlowTemplate extends Template {
   String get messageFilter => _ifFlowType;
 
   @override
-  Iterable<NodeData> processChildren(Status status, NodeControl control, FlowMessage message) {
-    return RecursionIterable<NodeData>(() {
-      bool candidate = true, checkCandi = message.data == false;
-      Iterator<NodeData> res = _empty;
-      if (checkCandi) {
-        xml.XmlElement element = node as xml.XmlElement;
-        xml.XmlAttribute fnode = element.getAttributeNode("candidate");
-        candidate = true;
-        if (fnode != null) {
-          var res = status.execute(fnode.value);
-          if (res is String) candidate = res == "true";
-          else if (res is bool) candidate = res;
-        }
+  Iterable<NodeData> processChildren(Status status, NodeControl control, FlowMessage message) sync* {
+    bool candidate = true, checkCandi = message.data == false;
+    if (checkCandi) {
+      xml.XmlElement element = node as xml.XmlElement;
+      xml.XmlAttribute fnode = element.getAttributeNode("candidate");
+      candidate = true;
+      if (fnode != null) {
+        var res = status.execute(fnode.value);
+        if (res is String) candidate = res == "true";
+        else if (res is bool) candidate = res;
+      }
 
-        if (candidate) {
-          FlowMessage message = FlowMessage();
-          res = RecursionIterator.expand(children.map((e) => e.generate(status, control, message)));
+      if (candidate) {
+        FlowMessage message = FlowMessage();
+        for (var child in children) {
+          yield* child.generate(status, control, message);
         }
       }
-      message.set(_ifFlowType, candidate || !checkCandi);
-      return res;
-    });
+    }
+    message.set(_ifFlowType, candidate || !checkCandi);
   }
 }
