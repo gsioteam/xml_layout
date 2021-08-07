@@ -185,7 +185,7 @@ A util to control the rendering logic. like:
 - `if` tag is a if control flow.
     - attributes:
         - `candidate` a Boolean value, if true the children would be rendered, otherwise not be rendered.
-- `else` tag is a else control flow, could be used after `if` or another `else` tag.
+- `else` tag is a else control flow, could be placed after `if` or another `else` tag.
     - attributes:
         - `candidate` same as `if` tag.
 - `for` tag is a loop control flow.
