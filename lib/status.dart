@@ -1,6 +1,8 @@
 
 import 'dart:collection';
 import 'dart:convert';
+import 'package:flutter/widgets.dart';
+
 import 'parser.dart';
 
 
@@ -113,10 +115,13 @@ class Status {
   Status _parent;
   Status get parent => _parent;
   dynamic tag = 0;
+  BuildContext context;
 
   Status(this.data);
 
-  Status child(Map<String, dynamic> data) => Status(data).._parent = this;
+  Status child(Map<String, dynamic> data) => Status(data)
+    .._parent = this
+    ..context = context;
 
   dynamic get(String path) {
     RegExp exp = RegExp(r"^(\w+)((\[[^\]]+\])*)$");

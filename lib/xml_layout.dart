@@ -245,6 +245,7 @@ class XmlLayoutState extends State<XmlLayout> with NodeControl {
     }
 
     status.data = widget.objects;
+    status.context = context;
     dynamic tar = template.generate(status, this).first?.element();
     if (tar is Widget) {
       return tar;

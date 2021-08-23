@@ -1,3 +1,6 @@
+## [2.2.13]
+
+* Added `context` property in `NodeData`
 
 ## [2.2.4] -
 

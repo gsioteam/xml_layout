@@ -29,6 +29,7 @@ class NodeData {
   List<String> _text;
 
   Status get status => _status;
+  BuildContext get context => status.context;
 
   NodeData(this._template, this._status, this.control);
 
