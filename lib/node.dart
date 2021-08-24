@@ -1,32 +1,31 @@
 
 part of xml_layout;
 
-typedef ItemConstructor = dynamic Function(NodeData node, Key key);
+typedef ItemConstructor = dynamic Function(NodeData node, Key? key);
 
 mixin NodeControl {
   Map<String, GlobalKey> keys = Map();
 
   GlobalKey _getKey(String id) {
-    if (keys.containsKey(id)) return keys[id];
+    if (keys.containsKey(id)) return keys[id]!;
     return keys[id] = GlobalKey();
   }
 
-  GlobalKey find(String id) {
+  GlobalKey? find(String id) {
     return keys[id];
   }
 
-  ItemConstructor onUnkown;
+  ItemConstructor? onUnkown;
 }
 
 class NodeData {
   Template _template;
   Status _status;
   NodeControl control;
-  NodeData _father;
 
-  Map<String, List<NodeData>> _attributes;
-  List<NodeData> _children;
-  List<String> _text;
+  Map<String, List<NodeData>>? _attributes;
+  List<NodeData>? _children;
+  List<String>? _text;
 
   Status get status => _status;
   BuildContext get context => status.context;
@@ -35,26 +34,26 @@ class NodeData {
 
   void _setNode(String name, NodeData node) {
     name = name.toLowerCase();
-    List<NodeData> list = _attributes[name];
+    List<NodeData>? list = _attributes![name];
     if (list == null) {
       list = [];
-      _attributes[name] = list;
+      _attributes![name] = list;
     }
     list.add(node);
   }
 
-  List<NodeData> _rawChildren;
+  List<NodeData>? _rawChildren;
   List<NodeData> get rawChildren {
     if (_rawChildren == null) {
       _rawChildren = [];
       if (_template.node is xml.XmlElement) {
         FlowMessage message = FlowMessage();
         for (var childTemplate in _template.children) {
-          _rawChildren.addAll(childTemplate.generate(status, control, message));
+          _rawChildren!.addAll(childTemplate.generate(status, control, message));
         }
       }
     }
-    return _rawChildren;
+    return _rawChildren!;
   }
 
   void _processNode() {
@@ -68,18 +67,18 @@ class NodeData {
         }
 
         for (var child in rawChildren) {
-          if (child.name?.prefix == "attr") {
+          if (child.name!.prefix == "attr") {
             for (var sub in child.rawChildren) {
-              _setNode(child.name.local, sub);
+              _setNode(child.name!.local, sub);
             }
-          } else if (child.name?.prefix == "arg") {
+          } else if (child.name!.prefix == "arg") {
             for (var sub in child.rawChildren) {
               _setNode(child.name.toString(), sub);
             }
           } else if (child._template.node is xml.XmlText) {
-            _text.add(child._template.node.text);
-          } else if (child.name?.prefix == null) {
-            _children.add(child);
+            _text!.add(child._template.node.text);
+          } else if (child.name!.prefix == null) {
+            _children!.add(child);
           }
         }
       }
@@ -95,7 +94,7 @@ class NodeData {
     var one = NodeData(_template, father.status, control);
     one._rawChildren = _rawChildren?.map<NodeData>((element) {
       return element._cloneAsChild(one);
-    })?.toList();
+    }).toList();
     return one;
   }
 
@@ -104,11 +103,11 @@ class NodeData {
     NodeData one = NodeData(_template, newStatus, control);
     one._rawChildren = _rawChildren?.map<NodeData>((element) {
       return element._cloneAsChild(one);
-    })?.toList();
+    }).toList();
     return one;
   }
 
-  NodeData _firstChild(List<NodeData> nodes, [bool Function(NodeData) tester]) {
+  NodeData? _firstChild(List<NodeData> nodes, [bool Function(NodeData)? tester]) {
     if (nodes != null) {
       for (var node in nodes) {
         if (tester == null || tester(node)) {
@@ -132,14 +131,14 @@ class NodeData {
     return res;
   }
 
-  NodeData operator [](String name) {
+  NodeData? operator [](String name) {
     _processNode();
     if (_attributes == null) return null;
-    return _firstChild(_attributes[name.toLowerCase()]);
+    return _firstChild(_attributes![name.toLowerCase()]??[]);
   }
 
-  Key _getKey() {
-    String id = _template.node.getAttribute("id");
+  Key? _getKey() {
+    String? id = _template.node.getAttribute("id");
     if (id != null) {
       id = status.execute(id);
       if (id != null) {
@@ -152,7 +151,7 @@ class NodeData {
   dynamic element() {
     if (isElement) {
       xml.XmlElement element = _template.node as xml.XmlElement;
-      _ItemInfo info =
+      _ItemInfo? info =
       XmlLayout._constructors[element.name.toString().toLowerCase()];
       if (info != null) {
         return info.constructor(this, _getKey());
@@ -176,15 +175,15 @@ class NodeData {
 
       if (slashCount % 2 == 0) {
         if (text[off + 1] == "{") {
-          Match match =
+          Match? match =
           RegExp(r"(?<=\$)\{([^\}]+)\}").matchAsPrefix(text, off + 1);
           if (match != null) {
-            ranges.add(_Range(match.start - 1, match.end, match.group(1)));
+            ranges.add(_Range(match.start - 1, match.end, match.group(1)!));
           } else {}
         } else {
-          Match match = RegExp(r"(?<=\$)[\w_]+").matchAsPrefix(text, off + 1);
+          Match? match = RegExp(r"(?<=\$)[\w_]+").matchAsPrefix(text, off + 1);
           if (match != null) {
-            ranges.add(_Range(match.start - 1, match.end, match.group(0)));
+            ranges.add(_Range(match.start - 1, match.end, match.group(0)!));
           } else {}
         }
       }
@@ -197,23 +196,23 @@ class NodeData {
     return text;
   }
 
-  String _raw;
+  String? _raw;
   String get raw {
     if (_raw == null) {
       if (isElement) {
         _processNode();
-        _raw = _text.join("\n");
+        _raw = _text!.join("\n");
       } else if (isAttribute) {
         _raw = (_template.node as xml.XmlAttribute).value;
       } else if (_template.node is xml.XmlText) {
         _raw = (_template.node as xml.XmlText).text;
       } else _raw = "";
     }
-    return _raw;
+    return _raw!;
   }
   String get text => _processText(raw.trim());
-  int get integer => int.tryParse(text);
-  double get real => double.tryParse(text);
+  int? get integer => int.tryParse(text);
+  double? get real => double.tryParse(text);
   bool get boolean {
     dynamic res = status.execute(raw);
     if (res is String) return res == "true";
@@ -222,17 +221,17 @@ class NodeData {
   }
 
   bool get isAttribute => _template.node is xml.XmlAttribute;
-  bool get isElement => _template.node is xml.XmlElement && _template.name.prefix == null;
-  xml.XmlName get name => _template.name;
+  bool get isElement => _template.node is xml.XmlElement && _template.name!.prefix == null;
+  xml.XmlName? get name => _template.name;
 
-  T child<T>() {
+  T? child<T>() {
     _processNode();
-    T res;
+    T? res;
     String text;
-    if (_children.isEmpty && (text = this.text).isNotEmpty) {
+    if (_children!.isEmpty && (text = this.text).isNotEmpty) {
       res = v<T>(text);
     } else {
-      _firstChild(_children, (node) {
+      _firstChild(_children!, (node) {
         dynamic obj = node.element();
         if (obj != null && obj is T) {
           res = obj;
@@ -251,7 +250,7 @@ class NodeData {
   List<T> children<T>() {
     _processNode();
 
-    return _children == null ? [] : _convertListTo<T>(_children);
+    return _children == null ? [] : _convertListTo<T>(_children!);
   }
 
   Iterable<T> iterable<T>() sync* {
@@ -266,12 +265,13 @@ class NodeData {
     }
   }
 
-  List<T> array<T>(String name) {
-    List<NodeData> attrs = _attributes[name.toLowerCase()];
+  List<T>? array<T>(String name) {
+    _processNode();
+    List<NodeData>? attrs = _attributes![name.toLowerCase()];
     var attr = attrs?.first;
     if (attr == null) return null;
     else if (attr.isElement) {
-      return _convertListTo<T>(attrs);
+      return _convertListTo<T>(attrs!);
     } else {
       return attr.t<List<T>>();
     }
@@ -309,7 +309,7 @@ class NodeData {
             else
               return control.onUnkown?.call(this, _getKey());
           }
-          _ItemInfo info = XmlLayout._constructors[T];
+          _ItemInfo? info = XmlLayout._constructors[T];
           if (info == null) {
             return control.onUnkown?.call(this, _getKey());
           } else {
@@ -321,21 +321,21 @@ class NodeData {
   }
   T convert<T>() => t<T>();
 
-  T s<T>(String name, [T def]) => this[name]?.t<T>() ?? def;
-  T attribute<T>(String name, [T defaultValue]) => s<T>(name, defaultValue);
+  T? s<T>(String name, [T? def]) => this[name]?.t<T>() ?? def;
+  T? attribute<T>(String name, [T? defaultValue]) => s<T>(name, defaultValue);
 
-  String rawAttribute(String name) => _template.node.getAttribute(name);
+  String? rawAttribute(String name) => _template.node.getAttribute(name);
 
-  T v<T>(String txt, [T def]) {
-    _ItemInfo info = XmlLayout._constructors[T];
-    return info.constructor(NodeData(Template(xml.XmlText(txt), _template), _status, control), null) ?? def;
+  T v<T>(String txt, [T? def]) {
+    _ItemInfo? info = XmlLayout._constructors[T];
+    return info?.constructor(NodeData(Template(xml.XmlText(txt), _template), _status, control), null) ?? def;
   }
-  T value<T>(String value, [T defaultValue]) => v<T>(value, defaultValue);
+  T value<T>(String value, [T? defaultValue]) => v<T>(value, defaultValue);
 
-  MethodNode _arguments;
+  MethodNode? _arguments;
   bool _argvInit = false;
   static const String MethodPattern = r"^{0}\(([^\)]*)\)$";
-  MethodNode splitMethod(String name, int count) {
+  MethodNode? splitMethod(String name, int count) {
     var argv = arguments;
     if (argv != null && argv.name == name && argv.length == count) {
       return argv;
@@ -343,7 +343,7 @@ class NodeData {
     return null;
   }
 
-  MethodNode get arguments {
+  MethodNode? get arguments {
     if (!isElement) {
       if (!_argvInit) {
         _arguments = MethodNode.parse(text, status);

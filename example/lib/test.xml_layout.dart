@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/src/material/material_button.dart';
 import 'package:flutter/src/foundation/basic_types.dart';
-import 'package:flutter/src/rendering/mouse_cursor.dart';
+import 'package:flutter/src/services/mouse_cursor.dart';
 import 'package:flutter/src/material/button_theme.dart';
 import 'dart:ui';
 import 'package:flutter/src/painting/edge_insets.dart';
@@ -352,6 +352,8 @@ Register register = Register(() {
         wordSpacing: node.s<double>("wordSpacing"),
         textBaseline: node.s<TextBaseline>("textBaseline"),
         height: node.s<double>("height"),
+        leadingDistribution:
+            node.s<TextLeadingDistribution>("leadingDistribution"),
         locale: node.s<Locale>("locale"),
         foreground: node.s<Paint>("foreground"),
         background: node.s<Paint>("background"),
@@ -400,6 +402,7 @@ Register register = Register(() {
     return FontWeight.bold;
   });
   XmlLayout.registerEnum(FontStyle.values);
+  XmlLayout.registerEnum(TextLeadingDistribution.values);
   XmlLayout.registerInline(Locale, "", false, (node, method) {
     return Locale(method[0]?.toString(), method[1]?.toString());
   });
@@ -432,6 +435,8 @@ Register register = Register(() {
         fontFamilyFallback: node.array<String>("fontFamilyFallback"),
         fontSize: node.s<double>("fontSize"),
         height: node.s<double>("height"),
+        leadingDistribution:
+            node.s<TextLeadingDistribution>("leadingDistribution"),
         leading: node.s<double>("leading"),
         fontWeight: node.s<FontWeight>("fontWeight"),
         fontStyle: node.s<FontStyle>("fontStyle"),
@@ -446,6 +451,8 @@ Register register = Register(() {
         fontFamilyFallback: node.array<String>("fontFamilyFallback"),
         fontSize: node.s<double>("fontSize"),
         height: node.s<double>("height"),
+        leadingDistribution:
+            node.s<TextLeadingDistribution>("leadingDistribution"),
         leading: node.s<double>("leading"),
         fontWeight: node.s<FontWeight>("fontWeight"),
         fontStyle: node.s<FontStyle>("fontStyle"),
@@ -462,7 +469,9 @@ Register register = Register(() {
   XmlLayout.register("TextHeightBehavior", (node, key) {
     return TextHeightBehavior(
         applyHeightToFirstAscent: node.s<bool>("applyHeightToFirstAscent"),
-        applyHeightToLastDescent: node.s<bool>("applyHeightToLastDescent"));
+        applyHeightToLastDescent: node.s<bool>("applyHeightToLastDescent"),
+        leadingDistribution:
+            node.s<TextLeadingDistribution>("leadingDistribution"));
   });
   XmlLayout.registerInline(TextHeightBehavior, "fromEncoded", false,
       (node, method) {

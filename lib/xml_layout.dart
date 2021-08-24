@@ -1,11 +1,7 @@
 library xml_layout;
 
-import 'dart:collection';
-import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:xml/xml.dart' as xml;
 import 'parser.dart';
 import 'exceptions.dart';
@@ -18,7 +14,6 @@ part 'node.dart';
 
 
 typedef MethodConstructor = dynamic Function();
-typedef _NodeTester = bool Function(NodeData);
 typedef ApplyFunction = dynamic Function(String name, List args);
 
 class _Range {
@@ -33,7 +28,7 @@ class _Range {
 abstract class _ItemInfo {
   _ItemInfo();
 
-  dynamic constructor(NodeData node, Key key);
+  dynamic constructor(NodeData node, Key? key);
 }
 
 class _ConstructorItemInfo extends _ItemInfo {
@@ -42,25 +37,25 @@ class _ConstructorItemInfo extends _ItemInfo {
   _ConstructorItemInfo(this._constructor);
 
   @override
-  constructor(NodeData node, Key key) {
+  constructor(NodeData node, Key? key) {
     return _constructor(node, key);
   }
 }
 
-typedef InlineItemConstructor = Function(NodeData node, MethodNode method);
+typedef InlineItemConstructor = Function(NodeData node, MethodNode? method);
 
 class _InlineItemData {
-  String name;
-  bool field;
+  late String name;
+  late bool field;
 
-  InlineItemConstructor constructor;
+  InlineItemConstructor? constructor;
 }
 
 class _InlineItemInfo extends _ItemInfo {
 
   List<_InlineItemData> dataList = [];
 
-  _InlineItemData _find(String name, bool field) {
+  _InlineItemData? _find(String name, bool field) {
     for (var data in dataList) {
       if (data.name == name && data.field == field) {
         return data;
@@ -70,9 +65,11 @@ class _InlineItemInfo extends _ItemInfo {
   }
 
   @override
-  constructor(NodeData node, Key key) {
+  constructor(NodeData node, Key? key) {
     if (node.text.contains('(')) {
       var method = MethodNode.parse(node.text, node.status);
+      if (method == null)
+        return _find(node.text, true)?.constructor?.call(node, null);
       return _find(method.name, false)?.constructor?.call(node, method);
     } else {
       return _find(node.text, true)?.constructor?.call(node, null);
@@ -83,10 +80,10 @@ class _InlineItemInfo extends _ItemInfo {
 class XmlLayout extends StatefulWidget {
   static Map<dynamic, _ItemInfo> _constructors = Map();
 
-  final xml.XmlElement element;
-  final String template;
+  final xml.XmlElement? element;
+  final String? template;
   final Map objects;
-  final ItemConstructor onUnkownElement;
+  final ItemConstructor? onUnkownElement;
 
   static bool _initialized = false;
 
@@ -106,8 +103,10 @@ class XmlLayout extends StatefulWidget {
   /// );
   /// ```
   ///
-  XmlLayout(
-      {Key key, @required this.template, this.objects, this.onUnkownElement})
+  XmlLayout({Key? key,
+    required this.template,
+    this.objects = const {},
+    this.onUnkownElement})
       : element = null,
         super(key: key) {
     assert(template != null);
@@ -117,8 +116,11 @@ class XmlLayout extends StatefulWidget {
   /// Constructs a XmlLayout widget
   ///
   /// use a [XmlElement] to constructs a widget.
-  XmlLayout.element(
-      {Key key, @required this.element, this.objects, this.onUnkownElement})
+  XmlLayout.element({
+    Key? key,
+    required this.element,
+    this.objects = const {},
+    this.onUnkownElement})
       : template = null,
         super(key: key) {
     assert(element != null);
@@ -218,7 +220,7 @@ class XmlLayout extends StatefulWidget {
     registerMethod(name, handler);
   }
 
-  static void registerFunctionReturn<T>([String name]) {
+  static void registerFunctionReturn<T>([String? name]) {
     function.registerReturnType<T>(name);
   }
 }
@@ -229,14 +231,14 @@ class XmlLayout extends StatefulWidget {
 /// by the id string.
 ///
 class XmlLayoutState extends State<XmlLayout> with NodeControl {
-  Template template;
-  Status status;
+  Template? template;
+  late Status status;
 
   @override
   Widget build(BuildContext context) {
     if (template == null) {
-      xml.XmlElement element =
-          widget.element ?? xml.XmlDocument.parse(widget.template)?.firstChild;
+      xml.XmlElement? element =
+          widget.element ?? (xml.XmlDocument.parse(widget.template!).firstChild as xml.XmlElement?);
       if (element != null) {
         template = Template(element);
       } else {
@@ -246,7 +248,8 @@ class XmlLayoutState extends State<XmlLayout> with NodeControl {
 
     status.data = widget.objects;
     status.context = context;
-    dynamic tar = template.generate(status, this).first?.element();
+    var iterable = template!.generate(status, this);
+    dynamic tar = iterable.isEmpty ? null : iterable.first.element();
     if (tar is Widget) {
       return tar;
     } else {

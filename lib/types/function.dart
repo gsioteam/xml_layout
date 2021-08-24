@@ -9,9 +9,9 @@ import 'package:xml/xml.dart' as xml;
 class ArgsCountError extends Error {}
 
 abstract class Action {
-  String ret;
-  List<Argument> args;
-  Status _status;
+  String? ret;
+  List<Argument>? args;
+  late Status _status;
 
   Action({this.ret, this.args});
 
@@ -44,14 +44,14 @@ abstract class Action {
 }
 
 class Call extends Action {
-  Function func;
+  Function? func;
 
-  Call({this.func, String ret, List<Argument> args})
+  Call({this.func, String? ret, List<Argument>? args})
       : super(ret: ret, args: args);
 
   dynamic call(Status status) {
     if (func != null) {
-      return Function.apply(func, args?.map((e) => e.value)?.toList() ?? []);
+      return Function.apply(func!, args?.map((e) => e.value)?.toList() ?? []);
     }
   }
 }
@@ -60,7 +60,7 @@ class Builder extends Action {
   final NodeData node;
 
   Builder(this.node, {
-    String ret
+    String? ret
   }) : super(ret: ret);
 
   @override
@@ -71,7 +71,7 @@ class Builder extends Action {
 
 class SetArgument extends Action {
   final dynamic argument;
-  SetArgument({String ret, this.argument}) : super(ret: ret);
+  SetArgument({String? ret, this.argument}) : super(ret: ret);
 
   @override
   call(Status status) {
@@ -131,13 +131,13 @@ class _ReturnType<T> {
     if (T != Null) {
       return ret as T;
     } else {
-      return null;
+      return null as T;
     }
   }
 }
 Map<String, _ReturnType> _returnTypes = {};
 
-void registerReturnType<T>([String name]) {
+void registerReturnType<T>([String? name]) {
   String typeName = name ?? T.toString().toLowerCase();
   _returnTypes[typeName] = _ReturnType<T>();
 }
@@ -153,10 +153,10 @@ NodeData _createNewNode(NodeData node, Map<String, dynamic> data) {
 
 Register register = Register(() {
   XmlLayout.register("Function", (node, key) {
-    String type = node.rawAttribute("returnType")?.toLowerCase();
-    _ReturnType returnType = _returnTypes.containsKey(type) ? _returnTypes[type] : _defaultReturnType;
+    String? type = node.rawAttribute("returnType")?.toLowerCase();
+    _ReturnType returnType = _returnTypes[type] ?? _defaultReturnType;
 
-    String creator = node.rawAttribute("creator");
+    String? creator = node.rawAttribute("creator");
     dynamic ret;
     if (creator != null) {
       ret = node.status.execute(creator);

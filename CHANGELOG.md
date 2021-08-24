@@ -1,3 +1,7 @@
+## [2.3.0]
+
+* Update to dart language 2.13
+
 ## [2.2.14]
 
 * Do not limit the key type of `objects` anymore.

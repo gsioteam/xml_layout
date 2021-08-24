@@ -16,7 +16,7 @@ class BuilderStatus {
 
   DartType convertType(DartType dartType) {
     if (_convertTypes.containsKey(dartType)) {
-      dartType = _convertTypes[dartType];
+      dartType = _convertTypes[dartType]!;
     }
     return dartType;
   }
@@ -25,13 +25,13 @@ class BuilderStatus {
     String src = uri.toString();
     for (var pattern in _inputConvert.keys) {
       if (pattern.matchAsPrefix(src) != null) {
-        return _inputConvert[pattern];
+        return _inputConvert[pattern]!;
       }
     }
     return src;
   }
 
-  void insertSource(Source source) {
+  void insertSource(Source? source) {
     if (source != null) {
       var uri = source.uri;
       if (uri.scheme == 'dart') {
@@ -153,7 +153,7 @@ class XmlLayoutBuilder extends Builder {
     }
   }
 
-  bool _isConstructorInline(ConstructorElement constructorElement, [Set<DartType> caches]) {
+  bool _isConstructorInline(ConstructorElement constructorElement, [Set<DartType>? caches]) {
     if (constructorElement.name.isEmpty && constructorElement.parameters.length == 0) return false;
 
     if (caches == null) {
@@ -403,7 +403,7 @@ class XmlLayoutBuilder extends Builder {
     }
   }
 
-  bool _isSubTypeOf(InterfaceType type, InterfaceType targetType) {
+  bool _isSubTypeOf(InterfaceType type, DartType? targetType) {
     if (type == targetType) return true;
     for (var supperType in type.allSupertypes) {
       var ret = _isSubTypeOf(supperType, targetType);
@@ -425,7 +425,7 @@ class XmlLayoutBuilder extends Builder {
     for (var field in classElement.fields) {
       if (field.isStatic && field.isPublic) {
         var type = field.type;
-        if (type is InterfaceType && targetType != null && !_isSubTypeOf(type, targetType)) {
+        if (type is InterfaceType && !_isSubTypeOf(type, targetType)) {
           continue;
         }
         status.insertSource(type.element?.source);

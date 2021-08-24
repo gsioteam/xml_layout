@@ -110,12 +110,12 @@ RegExp _matchRegExp1 = RegExp(r"^\$([\w_]+)$");
 RegExp _matchRegExp2 = RegExp(r"^\$\{([^\}]+)\}$");
 
 class Status {
-  Map<String, dynamic> data;
+  Map data;
 
-  Status _parent;
-  Status get parent => _parent;
+  Status? _parent;
+  Status? get parent => _parent;
   dynamic tag = 0;
-  BuildContext context;
+  late BuildContext context;
 
   Status(this.data);
 
@@ -129,15 +129,15 @@ class Status {
     List<String> arr = path.split(".");
     List segs = [];
     for (String seg in arr) {
-      RegExpMatch match = exp.firstMatch(seg);
+      RegExpMatch? match = exp.firstMatch(seg);
       if (match == null) return null;
-      String name = match.group(1);
-      String property = match.group(2);
+      String name = match.group(1)!;
+      String property = match.group(2)!;
       segs.add(name);
       if (property.length > 0) {
-        var matches = bExp.allMatches(property);
+        var matches = bExp.allMatches(property!);
         for (Match match in matches) {
-          segs.add(jsonDecode(match.group(1)));
+          segs.add(jsonDecode(match.group(1)!));
         }
       }
     }
@@ -164,25 +164,27 @@ class Status {
       }
     }
     if (param.indexOf("(") > 0) {
-      MethodNode m = MethodNode.parse(param, this);
+      MethodNode? m = MethodNode.parse(param, this);
+      if (m == null)
+        return _stringResult();
       dynamic func = get(m.name);
       if (func is Function) {
         return Function.apply(func, m.arguments);
       } else if (_methods.containsKey(m.name)) {
-        var handler = _methods[m.name];
+        var handler = _methods[m.name]!;
         return handler(m, this);
       } else {
         return _stringResult();
       }
     } else {
       if (param.startsWith("\$")) {
-        Match regExp = _matchRegExp1.firstMatch(param);
+        Match? regExp = _matchRegExp1.firstMatch(param);
         if (regExp == null) {
           regExp = _matchRegExp2.firstMatch(param);
         }
 
         if (regExp != null) {
-          return get(regExp.group(1));
+          return get(regExp.group(1)!);
         } else {
           return _stringResult();
         }

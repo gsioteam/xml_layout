@@ -6,12 +6,12 @@ import 'package:xml/xml.dart' as xml;
 import 'status.dart';
 import 'xml_layout.dart';
 
-typedef TemplateConstructor<T extends Template> = T Function(xml.XmlNode node, Template parent);
+typedef TemplateConstructor<T extends Template> = T Function(xml.XmlNode node, Template? parent);
 
 Map<String, TemplateConstructor> _flowConstructors = {
-  "for": (node, parent) => ForFlowTemplate(node, parent),
-  "if": (node, parent) => IfFlowTemplate(node, parent),
-  "else": (node, parent) => ElseFlowTemplate(node, parent),
+  "for": (node, parent) => ForFlowTemplate(node as xml.XmlElement, parent),
+  "if": (node, parent) => IfFlowTemplate(node as xml.XmlElement, parent),
+  "else": (node, parent) => ElseFlowTemplate(node as xml.XmlElement, parent),
 };
 
 void registerFlowTemplate<T extends Template>(String tagName, TemplateConstructor<T> constructor) {
@@ -19,12 +19,12 @@ void registerFlowTemplate<T extends Template>(String tagName, TemplateConstructo
 }
 
 class _InnerMessage {
-  String type;
+  late String type;
   dynamic data;
 }
 
 class FlowMessage {
-  _InnerMessage _inner;
+  _InnerMessage? _inner;
 
   void clear() {
     _inner = null;
@@ -41,40 +41,40 @@ class FlowMessage {
 
 abstract class Template {
   xml.XmlNode node;
-  Template parent;
+  Template? parent;
 
-  List<Template> _children;
+  List<Template>? _children;
   List<Template> get children {
     if (_children == null) {
       _children = [];
       if (node is xml.XmlElement) {
         for (var child in node.children) {
           if (child is xml.XmlElement) {
-            _children.add(Template(child, this));
+            _children!.add(Template(child, this));
           } else if (child is xml.XmlText) {
             if (child.text.trim().isNotEmpty)
-              _children.add(Template(child, this));
+              _children!.add(Template(child, this));
           }
         }
       }
     }
-    return _children;
+    return _children!;
   }
 
-  List<Template> _attributes;
+  List<Template>? _attributes;
   List<Template> get attributes {
     if (_attributes == null) {
       _attributes = [];
       if (node is xml.XmlElement) {
         for (var attr in node.attributes) {
-          _attributes.add(Template(attr, this));
+          _attributes!.add(Template(attr, this));
         }
       }
     }
-    return _attributes;
+    return _attributes!;
   }
 
-  xml.XmlName get name {
+  xml.XmlName? get name {
     if (node is xml.XmlElement) {
       return (node as xml.XmlElement).name;
     } else if (node is xml.XmlAttribute) {
@@ -84,10 +84,10 @@ abstract class Template {
     }
   }
 
-  String get messageFilter => null;
+  String? get messageFilter => null;
 
   Template.init(this.node, this.parent);
-  Iterable<NodeData> generate(Status status, NodeControl control, [FlowMessage message]) {
+  Iterable<NodeData> generate(Status status, NodeControl control, [FlowMessage? message]) {
     if (message == null) message = FlowMessage();
     if (message._inner?.type != messageFilter) {
       message.clear();
@@ -97,12 +97,12 @@ abstract class Template {
 
   Iterable<NodeData> processChildren(Status status, NodeControl control, FlowMessage message);
 
-  factory Template(xml.XmlNode node, [Template parent]) {
+  factory Template(xml.XmlNode node, [Template? parent]) {
     if (node is xml.XmlElement) {
       String tagName = node.name.toString().toLowerCase();
       if (_flowConstructors.containsKey(tagName)) {
         var constructor = _flowConstructors[tagName];
-        return constructor(node, parent);
+        return constructor!(node, parent);
       } else {
         return ElementTemplate(node, parent);
       }
@@ -111,16 +111,16 @@ abstract class Template {
     } else if (node is xml.XmlAttribute) {
       return AttributeTemplate(node, parent);
     }
-    return null;
+    throw Exception(["Unkown node type"]);
   }
 
 }
 
 class ElementTemplate extends Template {
-  ElementTemplate(xml.XmlElement node, [Template parent]) : super.init(node, parent);
+  ElementTemplate(xml.XmlElement node, [Template? parent]) : super.init(node, parent);
 
-  Status _oldStatus;
-  NodeData _cachedNode;
+  Status? _oldStatus;
+  NodeData? _cachedNode;
 
   @override
   Iterable<NodeData> processChildren(Status status, NodeControl control, FlowMessage message) {
@@ -131,16 +131,16 @@ class ElementTemplate extends Template {
     if (_cachedNode == null)
       _cachedNode = NodeData(this, status, control);
     else
-      _cachedNode.clear();
-    return [_cachedNode];
+      _cachedNode!.clear();
+    return [_cachedNode!];
   }
 }
 
 class TextTemplate extends Template {
-  TextTemplate(xml.XmlText node, [Template parent]) : super.init(node, parent);
+  TextTemplate(xml.XmlText node, [Template? parent]) : super.init(node, parent);
 
-  Status _oldStatus;
-  NodeData _cachedNode;
+  Status? _oldStatus;
+  NodeData? _cachedNode;
 
   @override
   Iterable<NodeData> processChildren(Status status, NodeControl control, FlowMessage message) {
@@ -151,16 +151,16 @@ class TextTemplate extends Template {
     if (_cachedNode == null)
       _cachedNode = NodeData(this, status, control);
     else
-      _cachedNode.clear();
-    return [_cachedNode];
+      _cachedNode!.clear();
+    return [_cachedNode!];
   }
 }
 
 class AttributeTemplate extends Template {
-  AttributeTemplate(xml.XmlAttribute node, [Template parent]) : super.init(node, parent);
+  AttributeTemplate(xml.XmlAttribute node, [Template? parent]) : super.init(node, parent);
 
-  Status _oldStatus;
-  NodeData _cachedNode;
+  Status? _oldStatus;
+  NodeData? _cachedNode;
 
   @override
   Iterable<NodeData> processChildren(Status status, NodeControl control, FlowMessage message) {
@@ -171,15 +171,15 @@ class AttributeTemplate extends Template {
     if (_cachedNode == null)
       _cachedNode = NodeData(this, status, control);
     else
-      _cachedNode.clear();
-    return [_cachedNode];
+      _cachedNode!.clear();
+    return [_cachedNode!];
   }
 }
 
 class ForFlowTemplate extends Template {
-  ForFlowTemplate(xml.XmlElement node, [Template parent]) : super.init(node, parent);
+  ForFlowTemplate(xml.XmlElement node, [Template? parent]) : super.init(node, parent);
 
-  bool _testArray(List list1, List list2) {
+  bool _testArray(List? list1, List? list2) {
     if (list1 != null && list2 != null && list1.length == list2.length) {
       int n = list1.length;
       for (int i = 0; i < n; ++i) {
@@ -195,8 +195,8 @@ class ForFlowTemplate extends Template {
     String item = element.getAttribute("item") ?? "item";
     String index = element.getAttribute("index") ?? "index";
 
-    List arr;
-    xml.XmlAttribute fnode = element.getAttributeNode("array");
+    List? arr;
+    xml.XmlAttribute? fnode = element.getAttributeNode("array");
     if (fnode != null) {
       arr = status.execute(fnode.value) as List;
     }
@@ -213,7 +213,7 @@ class ForFlowTemplate extends Template {
       }
     }
 
-    if ((arr?.length??0) > 0) {
+    if (arr.length > 0) {
       for (int i = 0, t = arr.length; i < t; ++i) {
         Status newStatus = status.child({
           item: arr[i],
@@ -231,12 +231,12 @@ class ForFlowTemplate extends Template {
 const String _ifFlowType = "if";
 
 class IfFlowTemplate extends Template {
-  IfFlowTemplate(xml.XmlElement node, [Template parent]) : super.init(node, parent);
+  IfFlowTemplate(xml.XmlElement node, [Template? parent]) : super.init(node, parent);
 
   @override
   Iterable<NodeData> processChildren(Status status, NodeControl control, FlowMessage message) sync* {
     xml.XmlElement element = node as xml.XmlElement;
-    xml.XmlAttribute fnode = element.getAttributeNode("candidate");
+    xml.XmlAttribute? fnode = element.getAttributeNode("candidate");
     bool candidate = false;
     if (fnode != null) {
       var res = status.execute(fnode.value);
@@ -255,7 +255,7 @@ class IfFlowTemplate extends Template {
 }
 
 class ElseFlowTemplate extends Template {
-  ElseFlowTemplate(xml.XmlElement node, [Template parent]) : super.init(node, parent);
+  ElseFlowTemplate(xml.XmlElement node, [Template? parent]) : super.init(node, parent);
 
   @override
   String get messageFilter => _ifFlowType;
@@ -265,7 +265,7 @@ class ElseFlowTemplate extends Template {
     bool candidate = true, checkCandi = message.data == false;
     if (checkCandi) {
       xml.XmlElement element = node as xml.XmlElement;
-      xml.XmlAttribute fnode = element.getAttributeNode("candidate");
+      xml.XmlAttribute? fnode = element.getAttributeNode("candidate");
       candidate = true;
       if (fnode != null) {
         var res = status.execute(fnode.value);

@@ -1,7 +1,7 @@
 library xml_layout;
 
 class TemplateException implements Exception {
-  String message;
+  String? message;
 
   TemplateException([this.message]);
 }

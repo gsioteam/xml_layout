@@ -53,18 +53,18 @@ List<int> _dots(String p) {
 RegExp _regExp = RegExp(r"^(\w*)\(([^`]*)\)$");
 
 class MethodNode {
-  String name;
-  List arguments;
+  late String name;
+  late List arguments;
   MethodNode._();
 
-  factory MethodNode.parse(String str, Status status) {
+  static MethodNode? parse(String str, Status status) {
     var matches = _regExp.allMatches(str);
     if (matches.length > 0) {
       var match = matches.first;
       MethodNode method = MethodNode._();
-      method.name = match.group(1);
+      method.name = match.group(1)!;
       method.arguments = [];
-      String param = match.group(2).trim();
+      String param = match.group(2)!.trim();
       List<int> dots = _dots(param);
 
       void insertParam(String param) {
@@ -87,7 +87,7 @@ class MethodNode {
 
   int get length => arguments.length;
   dynamic operator [](int idx) => arguments[idx];
-  List<T> map<T>(T Function(dynamic) fn) => arguments.map(fn);
+  List<T> map<T>(T Function(dynamic) fn) => arguments.map(fn).toList();
 
 }
 
