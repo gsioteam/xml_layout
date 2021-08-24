@@ -57,6 +57,10 @@ class MethodNode {
   late List arguments;
   MethodNode._();
 
+  static MethodNode defaultNode = MethodNode._()
+    ..name = ''
+    .. arguments = [];
+
   static MethodNode? parse(String str, Status status) {
     var matches = _regExp.allMatches(str);
     if (matches.length > 0) {

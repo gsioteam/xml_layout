@@ -42,7 +42,7 @@ class _ConstructorItemInfo extends _ItemInfo {
   }
 }
 
-typedef InlineItemConstructor = Function(NodeData node, MethodNode? method);
+typedef InlineItemConstructor = Function(NodeData node, MethodNode method);
 
 class _InlineItemData {
   late String name;
@@ -69,10 +69,10 @@ class _InlineItemInfo extends _ItemInfo {
     if (node.text.contains('(')) {
       var method = MethodNode.parse(node.text, node.status);
       if (method == null)
-        return _find(node.text, true)?.constructor?.call(node, null);
+        return _find(node.text, true)?.constructor?.call(node, MethodNode.defaultNode);
       return _find(method.name, false)?.constructor?.call(node, method);
     } else {
-      return _find(node.text, true)?.constructor?.call(node, null);
+      return _find(node.text, true)?.constructor?.call(node, MethodNode.defaultNode);
     }
   }
 }

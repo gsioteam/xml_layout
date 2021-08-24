@@ -224,7 +224,7 @@ class NodeData {
   bool get isElement => _template.node is xml.XmlElement && _template.name!.prefix == null;
   xml.XmlName? get name => _template.name;
 
-  T? child<T>() {
+  T child<T>() {
     _processNode();
     T? res;
     String text;
@@ -244,7 +244,7 @@ class NodeData {
         }
       });
     }
-    return res;
+    return res as T;
   }
 
   List<T> children<T>() {
@@ -265,11 +265,11 @@ class NodeData {
     }
   }
 
-  List<T>? array<T>(String name) {
+  List<T> array<T>(String name) {
     _processNode();
     List<NodeData>? attrs = _attributes![name.toLowerCase()];
     var attr = attrs?.first;
-    if (attr == null) return null;
+    if (attr == null) return [];
     else if (attr.isElement) {
       return _convertListTo<T>(attrs!);
     } else {
@@ -321,8 +321,8 @@ class NodeData {
   }
   T convert<T>() => t<T>();
 
-  T? s<T>(String name, [T? def]) => this[name]?.t<T>() ?? def;
-  T? attribute<T>(String name, [T? defaultValue]) => s<T>(name, defaultValue);
+  T s<T>(String name, [T? def]) => (this[name]?.t<T>() ?? def) as T;
+  T attribute<T>(String name, [T? defaultValue]) => s<T>(name, defaultValue);
 
   String? rawAttribute(String name) => _template.node.getAttribute(name);
 

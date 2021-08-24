@@ -1,6 +1,7 @@
 
 import 'dart:async';
 
+import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:build/build.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
@@ -43,6 +44,16 @@ class BuilderStatus {
         imports.add(str);
       }
     }
+  }
+}
+
+String nc(String line, DartType type) {
+  return type.nullabilitySuffix == NullabilitySuffix.none ? "($line)!" : line;
+}
+
+extension DartTypeGetName on DartType {
+  String getTypeString() {
+    return getDisplayString(withNullability: true).replaceAll('*', '?');
   }
 }
 
@@ -235,22 +246,22 @@ class XmlLayoutBuilder extends Builder {
                   if (param.hasDefaultValue) {
                     str += '??${param.defaultValueCode}';
                   }
-                  argv.add(str);
+                  argv.add(nc(str, type));
                 } else if (type.isDartCoreDouble || type.isDartCoreNum) {
                   String str = 'method[$i]?.toDouble()';
                   if (param.hasDefaultValue) {
                     str += '??${param.defaultValueCode}';
                   }
-                  argv.add(str);
+                  argv.add(nc(str, type));
                 } else if (type.isDartCoreString) {
-                  argv.add('method[$i]?.toString()');
+                  argv.add(nc('method[$i]?.toString()', type));
                 } else {
-                  String str = 'node.v<${type.getDisplayString(withNullability: false)}>(method[$i]';
+                  String str = 'node.v<${type.getTypeString()}>(method[$i]';
                   if (param.hasDefaultValue) {
                     str += ',${param.defaultValueCode}';
                   }
                   str += ')';
-                  argv.add(str);
+                  argv.add(nc(str, type));
                 }
               }
               segs.add(argv.join(','));
@@ -283,9 +294,11 @@ class XmlLayoutBuilder extends Builder {
 
                 if (type.isDartCoreList || type.isDartCoreIterable) {
                   var dartType = status.convertType((type as ParameterizedType).typeArguments.first);
-                  params.add('${param.name}: node.array<${dartType.getDisplayString(withNullability: false)}>(${argv[0]})');
+                  params.add('${param.name}: ${nc('node.array<${dartType.getTypeString()}>(${argv[0]})', type)}');
                 } else {
-                  params.add('${param.name}: node.s<${type.getDisplayString(withNullability: false)}>(${argv.join(',')})');
+                  print("Insert ${param.name} ${type.nullabilitySuffix}");
+                  String line = '${param.name}: ${nc('node.s<${type.getTypeString()}>(${argv.join(',')})', type)}';
+                  params.add(line);
                 }
               }
 
@@ -299,9 +312,9 @@ class XmlLayoutBuilder extends Builder {
                 _processDartType(status, type);
                 if (type.isDartCoreList || type.isDartCoreIterable) {
                   var dartType = (type as ParameterizedType).typeArguments.first;
-                  params.insert(index, 'node.array<${dartType.getDisplayString(withNullability: false)}>(${argv[0]})');
+                  params.insert(index, nc('node.array<${dartType.getTypeString()}>(${argv[0]})', type));
                 } else {
-                  params.insert(index, 'node.s<${type.getDisplayString(withNullability: false)}>(${argv.join(',')})');
+                  params.insert(index, nc('node.s<${type.getTypeString()}>(${argv.join(',')})', type));
                 }
               }
 
@@ -318,7 +331,7 @@ class XmlLayoutBuilder extends Builder {
                       hasChild = true;
                       var type = status.convertType(param.type);
                       _processDartType(status, type);
-                      params.add('${param.name}: node.child<${type.getDisplayString(withNullability: false)}>()');
+                      params.add('${param.name}: ${nc('node.child<${type.getTypeString()}>()', type)}');
                       break;
                     }
                     case 'children':
@@ -328,7 +341,7 @@ class XmlLayoutBuilder extends Builder {
                       if (type.isDartCoreList) {
                         String typeName;
                         if (type is ParameterizedType) {
-                          typeName = type.typeArguments.first.getDisplayString(withNullability: false);
+                          typeName = type.typeArguments.first.getTypeString();
                         } else {
                           typeName = 'dynamic';
                         }
@@ -360,7 +373,7 @@ class XmlLayoutBuilder extends Builder {
                     argv.add(param.defaultValueCode);
                   }
                   var type = status.convertType(param.type);
-                  String typeName = type.getDisplayString(withNullability: false);
+                  String typeName = type.getTypeString();
                   String child;
                   if (type.isDartCoreString ||
                       type.isDartCoreInt ||
@@ -372,7 +385,8 @@ class XmlLayoutBuilder extends Builder {
                     child = 'node.child<$typeName>()';
                     status.insertSource(param.type?.element?.source);
                   }
-                  params.insert(0, 'node.s<$typeName>(${argv.join(',')}) ?? $child');
+                  params.insert(0, nc('(node.s<$typeName>(${argv.join(',')}) ?? $child)', type));
+
                 }
               } else {
                 for (var index = 0, t = indexedParams.length; index < t; ++index) {
@@ -445,7 +459,7 @@ class XmlLayoutBuilder extends Builder {
   }
 
   String _removeGeneric(DartType type) {
-    String name = type.getDisplayString(withNullability: false);
+    String name = type.getTypeString();
     int index = name.indexOf('<');
     if (index >= 0) {
       return name.substring(0, index);
