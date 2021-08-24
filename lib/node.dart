@@ -67,17 +67,17 @@ class NodeData {
         }
 
         for (var child in rawChildren) {
-          if (child.name!.prefix == "attr") {
+          if (child.name?.prefix == "attr") {
             for (var sub in child.rawChildren) {
               _setNode(child.name!.local, sub);
             }
-          } else if (child.name!.prefix == "arg") {
+          } else if (child.name?.prefix == "arg") {
             for (var sub in child.rawChildren) {
               _setNode(child.name.toString(), sub);
             }
           } else if (child._template.node is xml.XmlText) {
             _text!.add(child._template.node.text);
-          } else if (child.name!.prefix == null) {
+          } else if (child.name?.prefix == null) {
             _children!.add(child);
           }
         }

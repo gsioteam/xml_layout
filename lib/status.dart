@@ -135,7 +135,7 @@ class Status {
       String property = match.group(2)!;
       segs.add(name);
       if (property.length > 0) {
-        var matches = bExp.allMatches(property!);
+        var matches = bExp.allMatches(property);
         for (Match match in matches) {
           segs.add(jsonDecode(match.group(1)!));
         }

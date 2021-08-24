@@ -12,7 +12,7 @@ class Register {
   }
 
   @override
-  int get hashCode => 0x43000000 | (initializer?.hashCode ?? 0);
+  int get hashCode => 0x43000000 | (initializer.hashCode ?? 0);
 
   @override
   bool operator ==(Object other) {
