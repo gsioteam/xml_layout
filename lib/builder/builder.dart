@@ -53,7 +53,11 @@ String nc(String line, DartType type) {
 
 extension DartTypeGetName on DartType {
   String getTypeString() {
-    return getDisplayString(withNullability: true).replaceAll('*', '?');
+    String type = getDisplayString(withNullability: true).replaceAll('*', '?');
+    if (type[type.length - 1] == '?') {
+      type = type.substring(0, type.length - 1);
+    }
+    return type;
   }
 }
 
@@ -245,16 +249,26 @@ class XmlLayoutBuilder extends Builder {
                   String str = 'method[$i]?.toInt()';
                   if (param.hasDefaultValue) {
                     str += '??${param.defaultValueCode}';
+                  } else if (type.nullabilitySuffix == NullabilitySuffix.none) {
+                    str = 'method[$i].toInt()';
                   }
-                  argv.add(nc(str, type));
+                  argv.add(str);
                 } else if (type.isDartCoreDouble || type.isDartCoreNum) {
                   String str = 'method[$i]?.toDouble()';
                   if (param.hasDefaultValue) {
                     str += '??${param.defaultValueCode}';
+                  } else if (type.nullabilitySuffix == NullabilitySuffix.none) {
+                    str = 'method[$i].toDouble()';
                   }
-                  argv.add(nc(str, type));
+                  argv.add(str);
                 } else if (type.isDartCoreString) {
-                  argv.add(nc('method[$i]?.toString()', type));
+                  String str = 'method[$i]?.toString()';
+                  if (param.hasDefaultValue) {
+                    str += '??${param.defaultValueCode}';
+                  } else if (type.nullabilitySuffix == NullabilitySuffix.none) {
+                    str = 'method[$i].toString()';
+                  }
+                  argv.add(str);
                 } else {
                   String str = 'node.v<${type.getTypeString()}>(method[$i]';
                   if (param.hasDefaultValue) {
@@ -296,7 +310,6 @@ class XmlLayoutBuilder extends Builder {
                   var dartType = status.convertType((type as ParameterizedType).typeArguments.first);
                   params.add('${param.name}: ${nc('node.array<${dartType.getTypeString()}>(${argv[0]})', type)}');
                 } else {
-                  print("Insert ${param.name} ${type.nullabilitySuffix}");
                   String line = '${param.name}: ${nc('node.s<${type.getTypeString()}>(${argv.join(',')})', type)}';
                   params.add(line);
                 }
@@ -385,7 +398,7 @@ class XmlLayoutBuilder extends Builder {
                     child = 'node.child<$typeName>()';
                     status.insertSource(param.type?.element?.source);
                   }
-                  params.insert(0, nc('(node.s<$typeName>(${argv.join(',')}) ?? $child)', type));
+                  params.insert(0, nc('(node.s<$typeName?>(${argv.join(',')}) ?? $child)', type));
 
                 }
               } else {
