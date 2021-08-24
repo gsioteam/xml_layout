@@ -1,3 +1,7 @@
+## [2.2.14]
+
+* Do not limit the key type of `objects` anymore.
+
 ## [2.2.13]
 
 * Added `context` property in `NodeData`

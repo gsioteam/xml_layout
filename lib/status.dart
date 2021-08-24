@@ -92,7 +92,7 @@ _getPath(dynamic tar, List path, int offset) {
   } else {
     dynamic seg = path[offset];
     if (tar is Map || tar is MapMixin) {
-      var sub = seg is String ? tar[seg] : null;
+      var sub = (seg is String || seg is int) ? tar[seg] : null;
       if (sub == null) return null;
       return _getPath(sub, path, offset + 1);
     } else if (tar is List || tar is ListMixin) {

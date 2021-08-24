@@ -85,7 +85,7 @@ class XmlLayout extends StatefulWidget {
 
   final xml.XmlElement element;
   final String template;
-  final Map<String, dynamic> objects;
+  final Map objects;
   final ItemConstructor onUnkownElement;
 
   static bool _initialized = false;
