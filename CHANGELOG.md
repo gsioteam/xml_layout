@@ -1,3 +1,7 @@
+## [2.3.2]
+
+* Added `xmlNode` in `NodeData`
+
 ## [2.3.0]
 
 * Update to dart language 2.13

@@ -30,6 +30,8 @@ class NodeData {
   Status get status => _status;
   BuildContext get context => status.context;
 
+  xml.XmlNode get xmlNode => _template.node;
+
   NodeData(this._template, this._status, this.control);
 
   void _setNode(String name, NodeData node) {
