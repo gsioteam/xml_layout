@@ -28,6 +28,7 @@ const List<Type> types = [
   ListView,
   Divider,
   ListTile,
+  AppBar,
 ];
 
 // const List<Collection> collections = [

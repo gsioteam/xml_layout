@@ -123,9 +123,40 @@ class Status {
     .._parent = this
     ..context = context;
 
+  int leftBrackets = "[".codeUnitAt(0);
+  int rightBrackets = "]".codeUnitAt(0);
+
+  Iterable<String> segIterable(String str) sync* {
+    StringBuffer buffer = StringBuffer();
+    int state = 0;
+    int deep = 0;
+    for (int code in str.codeUnits) {
+      if (state == 0) {
+        if (code == leftBrackets) {
+          state = 1;
+        }
+      } else {
+        if (code == leftBrackets) {
+          deep ++;
+          buffer.writeCharCode(code);
+        } else if (code == rightBrackets) {
+          if (deep == 0) {
+            yield buffer.toString();
+            buffer.clear();
+            state = 0;
+          } else {
+            deep--;
+            buffer.writeCharCode(code);
+          }
+        } else {
+          buffer.writeCharCode(code);
+        }
+      }
+    }
+  }
+
   dynamic get(String path) {
-    RegExp exp = RegExp(r"^(\w+)((\[[^\]]+\])*)$");
-    RegExp bExp = RegExp(r"\[([^\]]+)\]");
+    RegExp exp = RegExp(r"^(\w+)((\[[^$]+\])*)$");
     List<String> arr = path.split(".");
     List segs = [];
     for (String seg in arr) {
@@ -135,9 +166,12 @@ class Status {
       String property = match.group(2)!;
       segs.add(name);
       if (property.length > 0) {
-        var matches = bExp.allMatches(property);
-        for (Match match in matches) {
-          segs.add(jsonDecode(match.group(1)!));
+        for (var seg in segIterable(property)) {
+          if (seg.indexOf("[") > 0) {
+            segs.add(get(seg));
+          } else {
+            segs.add(jsonDecode(seg));
+          }
         }
       }
     }
