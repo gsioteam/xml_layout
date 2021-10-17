@@ -77,18 +77,18 @@ Register register = Register(() {
         hoverElevation: node.s<double>("hoverElevation"),
         highlightElevation: node.s<double>("highlightElevation"),
         disabledElevation: node.s<double>("disabledElevation"),
-        padding: node.s<EdgeInsets>("padding"),
+        padding: node.s<EdgeInsetsGeometry>("padding"),
         visualDensity: node.s<VisualDensity>("visualDensity"),
         shape: node.s<ShapeBorder>("shape"),
-        clipBehavior: (node.s<Clip>("clipBehavior", Clip.none))!,
+        clipBehavior: (node.s<Clip>("clipBehavior"))!,
         focusNode: node.s<FocusNode>("focusNode"),
-        autofocus: (node.s<bool>("autofocus", false))!,
+        autofocus: (node.s<bool>("autofocus"))!,
         materialTapTargetSize:
             node.s<MaterialTapTargetSize>("materialTapTargetSize"),
         animationDuration: node.s<Duration>("animationDuration"),
         minWidth: node.s<double>("minWidth"),
         height: node.s<double>("height"),
-        enableFeedback: (node.s<bool>("enableFeedback", true))!,
+        enableFeedback: (node.s<bool>("enableFeedback"))!,
         child: node.child<Widget>());
   });
   XmlLayout.registerInline(MouseCursor, "defer", true, (node, method) {
@@ -110,39 +110,14 @@ Register register = Register(() {
         method[2].toInt(), method[3].toDouble());
   });
   XmlLayout.registerEnum(Brightness.values);
-  XmlLayout.registerInline(EdgeInsets, "fromLTRB", false, (node, method) {
-    return EdgeInsets.fromLTRB(method[0].toDouble(), method[1].toDouble(),
-        method[2].toDouble(), method[3].toDouble());
-  });
-  XmlLayout.registerInline(EdgeInsets, "all", false, (node, method) {
-    return EdgeInsets.all(method[0].toDouble());
-  });
-  XmlLayout.register("EdgeInsets.only", (node, key) {
-    return EdgeInsets.only(
-        left: (node.s<double>("left", 0.0))!,
-        top: (node.s<double>("top", 0.0))!,
-        right: (node.s<double>("right", 0.0))!,
-        bottom: (node.s<double>("bottom", 0.0))!);
-  });
-  XmlLayout.register("EdgeInsets.symmetric", (node, key) {
-    return EdgeInsets.symmetric(
-        vertical: (node.s<double>("vertical", 0.0))!,
-        horizontal: (node.s<double>("horizontal", 0.0))!);
-  });
-  XmlLayout.register("EdgeInsets.fromWindowPadding", (node, key) {
-    return EdgeInsets.fromWindowPadding(
-        (node.s<WindowPadding>("arg:0"))!, (node.s<double>("arg:1"))!);
-  });
-  XmlLayout.registerInline(EdgeInsets, "zero", true, (node, method) {
-    return EdgeInsets.zero;
-  });
-  XmlLayout.registerInline(WindowPadding, "zero", true, (node, method) {
-    return WindowPadding.zero;
+  XmlLayout.registerInline(EdgeInsetsGeometry, "infinity", true,
+      (node, method) {
+    return EdgeInsetsGeometry.infinity;
   });
   XmlLayout.register("VisualDensity", (node, key) {
     return VisualDensity(
-        horizontal: (node.s<double>("horizontal", 0.0))!,
-        vertical: (node.s<double>("vertical", 0.0))!);
+        horizontal: (node.s<double>("horizontal"))!,
+        vertical: (node.s<double>("vertical"))!);
   });
   XmlLayout.registerInline(VisualDensity, "standard", true, (node, method) {
     return VisualDensity.standard;
@@ -170,12 +145,12 @@ Register register = Register(() {
   XmlLayout.registerEnum(MaterialTapTargetSize.values);
   XmlLayout.register("Duration", (node, key) {
     return Duration(
-        days: (node.s<int>("days"))!,
-        hours: (node.s<int>("hours"))!,
-        minutes: (node.s<int>("minutes"))!,
-        seconds: (node.s<int>("seconds"))!,
-        milliseconds: (node.s<int>("milliseconds"))!,
-        microseconds: (node.s<int>("microseconds"))!);
+        days: (node.s<int>("days", 0))!,
+        hours: (node.s<int>("hours", 0))!,
+        minutes: (node.s<int>("minutes", 0))!,
+        seconds: (node.s<int>("seconds", 0))!,
+        milliseconds: (node.s<int>("milliseconds", 0))!,
+        microseconds: (node.s<int>("microseconds", 0))!);
   });
   XmlLayout.registerInline(Duration, "zero", true, (node, method) {
     return Duration.zero;
@@ -219,18 +194,17 @@ Register register = Register(() {
         bottomSheet: node.s<Widget>("bottomSheet"),
         backgroundColor: node.s<Color>("backgroundColor"),
         resizeToAvoidBottomInset: node.s<bool>("resizeToAvoidBottomInset"),
-        primary: (node.s<bool>("primary", true))!,
-        drawerDragStartBehavior: (node.s<DragStartBehavior>(
-            "drawerDragStartBehavior", DragStartBehavior.start))!,
-        extendBody: (node.s<bool>("extendBody", false))!,
-        extendBodyBehindAppBar:
-            (node.s<bool>("extendBodyBehindAppBar", false))!,
+        primary: (node.s<bool>("primary"))!,
+        drawerDragStartBehavior:
+            (node.s<DragStartBehavior>("drawerDragStartBehavior"))!,
+        extendBody: (node.s<bool>("extendBody"))!,
+        extendBodyBehindAppBar: (node.s<bool>("extendBodyBehindAppBar"))!,
         drawerScrimColor: node.s<Color>("drawerScrimColor"),
         drawerEdgeDragWidth: node.s<double>("drawerEdgeDragWidth"),
         drawerEnableOpenDragGesture:
-            (node.s<bool>("drawerEnableOpenDragGesture", true))!,
+            (node.s<bool>("drawerEnableOpenDragGesture"))!,
         endDrawerEnableOpenDragGesture:
-            (node.s<bool>("endDrawerEnableOpenDragGesture", true))!,
+            (node.s<bool>("endDrawerEnableOpenDragGesture"))!,
         restorationId: node.s<String>("restorationId"));
   });
   XmlLayout.registerInline(FloatingActionButtonLocation, "startTop", true,
@@ -345,7 +319,7 @@ Register register = Register(() {
   });
   XmlLayout.register("TextStyle", (node, key) {
     return TextStyle(
-        inherit: (node.s<bool>("inherit", true))!,
+        inherit: (node.s<bool>("inherit"))!,
         color: node.s<Color>("color"),
         backgroundColor: node.s<Color>("backgroundColor"),
         fontSize: node.s<double>("fontSize"),
@@ -411,7 +385,7 @@ Register register = Register(() {
   });
   XmlLayout.register("Locale.fromSubtags", (node, key) {
     return Locale.fromSubtags(
-        languageCode: (node.s<String>("languageCode"))!,
+        languageCode: (node.s<String>("languageCode", 'und'))!,
         scriptCode: node.s<String>("scriptCode"),
         countryCode: node.s<String>("countryCode"));
   });
@@ -497,7 +471,7 @@ Register register = Register(() {
         primary: node.s<bool>("primary"),
         physics: node.s<ScrollPhysics>("physics"),
         shrinkWrap: (node.s<bool>("shrinkWrap", false))!,
-        padding: node.s<EdgeInsets>("padding"),
+        padding: node.s<EdgeInsetsGeometry>("padding"),
         gridDelegate: (node.s<SliverGridDelegate>("gridDelegate"))!,
         addAutomaticKeepAlives: (node.s<bool>("addAutomaticKeepAlives", true))!,
         addRepaintBoundaries: (node.s<bool>("addRepaintBoundaries", true))!,
@@ -522,7 +496,7 @@ Register register = Register(() {
         primary: node.s<bool>("primary"),
         physics: node.s<ScrollPhysics>("physics"),
         shrinkWrap: (node.s<bool>("shrinkWrap", false))!,
-        padding: node.s<EdgeInsets>("padding"),
+        padding: node.s<EdgeInsetsGeometry>("padding"),
         gridDelegate: (node.s<SliverGridDelegate>("gridDelegate"))!,
         itemBuilder:
             (node.s<Widget Function(BuildContext, int)>("itemBuilder"))!,
@@ -549,7 +523,7 @@ Register register = Register(() {
         primary: node.s<bool>("primary"),
         physics: node.s<ScrollPhysics>("physics"),
         shrinkWrap: (node.s<bool>("shrinkWrap", false))!,
-        padding: node.s<EdgeInsets>("padding"),
+        padding: node.s<EdgeInsetsGeometry>("padding"),
         gridDelegate: (node.s<SliverGridDelegate>("gridDelegate"))!,
         childrenDelegate: (node.s<SliverChildDelegate>("childrenDelegate"))!,
         cacheExtent: node.s<double>("cacheExtent"),
@@ -571,7 +545,7 @@ Register register = Register(() {
         primary: node.s<bool>("primary"),
         physics: node.s<ScrollPhysics>("physics"),
         shrinkWrap: (node.s<bool>("shrinkWrap", false))!,
-        padding: node.s<EdgeInsets>("padding"),
+        padding: node.s<EdgeInsetsGeometry>("padding"),
         crossAxisCount: (node.s<int>("crossAxisCount"))!,
         mainAxisSpacing: (node.s<double>("mainAxisSpacing", 0.0))!,
         crossAxisSpacing: (node.s<double>("crossAxisSpacing", 0.0))!,
@@ -599,7 +573,7 @@ Register register = Register(() {
         primary: node.s<bool>("primary"),
         physics: node.s<ScrollPhysics>("physics"),
         shrinkWrap: (node.s<bool>("shrinkWrap", false))!,
-        padding: node.s<EdgeInsets>("padding"),
+        padding: node.s<EdgeInsetsGeometry>("padding"),
         maxCrossAxisExtent: (node.s<double>("maxCrossAxisExtent"))!,
         mainAxisSpacing: (node.s<double>("mainAxisSpacing", 0.0))!,
         crossAxisSpacing: (node.s<double>("crossAxisSpacing", 0.0))!,
@@ -622,7 +596,7 @@ Register register = Register(() {
   XmlLayout.register("ScrollController", (node, key) {
     return ScrollController(
         initialScrollOffset: (node.s<double>("initialScrollOffset", 0.0))!,
-        keepScrollOffset: (node.s<bool>("keepScrollOffset", true))!,
+        keepScrollOffset: (node.s<bool>("keepScrollOffset"))!,
         debugLabel: node.s<String>("debugLabel"));
   });
   XmlLayout.register("ScrollPhysics", (node, key) {
@@ -633,25 +607,25 @@ Register register = Register(() {
     return Container(
         key: key,
         alignment: node.s<AlignmentGeometry>("alignment"),
-        padding: node.s<EdgeInsets>("padding"),
+        padding: node.s<EdgeInsetsGeometry>("padding"),
         color: node.s<Color>("color"),
         decoration: node.s<Decoration>("decoration"),
         foregroundDecoration: node.s<Decoration>("foregroundDecoration"),
         width: node.s<double>("width"),
         height: node.s<double>("height"),
         constraints: node.s<BoxConstraints>("constraints"),
-        margin: node.s<EdgeInsets>("margin"),
+        margin: node.s<EdgeInsetsGeometry>("margin"),
         transform: node.s<Matrix4>("transform"),
         transformAlignment: node.s<AlignmentGeometry>("transformAlignment"),
         child: node.child<Widget>(),
-        clipBehavior: (node.s<Clip>("clipBehavior", Clip.none))!);
+        clipBehavior: (node.s<Clip>("clipBehavior"))!);
   });
   XmlLayout.register("BoxConstraints", (node, key) {
     return BoxConstraints(
-        minWidth: (node.s<double>("minWidth", 0.0))!,
-        maxWidth: (node.s<double>("maxWidth", double.infinity))!,
-        minHeight: (node.s<double>("minHeight", 0.0))!,
-        maxHeight: (node.s<double>("maxHeight", double.infinity))!);
+        minWidth: (node.s<double>("minWidth"))!,
+        maxWidth: (node.s<double>("maxWidth"))!,
+        minHeight: (node.s<double>("minHeight"))!,
+        maxHeight: (node.s<double>("maxHeight"))!);
   });
   XmlLayout.registerInline(BoxConstraints, "tight", false, (node, method) {
     return BoxConstraints.tight((node.v<Size>(method[0]))!);
@@ -765,8 +739,7 @@ Register register = Register(() {
     return AppBar(
         key: key,
         leading: node.s<Widget>("leading"),
-        automaticallyImplyLeading:
-            (node.s<bool>("automaticallyImplyLeading", true))!,
+        automaticallyImplyLeading: (node.s<bool>("automaticallyImplyLeading"))!,
         title: node.s<Widget>("title"),
         actions: node.array<Widget>("actions"),
         flexibleSpace: node.s<Widget>("flexibleSpace"),
@@ -780,13 +753,12 @@ Register register = Register(() {
         iconTheme: node.s<IconThemeData>("iconTheme"),
         actionsIconTheme: node.s<IconThemeData>("actionsIconTheme"),
         textTheme: node.s<TextTheme>("textTheme"),
-        primary: (node.s<bool>("primary", true))!,
+        primary: (node.s<bool>("primary"))!,
         centerTitle: node.s<bool>("centerTitle"),
-        excludeHeaderSemantics:
-            (node.s<bool>("excludeHeaderSemantics", false))!,
+        excludeHeaderSemantics: (node.s<bool>("excludeHeaderSemantics"))!,
         titleSpacing: node.s<double>("titleSpacing"),
-        toolbarOpacity: (node.s<double>("toolbarOpacity", 1.0))!,
-        bottomOpacity: (node.s<double>("bottomOpacity", 1.0))!,
+        toolbarOpacity: (node.s<double>("toolbarOpacity"))!,
+        bottomOpacity: (node.s<double>("bottomOpacity"))!,
         toolbarHeight: node.s<double>("toolbarHeight"),
         leadingWidth: node.s<double>("leadingWidth"),
         backwardsCompatibility: node.s<bool>("backwardsCompatibility"),
@@ -859,20 +831,19 @@ Register register = Register(() {
             node.s<Widget Function(BuildContext, Object, StackTrace?)>(
                 "errorBuilder"),
         semanticLabel: node.s<String>("semanticLabel"),
-        excludeFromSemantics: (node.s<bool>("excludeFromSemantics", false))!,
+        excludeFromSemantics: (node.s<bool>("excludeFromSemantics"))!,
         width: node.s<double>("width"),
         height: node.s<double>("height"),
         color: node.s<Color>("color"),
         colorBlendMode: node.s<BlendMode>("colorBlendMode"),
         fit: node.s<BoxFit>("fit"),
-        alignment: (node.s<AlignmentGeometry>("alignment", Alignment.center))!,
-        repeat: (node.s<ImageRepeat>("repeat", ImageRepeat.noRepeat))!,
+        alignment: (node.s<AlignmentGeometry>("alignment"))!,
+        repeat: (node.s<ImageRepeat>("repeat"))!,
         centerSlice: node.s<Rect>("centerSlice"),
-        matchTextDirection: (node.s<bool>("matchTextDirection", false))!,
-        gaplessPlayback: (node.s<bool>("gaplessPlayback", false))!,
-        isAntiAlias: (node.s<bool>("isAntiAlias", false))!,
-        filterQuality:
-            (node.s<FilterQuality>("filterQuality", FilterQuality.low))!);
+        matchTextDirection: (node.s<bool>("matchTextDirection"))!,
+        gaplessPlayback: (node.s<bool>("gaplessPlayback"))!,
+        isAntiAlias: (node.s<bool>("isAntiAlias"))!,
+        filterQuality: (node.s<FilterQuality>("filterQuality"))!);
   });
   XmlLayout.register("Image.network", (node, key) {
     return Image.network(((node.s<String?>("arg:0") ?? node.t<String>()))!,
@@ -887,20 +858,19 @@ Register register = Register(() {
             node.s<Widget Function(BuildContext, Object, StackTrace?)>(
                 "errorBuilder"),
         semanticLabel: node.s<String>("semanticLabel"),
-        excludeFromSemantics: (node.s<bool>("excludeFromSemantics", false))!,
+        excludeFromSemantics: (node.s<bool>("excludeFromSemantics"))!,
         width: node.s<double>("width"),
         height: node.s<double>("height"),
         color: node.s<Color>("color"),
         colorBlendMode: node.s<BlendMode>("colorBlendMode"),
         fit: node.s<BoxFit>("fit"),
-        alignment: (node.s<AlignmentGeometry>("alignment", Alignment.center))!,
-        repeat: (node.s<ImageRepeat>("repeat", ImageRepeat.noRepeat))!,
+        alignment: (node.s<AlignmentGeometry>("alignment"))!,
+        repeat: (node.s<ImageRepeat>("repeat"))!,
         centerSlice: node.s<Rect>("centerSlice"),
-        matchTextDirection: (node.s<bool>("matchTextDirection", false))!,
-        gaplessPlayback: (node.s<bool>("gaplessPlayback", false))!,
-        filterQuality:
-            (node.s<FilterQuality>("filterQuality", FilterQuality.low))!,
-        isAntiAlias: (node.s<bool>("isAntiAlias", false))!,
+        matchTextDirection: (node.s<bool>("matchTextDirection"))!,
+        gaplessPlayback: (node.s<bool>("gaplessPlayback"))!,
+        filterQuality: (node.s<FilterQuality>("filterQuality"))!,
+        isAntiAlias: (node.s<bool>("isAntiAlias"))!,
         headers: node.s<Map<String, String>>("headers"),
         cacheWidth: node.s<int>("cacheWidth"),
         cacheHeight: node.s<int>("cacheHeight"));
@@ -915,20 +885,19 @@ Register register = Register(() {
             node.s<Widget Function(BuildContext, Object, StackTrace?)>(
                 "errorBuilder"),
         semanticLabel: node.s<String>("semanticLabel"),
-        excludeFromSemantics: (node.s<bool>("excludeFromSemantics", false))!,
+        excludeFromSemantics: (node.s<bool>("excludeFromSemantics"))!,
         width: node.s<double>("width"),
         height: node.s<double>("height"),
         color: node.s<Color>("color"),
         colorBlendMode: node.s<BlendMode>("colorBlendMode"),
         fit: node.s<BoxFit>("fit"),
-        alignment: (node.s<AlignmentGeometry>("alignment", Alignment.center))!,
-        repeat: (node.s<ImageRepeat>("repeat", ImageRepeat.noRepeat))!,
+        alignment: (node.s<AlignmentGeometry>("alignment"))!,
+        repeat: (node.s<ImageRepeat>("repeat"))!,
         centerSlice: node.s<Rect>("centerSlice"),
-        matchTextDirection: (node.s<bool>("matchTextDirection", false))!,
-        gaplessPlayback: (node.s<bool>("gaplessPlayback", false))!,
-        isAntiAlias: (node.s<bool>("isAntiAlias", false))!,
-        filterQuality:
-            (node.s<FilterQuality>("filterQuality", FilterQuality.low))!,
+        matchTextDirection: (node.s<bool>("matchTextDirection"))!,
+        gaplessPlayback: (node.s<bool>("gaplessPlayback"))!,
+        isAntiAlias: (node.s<bool>("isAntiAlias"))!,
+        filterQuality: (node.s<FilterQuality>("filterQuality"))!,
         cacheWidth: node.s<int>("cacheWidth"),
         cacheHeight: node.s<int>("cacheHeight"));
   });
@@ -942,22 +911,21 @@ Register register = Register(() {
             node.s<Widget Function(BuildContext, Object, StackTrace?)>(
                 "errorBuilder"),
         semanticLabel: node.s<String>("semanticLabel"),
-        excludeFromSemantics: (node.s<bool>("excludeFromSemantics", false))!,
+        excludeFromSemantics: (node.s<bool>("excludeFromSemantics"))!,
         scale: node.s<double>("scale"),
         width: node.s<double>("width"),
         height: node.s<double>("height"),
         color: node.s<Color>("color"),
         colorBlendMode: node.s<BlendMode>("colorBlendMode"),
         fit: node.s<BoxFit>("fit"),
-        alignment: (node.s<AlignmentGeometry>("alignment", Alignment.center))!,
-        repeat: (node.s<ImageRepeat>("repeat", ImageRepeat.noRepeat))!,
+        alignment: (node.s<AlignmentGeometry>("alignment"))!,
+        repeat: (node.s<ImageRepeat>("repeat"))!,
         centerSlice: node.s<Rect>("centerSlice"),
-        matchTextDirection: (node.s<bool>("matchTextDirection", false))!,
-        gaplessPlayback: (node.s<bool>("gaplessPlayback", false))!,
-        isAntiAlias: (node.s<bool>("isAntiAlias", false))!,
+        matchTextDirection: (node.s<bool>("matchTextDirection"))!,
+        gaplessPlayback: (node.s<bool>("gaplessPlayback"))!,
+        isAntiAlias: (node.s<bool>("isAntiAlias"))!,
         package: node.s<String>("package"),
-        filterQuality:
-            (node.s<FilterQuality>("filterQuality", FilterQuality.low))!,
+        filterQuality: (node.s<FilterQuality>("filterQuality"))!,
         cacheWidth: node.s<int>("cacheWidth"),
         cacheHeight: node.s<int>("cacheHeight"));
   });
@@ -972,20 +940,19 @@ Register register = Register(() {
             node.s<Widget Function(BuildContext, Object, StackTrace?)>(
                 "errorBuilder"),
         semanticLabel: node.s<String>("semanticLabel"),
-        excludeFromSemantics: (node.s<bool>("excludeFromSemantics", false))!,
+        excludeFromSemantics: (node.s<bool>("excludeFromSemantics"))!,
         width: node.s<double>("width"),
         height: node.s<double>("height"),
         color: node.s<Color>("color"),
         colorBlendMode: node.s<BlendMode>("colorBlendMode"),
         fit: node.s<BoxFit>("fit"),
-        alignment: (node.s<AlignmentGeometry>("alignment", Alignment.center))!,
-        repeat: (node.s<ImageRepeat>("repeat", ImageRepeat.noRepeat))!,
+        alignment: (node.s<AlignmentGeometry>("alignment"))!,
+        repeat: (node.s<ImageRepeat>("repeat"))!,
         centerSlice: node.s<Rect>("centerSlice"),
-        matchTextDirection: (node.s<bool>("matchTextDirection", false))!,
-        gaplessPlayback: (node.s<bool>("gaplessPlayback", false))!,
-        isAntiAlias: (node.s<bool>("isAntiAlias", false))!,
-        filterQuality:
-            (node.s<FilterQuality>("filterQuality", FilterQuality.low))!,
+        matchTextDirection: (node.s<bool>("matchTextDirection"))!,
+        gaplessPlayback: (node.s<bool>("gaplessPlayback"))!,
+        isAntiAlias: (node.s<bool>("isAntiAlias"))!,
+        filterQuality: (node.s<FilterQuality>("filterQuality"))!,
         cacheWidth: node.s<int>("cacheWidth"),
         cacheHeight: node.s<int>("cacheHeight"));
   });
@@ -1025,7 +992,8 @@ Register register = Register(() {
     return Offset(method[0].toDouble(), method[1].toDouble());
   });
   XmlLayout.registerInline(Offset, "fromDirection", false, (node, method) {
-    return Offset.fromDirection(method[0].toDouble(), method[1].toDouble());
+    return Offset.fromDirection(
+        method[0].toDouble(), method[1]?.toDouble() ?? 1.0);
   });
   XmlLayout.registerInline(Offset, "zero", true, (node, method) {
     return Offset.zero;
@@ -1043,7 +1011,7 @@ Register register = Register(() {
         primary: node.s<bool>("primary"),
         physics: node.s<ScrollPhysics>("physics"),
         shrinkWrap: (node.s<bool>("shrinkWrap", false))!,
-        padding: node.s<EdgeInsets>("padding"),
+        padding: node.s<EdgeInsetsGeometry>("padding"),
         itemExtent: node.s<double>("itemExtent"),
         addAutomaticKeepAlives: (node.s<bool>("addAutomaticKeepAlives", true))!,
         addRepaintBoundaries: (node.s<bool>("addRepaintBoundaries", true))!,
@@ -1068,7 +1036,7 @@ Register register = Register(() {
         primary: node.s<bool>("primary"),
         physics: node.s<ScrollPhysics>("physics"),
         shrinkWrap: (node.s<bool>("shrinkWrap", false))!,
-        padding: node.s<EdgeInsets>("padding"),
+        padding: node.s<EdgeInsetsGeometry>("padding"),
         itemExtent: node.s<double>("itemExtent"),
         itemBuilder:
             (node.s<Widget Function(BuildContext, int)>("itemBuilder"))!,
@@ -1095,7 +1063,7 @@ Register register = Register(() {
         primary: node.s<bool>("primary"),
         physics: node.s<ScrollPhysics>("physics"),
         shrinkWrap: (node.s<bool>("shrinkWrap", false))!,
-        padding: node.s<EdgeInsets>("padding"),
+        padding: node.s<EdgeInsetsGeometry>("padding"),
         itemBuilder:
             (node.s<Widget Function(BuildContext, int)>("itemBuilder"))!,
         separatorBuilder:
@@ -1122,7 +1090,7 @@ Register register = Register(() {
         primary: node.s<bool>("primary"),
         physics: node.s<ScrollPhysics>("physics"),
         shrinkWrap: (node.s<bool>("shrinkWrap", false))!,
-        padding: node.s<EdgeInsets>("padding"),
+        padding: node.s<EdgeInsetsGeometry>("padding"),
         itemExtent: node.s<double>("itemExtent"),
         childrenDelegate: (node.s<SliverChildDelegate>("childrenDelegate"))!,
         cacheExtent: node.s<double>("cacheExtent"),
@@ -1151,20 +1119,20 @@ Register register = Register(() {
         title: node.s<Widget>("title"),
         subtitle: node.s<Widget>("subtitle"),
         trailing: node.s<Widget>("trailing"),
-        isThreeLine: (node.s<bool>("isThreeLine", false))!,
+        isThreeLine: (node.s<bool>("isThreeLine"))!,
         dense: node.s<bool>("dense"),
         visualDensity: node.s<VisualDensity>("visualDensity"),
         shape: node.s<ShapeBorder>("shape"),
-        contentPadding: node.s<EdgeInsets>("contentPadding"),
-        enabled: (node.s<bool>("enabled", true))!,
+        contentPadding: node.s<EdgeInsetsGeometry>("contentPadding"),
+        enabled: (node.s<bool>("enabled"))!,
         onTap: node.s<void Function()>("onTap"),
         onLongPress: node.s<void Function()>("onLongPress"),
         mouseCursor: node.s<MouseCursor>("mouseCursor"),
-        selected: (node.s<bool>("selected", false))!,
+        selected: (node.s<bool>("selected"))!,
         focusColor: node.s<Color>("focusColor"),
         hoverColor: node.s<Color>("hoverColor"),
         focusNode: node.s<FocusNode>("focusNode"),
-        autofocus: (node.s<bool>("autofocus", false))!,
+        autofocus: (node.s<bool>("autofocus"))!,
         tileColor: node.s<Color>("tileColor"),
         selectedTileColor: node.s<Color>("selectedTileColor"),
         enableFeedback: node.s<bool>("enableFeedback"),

@@ -88,38 +88,38 @@ class XmlLayoutBuilder extends Builder {
           if (topLevelElement.name == entryName) {
             var types = topLevelElement.computeConstantValue();
             if (types != null) {
-              for (var type in types.toListValue()) {
-                entries.add(type.toTypeValue());
+              for (var type in types.toListValue()!) {
+                entries.add(type.toTypeValue()!);
               }
             }
           } else if (topLevelElement.name == collectionsName) {
             var types = topLevelElement.computeConstantValue();
             if (types != null) {
-              for (var type in types.toListValue()) {
+              for (var type in types.toListValue()!) {
                 _processCollectionType(status, type);
               }
             }
           } else if (topLevelElement.name == importsName) {
             var importsList = topLevelElement.computeConstantValue();
             if (importsList != null) {
-              for (var importUri in importsList.toListValue()) {
-                String str = importUri.toStringValue();
+              for (var importUri in importsList.toListValue()!) {
+                String str = importUri.toStringValue()!;
                 if (!status.imports.contains(str)) {
                   status.imports.add(str);
                 }
               }
             }
           }
-        } else if (topLevelElement.type?.isDartCoreMap == true) {
+        } else if (topLevelElement.type.isDartCoreMap == true) {
           if (topLevelElement.name == convertName) {
             var types = topLevelElement.computeConstantValue();
-            types.toMapValue().forEach((key, value) {
-              status._convertTypes[key.toTypeValue()] = value.toTypeValue();
+            types!.toMapValue()!.forEach((key, value) {
+              status._convertTypes[key!.toTypeValue()!] = value!.toTypeValue()!;
             });
           } else if (topLevelElement.name == convertsName) {
             var converts = topLevelElement.computeConstantValue();
-            converts.toMapValue().forEach((key, value) {
-              status._inputConvert[key.toStringValue()] = value.toStringValue();
+            converts!.toMapValue()!.forEach((key, value) {
+              status._inputConvert[key!.toStringValue()!] = value!.toStringValue()!;
             });
           }
         }
@@ -198,7 +198,7 @@ class XmlLayoutBuilder extends Builder {
       ) continue;
       if (caches.contains(type)) continue;
       var element = type.element;
-      if (element.kind == ElementKind.ENUM) continue;
+      if (element!.kind == ElementKind.ENUM) continue;
       else if (element.kind == ElementKind.CLASS) {
         caches.add(type);
         var classElement = element as ClassElement;
@@ -295,7 +295,7 @@ class XmlLayoutBuilder extends Builder {
                 List<String> argv = [];
                 argv.add('"${param.name}"');
                 if (param.hasDefaultValue) {
-                  argv.add(param.defaultValueCode);
+                  argv.add(param.defaultValueCode!);
                 }
                 _processDartType(status, type);
                 if (type.element?.kind == ElementKind.GENERIC_FUNCTION_TYPE) {
@@ -320,7 +320,7 @@ class XmlLayoutBuilder extends Builder {
                 List<String> argv = [];
                 argv.add('"arg:$index"');
                 if (param.hasDefaultValue) {
-                  argv.add(param.defaultValueCode);
+                  argv.add(param.defaultValueCode!);
                 }
                 _processDartType(status, type);
                 if (type.isDartCoreList || type.isDartCoreIterable) {
@@ -383,7 +383,7 @@ class XmlLayoutBuilder extends Builder {
                   List<String> argv = [];
                   argv.add('"arg:0"');
                   if (param.hasDefaultValue) {
-                    argv.add(param.defaultValueCode);
+                    argv.add(param.defaultValueCode!);
                   }
                   var type = status.convertType(param.type);
                   String typeName = type.getTypeString();
@@ -440,8 +440,8 @@ class XmlLayoutBuilder extends Builder {
   }
 
   void _processCollectionType(BuilderStatus status, DartObject dartObject) {
-    DartType dartType = dartObject.getField("collectionType").toTypeValue();
-    DartType targetType = dartObject.getField("targetType").toTypeValue();
+    DartType dartType = dartObject.getField("collectionType")!.toTypeValue()!;
+    DartType targetType = dartObject.getField("targetType")!.toTypeValue()!;
     ClassElement classElement = dartType.element as ClassElement;
     if (status._processed.containsKey(classElement)) return;
     status.insertSource(classElement.source);
