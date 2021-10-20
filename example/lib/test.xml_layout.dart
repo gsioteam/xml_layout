@@ -319,7 +319,7 @@ Register register = Register(() {
   });
   XmlLayout.register("TextStyle", (node, key) {
     return TextStyle(
-        inherit: (node.s<bool>("inherit"))!,
+        inherit: (node.s<bool>("inherit") ?? true)!,
         color: node.s<Color>("color"),
         backgroundColor: node.s<Color>("backgroundColor"),
         fontSize: node.s<double>("fontSize"),

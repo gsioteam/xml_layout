@@ -237,13 +237,10 @@ class XmlLayoutState extends State<XmlLayout> with NodeControl {
   @override
   Widget build(BuildContext context) {
     if (template == null) {
-      xml.XmlElement? element =
-          widget.element ?? (xml.XmlDocument.parse(widget.template!).firstChild as xml.XmlElement?);
-      if (element != null) {
-        template = Template(element);
-      } else {
-        throw TemplateException("Can not parse template.");
-      }
+      xml.XmlElement element =
+          widget.element ?? (xml.XmlDocument.parse(widget.template!)
+              .children.firstWhere((e) => e is xml.XmlElement) as xml.XmlElement);
+      template = Template(element);
     }
 
     status.data = widget.objects;

@@ -84,7 +84,7 @@ class XmlLayoutBuilder extends Builder {
     for (var element in library.topLevelElements) {
       if (element.kind == ElementKind.TOP_LEVEL_VARIABLE) {
         var topLevelElement = element as TopLevelVariableElement;
-        if (topLevelElement.type?.isDartCoreList == true) {
+        if (topLevelElement.type.isDartCoreList == true) {
           if (topLevelElement.name == entryName) {
             var types = topLevelElement.computeConstantValue();
             if (types != null) {
