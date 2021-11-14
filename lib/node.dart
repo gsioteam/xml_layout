@@ -279,7 +279,7 @@ class NodeData {
     }
   }
 
-  T t<T>() {
+  T? t<T>() {
     if (!isElement) {
       dynamic obj = status.execute(raw);
       if (obj is T) return obj;
@@ -288,19 +288,19 @@ class NodeData {
     switch (T) {
       case String:
         {
-          return text as T;
+          return text as T?;
         }
       case bool:
         {
-          return boolean as T;
+          return boolean as T?;
         }
       case int:
         {
-          return integer as T;
+          return integer as T?;
         }
       case double:
         {
-          return real as T;
+          return real as T?;
         }
       default:
         {
@@ -321,7 +321,7 @@ class NodeData {
         }
     }
   }
-  T convert<T>() => t<T>();
+  T? convert<T>() => t<T>();
 
   T? s<T>(String name, [T? def]) => this[name]?.t<T>() ?? def;
   T? attribute<T>(String name, [T? defaultValue]) => s<T>(name, defaultValue);

@@ -90,7 +90,9 @@ class MethodNode {
   }
 
   int get length => arguments.length;
-  dynamic operator [](int idx) => arguments[idx];
+  dynamic operator [](int idx) {
+    if (arguments.length > idx) return arguments[idx];
+  }
   List<T> map<T>(T Function(dynamic) fn) => arguments.map(fn).toList();
 
 }
