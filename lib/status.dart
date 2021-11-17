@@ -170,7 +170,13 @@ class Status {
           if (seg.indexOf("[") > 0) {
             segs.add(get(seg));
           } else {
-            segs.add(jsonDecode(seg));
+            var val;
+            try {
+              val = jsonDecode(seg);
+            } catch (e) {
+              val = get(seg);
+            }
+            segs.add(val);
           }
         }
       }
