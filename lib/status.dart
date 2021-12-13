@@ -79,6 +79,13 @@ Map<String, MethodHandler> _methods = {
       ret /= method[i];
     }
     return ret;
+  },
+  "str": (method, status) {
+    List<String> arr = [];
+    for (int i = 0, t = method.length; i < t; ++i) {
+      arr.add(method[i].toString());
+    }
+    return arr.join();
   }
 };
 
