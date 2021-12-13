@@ -51,7 +51,11 @@ class NodeData {
       if (_template.node is xml.XmlElement) {
         FlowMessage message = FlowMessage();
         for (var childTemplate in _template.children) {
-          _rawChildren!.addAll(childTemplate.generate(status, control, message));
+          try {
+            _rawChildren!.addAll(childTemplate.generate(status, control, message));
+          } catch (e) {
+            print("Parse xml failed\n$e\n${_template.node}");
+          }
         }
       }
     }
@@ -258,11 +262,15 @@ class NodeData {
   Iterable<T> iterable<T>() sync* {
     FlowMessage message = FlowMessage();
     for (var child in _template.children) {
-      var nodes = child.generate(status, control, message);
-      for (var node in nodes) {
-        var elem = node.element();
-        if (elem is T && elem != null)
-          yield elem;
+      try {
+        var nodes = child.generate(status, control, message);
+        for (var node in nodes) {
+          var elem = node.element();
+          if (elem is T && elem != null)
+            yield elem;
+        }
+      } catch (e) {
+        print("Parse xml failed\n$e\n${_template.node}");
       }
     }
   }
