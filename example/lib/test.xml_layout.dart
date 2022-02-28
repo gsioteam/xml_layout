@@ -136,7 +136,6 @@ Register register = Register(() {
   XmlLayout.register("FocusNode", (node, key) {
     return FocusNode(
         debugLabel: node.s<String>("debugLabel"),
-        onKey: node.s<dynamic Function(FocusNode, RawKeyEvent)>("onKey"),
         skipTraversal: (node.s<bool>("skipTraversal", false))!,
         canRequestFocus: (node.s<bool>("canRequestFocus", true))!,
         descendantsAreFocusable:
@@ -449,10 +448,6 @@ Register register = Register(() {
         applyHeightToLastDescent: (node.s<bool>("applyHeightToLastDescent"))!,
         leadingDistribution:
             (node.s<TextLeadingDistribution>("leadingDistribution"))!);
-  });
-  XmlLayout.registerInline(TextHeightBehavior, "fromEncoded", false,
-      (node, method) {
-    return TextHeightBehavior.fromEncoded(method[0].toInt());
   });
   XmlLayout.register("Icon", (node, key) {
     return Icon((node.s<IconData?>("arg:0") ?? node.child<IconData>()),
@@ -789,17 +784,7 @@ Register register = Register(() {
         bodyText2: node.s<TextStyle>("bodyText2"),
         caption: node.s<TextStyle>("caption"),
         button: node.s<TextStyle>("button"),
-        overline: node.s<TextStyle>("overline"),
-        display4: node.s<TextStyle>("display4"),
-        display3: node.s<TextStyle>("display3"),
-        display2: node.s<TextStyle>("display2"),
-        display1: node.s<TextStyle>("display1"),
-        headline: node.s<TextStyle>("headline"),
-        title: node.s<TextStyle>("title"),
-        subhead: node.s<TextStyle>("subhead"),
-        subtitle: node.s<TextStyle>("subtitle"),
-        body2: node.s<TextStyle>("body2"),
-        body1: node.s<TextStyle>("body1"));
+        overline: node.s<TextStyle>("overline"));
   });
   XmlLayout.register("SystemUiOverlayStyle", (node, key) {
     return SystemUiOverlayStyle(

@@ -145,21 +145,6 @@ Register register = Register(() {
   XmlLayout.registerInline(IconData, "five_mp", true, (node, method) {
     return Icons.five_mp;
   });
-  XmlLayout.registerInline(IconData, "six_ft_apart", true, (node, method) {
-    return Icons.six_ft_apart;
-  });
-  XmlLayout.registerInline(IconData, "six_ft_apart_outlined", true,
-          (node, method) {
-        return Icons.six_ft_apart_outlined;
-      });
-  XmlLayout.registerInline(IconData, "six_ft_apart_rounded", true,
-          (node, method) {
-        return Icons.six_ft_apart_rounded;
-      });
-  XmlLayout.registerInline(IconData, "six_ft_apart_sharp", true,
-          (node, method) {
-        return Icons.six_ft_apart_sharp;
-      });
   XmlLayout.registerInline(IconData, "six_k", true, (node, method) {
     return Icons.six_k;
   });
