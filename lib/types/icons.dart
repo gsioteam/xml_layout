@@ -3528,15 +3528,6 @@ Register register = Register(() {
   XmlLayout.registerInline(IconData, "class_", true, (node, method) {
     return Icons.class_;
   });
-  XmlLayout.registerInline(IconData, "class__outlined", true, (node, method) {
-    return Icons.class__outlined;
-  });
-  XmlLayout.registerInline(IconData, "class__rounded", true, (node, method) {
-    return Icons.class__rounded;
-  });
-  XmlLayout.registerInline(IconData, "class__sharp", true, (node, method) {
-    return Icons.class__sharp;
-  });
   XmlLayout.registerInline(IconData, "clean_hands", true, (node, method) {
     return Icons.clean_hands;
   });
@@ -13412,10 +13403,6 @@ Register register = Register(() {
   XmlLayout.registerInline(IconData, "pie_chart_outline_sharp", true,
           (node, method) {
         return Icons.pie_chart_outline_sharp;
-      });
-  XmlLayout.registerInline(IconData, "pie_chart_outlined", true,
-          (node, method) {
-        return Icons.pie_chart_outlined;
       });
   XmlLayout.registerInline(IconData, "pie_chart_rounded", true, (node, method) {
     return Icons.pie_chart_rounded;

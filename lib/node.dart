@@ -292,6 +292,17 @@ class NodeData {
       dynamic obj = status.execute(raw);
       if (obj is T) return obj;
       if (T == String) return obj.toString() as T;
+      if (obj != null) {
+        if ((T == int || T == double) && obj is num) {
+          if (T == int) {
+            return obj.toInt() as T;
+          } else {
+            return obj.toDouble() as T;
+          }
+        } else {
+          print("Warring: Result $obj is not target Type $T.");
+        }
+      }
     }
     switch (T) {
       case String:

@@ -221,6 +221,7 @@ class Status {
         var handler = _methods[m.name]!;
         return handler(m, this);
       } else {
+        print("Warring: Can't find the method [${m.name}]");
         return _stringResult();
       }
     } else {
