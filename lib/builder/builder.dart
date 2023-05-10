@@ -1,4 +1,3 @@
-
 import 'dart:async';
 
 import 'package:analyzer/dart/element/nullability_suffix.dart';
@@ -10,7 +9,7 @@ import 'package:analyzer/dart/constant/value.dart';
 import 'package:dart_style/dart_style.dart';
 
 class BuilderStatus {
-  Map<ClassElement, List<String>> _processed = {};
+  Map<Element, List<String>> _processed = {};
   List<String> imports = [];
   Map<DartType, DartType> _convertTypes = {};
   Map<Pattern, String> _inputConvert = {};
@@ -119,7 +118,8 @@ class XmlLayoutBuilder extends Builder {
           } else if (topLevelElement.name == convertsName) {
             var converts = topLevelElement.computeConstantValue();
             converts!.toMapValue()!.forEach((key, value) {
-              status._inputConvert[key!.toStringValue()!] = value!.toStringValue()!;
+              status._inputConvert[key!.toStringValue()!] =
+                  value!.toStringValue()!;
             });
           }
         }
@@ -139,9 +139,7 @@ class XmlLayoutBuilder extends Builder {
 
     String output = DartFormatter().format(codes.join('\n'));
     await buildStep.writeAsString(
-        buildStep.inputId.changeExtension('.xml_layout.dart'),
-        output
-    );
+        buildStep.inputId.changeExtension('.xml_layout.dart'), output);
   }
 
   void _processDartType(BuilderStatus status, DartType dartType) {
@@ -161,15 +159,19 @@ class XmlLayoutBuilder extends Builder {
           !dartType.isDartCoreString &&
           !dartType.isDartCoreSymbol) {
         var element = dartType.element;
-        if (element != null && (element.kind == ElementKind.CLASS || element.kind == ElementKind.ENUM)) {
+        if (element != null && element.kind == ElementKind.CLASS) {
           _processType(status, element as ClassElement);
+        } else if (element != null && element.kind == ElementKind.ENUM) {
+          _processEnumType(status, element as EnumElement);
         }
       }
     }
   }
 
-  bool _isConstructorInline(ConstructorElement constructorElement, [Set<DartType>? caches]) {
-    if (constructorElement.name.isEmpty && constructorElement.parameters.length == 0) return false;
+  bool _isConstructorInline(ConstructorElement constructorElement,
+      [Set<DartType>? caches]) {
+    if (constructorElement.name.isEmpty &&
+        constructorElement.parameters.length == 0) return false;
 
     if (caches == null) {
       caches = {};
@@ -177,8 +179,7 @@ class XmlLayoutBuilder extends Builder {
     }
 
     for (var param in constructorElement.parameters) {
-      if (param.isNamed)
-        return false;
+      if (param.isNamed) return false;
       var type = param.type;
       if (type.isDartCoreFunction ||
           type.isDartCoreSymbol ||
@@ -187,18 +188,17 @@ class XmlLayoutBuilder extends Builder {
           type.isDartAsyncFuture ||
           type.isDartCoreList ||
           type.isDartCoreMap ||
-          type.isDartCoreIterable
-      ) return false;
+          type.isDartCoreIterable) return false;
       if (type.isDartCoreString ||
           type.isDartCoreNum ||
           type.isDartCoreInt ||
           type.isDartCoreDouble ||
           type.isDartCoreBool ||
-          type.isDartCoreNull
-      ) continue;
+          type.isDartCoreNull) continue;
       if (caches.contains(type)) continue;
       var element = type.element;
-      if (element!.kind == ElementKind.ENUM) continue;
+      if (element!.kind == ElementKind.ENUM)
+        continue;
       else if (element.kind == ElementKind.CLASS) {
         caches.add(type);
         var classElement = element as ClassElement;
@@ -209,14 +209,24 @@ class XmlLayoutBuilder extends Builder {
             break;
           }
         }
-        if (hasInline) continue;
-        else return false;
+        if (hasInline)
+          continue;
+        else
+          return false;
       } else {
         return false;
       }
-
     }
     return true;
+  }
+
+  void _processEnumType(BuilderStatus status, EnumElement e) {
+    if (status._processed.containsKey(e)) return;
+    status.insertSource(e.source);
+
+    List<String> codes = [];
+    status._processed[e] = codes;
+    codes.add('XmlLayout.registerEnum(${e.name}.values);');
   }
 
   void _processType(BuilderStatus status, ClassElement classElement) {
@@ -225,7 +235,7 @@ class XmlLayoutBuilder extends Builder {
 
     List<String> codes = [];
     status._processed[classElement] = codes;
-    if (classElement.isEnum) {
+    if (classElement.isDartCoreEnum) {
       codes.add('XmlLayout.registerEnum(${classElement.name}.values);');
     } else {
       // Process constructors.
@@ -235,7 +245,8 @@ class XmlLayoutBuilder extends Builder {
             if (con.name.isEmpty && con.parameters.length == 0) continue;
             if (_isConstructorInline(con)) {
               List<String> segs = [];
-              segs.add('XmlLayout.registerInline(${classElement.name}, "${con.name}", false, (node, method) {');
+              segs.add(
+                  'XmlLayout.registerInline(${classElement.name}, "${con.name}", false, (node, method) {');
               if (con.name.isEmpty) {
                 segs.add('return ${classElement.name}(');
               } else {
@@ -284,7 +295,9 @@ class XmlLayoutBuilder extends Builder {
 
               codes.add(segs.join('\n'));
             } else {
-              String constructorName = con.name.isEmpty ? "${classElement.name}" : "${classElement.name}.${con.name}";
+              String constructorName = con.name.isEmpty
+                  ? "${classElement.name}"
+                  : "${classElement.name}.${con.name}";
               List<String> segs = [];
               segs.add('XmlLayout.register("$constructorName", (node, key) {');
               segs.add('return $constructorName(');
@@ -307,10 +320,13 @@ class XmlLayoutBuilder extends Builder {
                 }
 
                 if (type.isDartCoreList || type.isDartCoreIterable) {
-                  var dartType = status.convertType((type as ParameterizedType).typeArguments.first);
-                  params.add('${param.name}: ${nc('node.array<${dartType.getTypeString()}>(${argv[0]})', type)}');
+                  var dartType = status.convertType(
+                      (type as ParameterizedType).typeArguments.first);
+                  params.add(
+                      '${param.name}: ${nc('node.array<${dartType.getTypeString()}>(${argv[0]})', type)}');
                 } else {
-                  String line = '${param.name}: ${nc('node.s<${type.getTypeString()}>(${argv.join(',')})', type)}';
+                  String line =
+                      '${param.name}: ${nc('node.s<${type.getTypeString()}>(${argv.join(',')})', type)}';
                   params.add(line);
                 }
               }
@@ -324,10 +340,17 @@ class XmlLayoutBuilder extends Builder {
                 }
                 _processDartType(status, type);
                 if (type.isDartCoreList || type.isDartCoreIterable) {
-                  var dartType = (type as ParameterizedType).typeArguments.first;
-                  params.insert(index, nc('node.array<${dartType.getTypeString()}>(${argv[0]})', type));
+                  var dartType =
+                      (type as ParameterizedType).typeArguments.first;
+                  params.insert(
+                      index,
+                      nc('node.array<${dartType.getTypeString()}>(${argv[0]})',
+                          type));
                 } else {
-                  params.insert(index, nc('node.s<${type.getTypeString()}>(${argv.join(',')})', type));
+                  params.insert(
+                      index,
+                      nc('node.s<${type.getTypeString()}>(${argv.join(',')})',
+                          type));
                 }
               }
 
@@ -336,39 +359,45 @@ class XmlLayoutBuilder extends Builder {
               for (var param in con.parameters) {
                 if (param.isNamed) {
                   switch (param.name) {
-                    case 'key': {
-                      params.add('${param.name}: key');
-                      break;
-                    }
-                    case 'child': {
-                      hasChild = true;
-                      var type = status.convertType(param.type);
-                      _processDartType(status, type);
-                      params.add('${param.name}: ${nc('node.child<${type.getTypeString()}>()', type)}');
-                      break;
-                    }
-                    case 'children':
-                    case 'slivers': {
-                      hasChild = true;
-                      var type = status.convertType(param.type);
-                      if (type.isDartCoreList) {
-                        String typeName;
-                        if (type is ParameterizedType) {
-                          typeName = type.typeArguments.first.getTypeString();
-                        } else {
-                          typeName = 'dynamic';
-                        }
-                        _processDartType(status, type);
-                        params.add('${param.name}: node.children<$typeName>()');
-                      } else {
-                        insertNamedParam(param);
+                    case 'key':
+                      {
+                        params.add('${param.name}: key');
+                        break;
                       }
-                      break;
-                    }
-                    default: {
-                      insertNamedParam(param);
-                      break;
-                    }
+                    case 'child':
+                      {
+                        hasChild = true;
+                        var type = status.convertType(param.type);
+                        _processDartType(status, type);
+                        params.add(
+                            '${param.name}: ${nc('node.child<${type.getTypeString()}>()', type)}');
+                        break;
+                      }
+                    case 'children':
+                    case 'slivers':
+                      {
+                        hasChild = true;
+                        var type = status.convertType(param.type);
+                        if (type.isDartCoreList) {
+                          String typeName;
+                          if (type is ParameterizedType) {
+                            typeName = type.typeArguments.first.getTypeString();
+                          } else {
+                            typeName = 'dynamic';
+                          }
+                          _processDartType(status, type);
+                          params
+                              .add('${param.name}: node.children<$typeName>()');
+                        } else {
+                          insertNamedParam(param);
+                        }
+                        break;
+                      }
+                    default:
+                      {
+                        insertNamedParam(param);
+                        break;
+                      }
                   }
                 } else {
                   indexedParams.add(param);
@@ -391,18 +420,21 @@ class XmlLayoutBuilder extends Builder {
                   if (type.isDartCoreString ||
                       type.isDartCoreInt ||
                       type.isDartCoreDouble ||
-                      type.isDartCoreBool
-                  ) {
+                      type.isDartCoreBool) {
                     child = 'node.t<$typeName>()';
                   } else {
                     child = 'node.child<$typeName>()';
-                    status.insertSource(param.type?.element?.source);
+                    status.insertSource(param.type.element?.source);
                   }
-                  params.insert(0, nc('(node.s<$typeName?>(${argv.join(',')}) ?? $child)', type));
-
+                  params.insert(
+                      0,
+                      nc('(node.s<$typeName?>(${argv.join(',')}) ?? $child)',
+                          type));
                 }
               } else {
-                for (var index = 0, t = indexedParams.length; index < t; ++index) {
+                for (var index = 0, t = indexedParams.length;
+                    index < t;
+                    ++index) {
                   insertIndexParam(indexedParams[index], index);
                 }
               }
@@ -418,9 +450,12 @@ class XmlLayoutBuilder extends Builder {
 
       // Process static fields.
       for (var field in classElement.fields) {
-        if (field.isStatic && field.isPublic && field.type == classElement.thisType) {
+        if (field.isStatic &&
+            field.isPublic &&
+            field.type == classElement.thisType) {
           List<String> segs = [];
-          segs.add('XmlLayout.registerInline(${classElement.name}, "${field.name}", true, (node, method) {');
+          segs.add(
+              'XmlLayout.registerInline(${classElement.name}, "${field.name}", true, (node, method) {');
           segs.add("return ${classElement.name}.${field.name};");
           segs.add('});');
 
@@ -462,7 +497,8 @@ class XmlLayoutBuilder extends Builder {
           }
         }
         List<String> segs = [];
-        segs.add('XmlLayout.registerInline(${targetType.getDisplayString(withNullability: false)}, "${field.name}", true, (node, method) {');
+        segs.add(
+            'XmlLayout.registerInline(${targetType.getDisplayString(withNullability: false)}, "${field.name}", true, (node, method) {');
         segs.add("return ${classElement.name}.${field.name};");
         segs.add('});');
 
@@ -482,8 +518,8 @@ class XmlLayoutBuilder extends Builder {
 
   @override
   Map<String, List<String>> get buildExtensions => const {
-    '.dart': ['.xml_layout.dart']
-  };
+        '.dart': ['.xml_layout.dart']
+      };
 }
 
 XmlLayoutBuilder builderFactory(BuilderOptions options) {
