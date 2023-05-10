@@ -13,10 +13,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  xml: ^5.1.2
-  analyzer: ^1.7.1
-  dart_style: ^2.1.1
-  build: ^2.1.0
+  xml: ^6.2.2
+  analyzer: ^5.10.0
+  dart_style: ^2.3.1
+  build: ^2.3.1
 
 dev_dependencies:
 

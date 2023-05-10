@@ -40,6 +40,7 @@ abstract class Action {
       }
     }
   }
+
   dynamic call(Status status);
 }
 
@@ -51,7 +52,7 @@ class Call extends Action {
 
   dynamic call(Status status) {
     if (func != null) {
-      return Function.apply(func!, args?.map((e) => e.value)?.toList() ?? []);
+      return Function.apply(func!, args?.map((e) => e.value).toList() ?? []);
     }
   }
 }
@@ -59,9 +60,7 @@ class Call extends Action {
 class Builder extends Action {
   final NodeData node;
 
-  Builder(this.node, {
-    String? ret
-  }) : super(ret: ret);
+  Builder(this.node, {String? ret}) : super(ret: ret);
 
   @override
   call(Status status) {
@@ -97,7 +96,6 @@ class Script extends Action {
     }
     return ret;
   }
-
 }
 
 class Argument {
@@ -109,6 +107,7 @@ class Argument {
 
 const List _emptyArgs = [null, null, null, null, null];
 typedef _Func<T> = T Function([dynamic, dynamic, dynamic, dynamic, dynamic]);
+
 class _ReturnType<T> {
   _Func<T> function(NodeData node) {
     return ([a1, a2, a3, a4, a5]) {
@@ -117,6 +116,7 @@ class _ReturnType<T> {
       }));
     };
   }
+
   T creator(NodeData node) {
     var iter = node.iterable();
     dynamic ret;
@@ -135,12 +135,14 @@ class _ReturnType<T> {
     }
   }
 }
+
 Map<String, _ReturnType> _returnTypes = {};
 
 void registerReturnType<T>([String? name]) {
   String typeName = name ?? T.toString().toLowerCase();
   _returnTypes[typeName] = _ReturnType<T>();
 }
+
 int _functionTag = 0x10003;
 
 _ReturnType<Null> _defaultReturnType = _ReturnType<Null>();
@@ -162,18 +164,16 @@ Register register = Register(() {
       ret = node.status.execute(creator);
     }
     if (ret == true) {
-      return returnType.creator(_createNewNode(node, {
-        "args": _emptyArgs
-      }));
+      return returnType.creator(_createNewNode(node, {"args": _emptyArgs}));
     } else {
       return returnType.function(node);
     }
   });
   XmlLayout.register("Call", (node, key) {
     var call = Call(
-      func: node.s<Function>("function"),
-      ret: node.s<String>("return"),
-      args: node.children<Argument>());
+        func: node.s<Function>("function"),
+        ret: node.s<String>("return"),
+        args: node.children<Argument>());
     call.execute(node.status);
     return call;
   });
@@ -186,9 +186,7 @@ Register register = Register(() {
   });
   XmlLayout.register("SetArgument", (node, key) {
     var set = SetArgument(
-        ret: node.s<String>("return"),
-        argument: node.s("argument")
-    );
+        ret: node.s<String>("return"), argument: node.s("argument"));
     set.execute(node.status);
     return set;
   });
@@ -200,5 +198,4 @@ Register register = Register(() {
   XmlLayout.register("Argument", (node, key) {
     return Argument(node);
   });
-
 });
