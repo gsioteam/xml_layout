@@ -466,7 +466,7 @@ class XmlLayoutBuilder extends Builder {
   }
 
   bool _isSubTypeOf(InterfaceType type, DartType? targetType) {
-    if (type == targetType) return true;
+    if (targetType?.asInstanceOf(type.element) != null) return true;
     for (var supperType in type.allSupertypes) {
       var ret = _isSubTypeOf(supperType, targetType);
       if (ret) return true;
