@@ -744,10 +744,8 @@ Register register = Register(() {
         shape: node.s<ShapeBorder>("shape"),
         backgroundColor: node.s<Color>("backgroundColor"),
         foregroundColor: node.s<Color>("foregroundColor"),
-        brightness: node.s<Brightness>("brightness"),
         iconTheme: node.s<IconThemeData>("iconTheme"),
         actionsIconTheme: node.s<IconThemeData>("actionsIconTheme"),
-        textTheme: node.s<TextTheme>("textTheme"),
         primary: (node.s<bool>("primary"))!,
         centerTitle: node.s<bool>("centerTitle"),
         excludeHeaderSemantics: (node.s<bool>("excludeHeaderSemantics"))!,
@@ -756,7 +754,6 @@ Register register = Register(() {
         bottomOpacity: (node.s<double>("bottomOpacity"))!,
         toolbarHeight: node.s<double>("toolbarHeight"),
         leadingWidth: node.s<double>("leadingWidth"),
-        backwardsCompatibility: node.s<bool>("backwardsCompatibility"),
         toolbarTextStyle: node.s<TextStyle>("toolbarTextStyle"),
         titleTextStyle: node.s<TextStyle>("titleTextStyle"),
         systemOverlayStyle: node.s<SystemUiOverlayStyle>("systemOverlayStyle"));
